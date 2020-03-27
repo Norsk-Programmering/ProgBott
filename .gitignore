@@ -1,6 +1,7 @@
 tests/.venv/
 .idea/
 data/
+.vscode
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
