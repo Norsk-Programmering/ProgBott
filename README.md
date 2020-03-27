@@ -3,7 +3,7 @@
 Discord bot for å håndtere hjelpsomme folk
 
 ## Oppsett
-Prosjektet er skrevet i Python, og kan derfor kjøres nesten over alt. Jeg tilbyr også et [docker bilde](https://hub.docker.com/r/si0972/sprokfork).
+Prosjektet er skrevet i Python, og kan derfor kjøres nesten over alt. Jeg tilbyr også et [docker bilde](https://hub.docker.com/r/roxedus/progbott).
 
 
 <details>
@@ -15,7 +15,7 @@ For å sette opp programvaren, må du ha Python 3,8 eller nyere.
 ```bash
 git clone https://github.com/Roxedus/ProgBott progbott
 python -m pip install -r /progbott/requirements.txt
-cp /progbott/data/settings.example.json /progbott/data/settings.json
+cp /progbott/settings.example.json /progbott/data/settings.json
 ```
 
 </details>
