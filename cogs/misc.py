@@ -1,10 +1,12 @@
+# Discord Packages
 import discord
-import time
-import platform
-
-from .utils.defaults import easy_embed
-
 from discord.ext import commands
+
+# Bot Utilities
+from cogs.utils.defaults import easy_embed
+
+import platform
+import time
 
 
 class Misc(commands.Cog):

@@ -1,12 +1,17 @@
-from argparse import ArgumentParser, RawTextHelpFormatter
-import os
-from utils.logging import Logger
-from utils.settings import Settings
+# Discord Packages
 import discord
 from discord.ext import commands
-import aiohttp
+
+# Bot Utilities
+from cogs.utils.logging import Logger
+from cogs.utils.settings import Settings
+
+import os
 import time
 import traceback
+from argparse import ArgumentParser, RawTextHelpFormatter
+
+import aiohttp
 
 
 def _get_prefix(bot, message):
@@ -22,6 +27,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=_get_prefix)
         self.logger = logger
         self.logger.debug("Logging level: %s" % level.upper())
+        self.data_dir = data_dir
 
     async def on_message(self, message):
         if message.author.bot:
@@ -32,16 +38,17 @@ class Bot(commands.Bot):
         if not hasattr(self, 'uptime'):
             self.uptime = time.time()
 
-        extension = 'cogs.misc'
-        try:
-            self.logger.debug("Loading extension %s" % extension)
-            self.load_extension(extension)
-        except Exception:
-            self.logger.exception("Loading of extension %s failed" % extension)
-
         print(f'Logged in as: {self.user.name} in {len(self.guilds)} servers.')
         print(f'Version: {discord.__version__}')
         self.logger.debug("Bot Ready")
+
+        extensions = ['cogs.misc', 'cogs.poeng']
+        for extension in extensions:
+            try:
+                self.logger.debug("Loading extension %s" % extension)
+                self.load_extension(extension)
+            except Exception:
+                self.logger.exception("Loading of extension %s failed" % extension)
 
     def run(self):
         try:
@@ -53,8 +60,8 @@ class Bot(commands.Bot):
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(prog='Shite Music Bot',
-                            description='Discord bot base',
+    parser = ArgumentParser(prog="Roxedus' ProgBott",
+                            description='Programmerings bot',
                             formatter_class=RawTextHelpFormatter)
 
     parser.add_argument("-D", "--debug", action='store_true', help='Sets debug to true')
@@ -78,4 +85,3 @@ if __name__ == '__main__':
     logger.debug("Data folder: %s" % data_dir)
     settings = Settings(data_dir=data_dir)
     Bot().run()
-
