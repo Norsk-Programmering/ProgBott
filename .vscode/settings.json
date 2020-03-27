@@ -1,0 +1,17 @@
+{
+  "python.pythonPath": "e:\\Projects\\git\\bått\\PoengBott\\.venv\\Scripts\\python.exe",
+  "[git-commit]": {"editor.rulers": [50]},
+  "[python]": {
+      "editor.rulers": [
+          120
+      ]
+  },
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext"
+  ]
+}

@@ -1,0 +1,95 @@
+name: Test And Build BOT
+on: [push]
+
+jobs:
+  tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 --select=E9,F63,F7,F82 --show-source
+        # exit-zero treats all errors as warnings.
+        flake8 --exit-zero --max-complexity=10
+    - name: Check with Isort
+      run: |
+        pip install isort
+        isort --check -rc -sp setup.cfg .
+        
+    - name: Sort with Isort
+      if: failure()
+      run: |
+        isort -y -rc -sp setup.cfg .
+
+    - name: Create Pull Request
+      if: failure()
+      uses: peter-evans/create-pull-request@v2
+      with:
+        token: ${{ secrets.GH_TOKEN }}
+        branch: actions/auto
+        commit-message: Changes done by tests
+        committer: Roxedus <bot@roxedus.dev>
+        title: Linter changed files
+
+
+  build-and-push-container:
+    needs: tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create VARS
+      env:
+        _repo: ${{github.repository}}
+        _ref: ${{github.ref}}
+      id: vars
+      run: | 
+        echo "::set-output name=branch::$(echo ${_ref} | cut -d/ -f3)"
+        echo "::set-output name=username::$(echo ${_repo} | cut -d/ -f1 | tr '[:upper:]' '[:lower:]')"
+        echo "::set-output name=repo::$(echo ${_repo} | tr '[:upper:]' '[:lower:]')"
+    - name: Print VARS
+      run: | 
+        echo "${{ steps.vars.outputs.branch }} && ${{github.ref}}"
+        echo "${{ steps.vars.outputs.username }} && ${{github.repository}}"
+        echo ${{ steps.vars.outputs.repo }}
+    - name: Build the Docker image
+      env:
+        REPO : ${{ steps.vars.outputs.repo }}
+        BRANCH: ${{ steps.vars.outputs.branch }}
+      run: |
+        docker build -t $REPO:$BRANCH -t $REPO:$BRANCH-${{github.sha}} -f amd64.Dockerfile .       
+    - name: Build the :latest Docker image
+      env:
+        REPO : ${{ steps.vars.outputs.repo }}
+      if: github.ref == 'refs/heads/master'
+      run: |
+        docker build -t $REPO:latest -f amd64.Dockerfile .     
+    - name: Login to registry
+      if: github.event_name != 'pull_request' && contains(github.ref, 'actions') != 'true'
+      env:
+        DOCKER_USERNAME: ${{ steps.vars.outputs.username }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      
+    - name: Pushes the Docker image
+      env:
+        REPO : ${{ steps.vars.outputs.repo }}
+      if: github.event_name != 'pull_request' && contains(github.ref, 'actions') != 'true'
+      run: docker push $REPO
