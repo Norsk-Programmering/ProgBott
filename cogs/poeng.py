@@ -75,7 +75,7 @@ class Poeng(commands.Cog):
             return False
         
         try:
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=15.0, check=check)
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
@@ -86,7 +86,7 @@ class Poeng(commands.Cog):
         except asyncio.TimeoutError:
             self.teller_data['meldinger'][str(message.id)] = msg_data
             self.cacher()
-            await message.channel.send(content=None, embed=embed)
+            await msg.edit(content=None, embed=embed)
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
