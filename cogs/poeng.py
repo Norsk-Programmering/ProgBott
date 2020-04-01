@@ -30,7 +30,7 @@ class Poeng(commands.Cog):
             return
         if message.mentions:
             for word in self.settings_data['takk']:
-                if word in message.content:
+                if word.lower() in message.content.lower():
                     await self.add_star(message)
 
 # TODO: halvstjerner?
