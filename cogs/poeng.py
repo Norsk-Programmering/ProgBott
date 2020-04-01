@@ -32,6 +32,7 @@ class Poeng(commands.Cog):
             for word in self.settings_data['takk']:
                 if word.lower() in message.content.lower():
                     await self.add_star(message)
+                    break
 
 # TODO: halvstjerner?
 
@@ -56,6 +57,8 @@ class Poeng(commands.Cog):
         }
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {",".join(dudes["mention"])} en stjerne!'
+        msg = await message.channel.send("Registrerer stjerne")
+        await message.channel.trigger_typing()
 
 
 
@@ -68,19 +71,27 @@ class Poeng(commands.Cog):
 
             if reaction.emoji == emoji:
                 return True
+            
+            return False
         
         try:
             reaction, user = await self.bot.wait_for('reaction_add', timeout=15.0, check=check)
-            self.teller_data['meldinger'][str(message.id)] = msg_data
-            self.cacher()
-            await message.channel.send(embed=embed)
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
             except:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
+            await msg.delete()
+
         except asyncio.TimeoutError:
+            self.teller_data['meldinger'][str(message.id)] = msg_data
+            self.cacher()
+            await message.channel.send(content=None, embed=embed)
             await message.remove_reaction(emoji, self.bot.user)
+            try:
+                await message.remove_reaction(emoji, message.author)
+            except:
+                self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
 
     @commands.group(name="stjerne")
