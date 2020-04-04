@@ -37,6 +37,8 @@ class Bot(commands.Bot):
     async def on_ready(self):
         if not hasattr(self, 'uptime'):
             self.uptime = time.time()
+        if not hasattr(self, 'appinfo'):
+            self.appinfo = await self.application_info()
 
         print(f'Logged in as: {self.user.name} in {len(self.guilds)} servers.')
         print(f'Version: {discord.__version__}')
