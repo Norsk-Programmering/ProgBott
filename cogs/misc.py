@@ -3,8 +3,8 @@ import discord
 from discord.ext import commands
 
 # Bot Utilities
-from cogs.utils.defaults import easy_embed
 from cogs.utils.Bot_version import bot_version
+from cogs.utils.defaults import easy_embed
 
 import platform
 import time
