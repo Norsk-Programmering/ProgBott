@@ -67,7 +67,7 @@ class Misc(commands.Cog):
         dev = await self.bot.fetch_user(self.bot.appinfo.owner.id)
 
         desc = f"Discord-programvareagent for Norsk Programering" \
-               f"Forbedringforslag mottas på [GitHub]({self.repo})"
+               f"\nForbedringforslag mottas på [GitHub]({self.repo})"
 
         py_ver = platform.python_version()
         how = f"**Python-versjon:** " \
