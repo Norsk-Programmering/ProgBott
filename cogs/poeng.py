@@ -148,7 +148,7 @@ class Poeng(commands.Cog):
     async def set_thanks(self, ctx, thanks_phrase):
         try:
             self.settings_data['takk'].append(thanks_phrase)
-            await ctx.send('La til {thanks_phrase} i lista')
+            await ctx.send(f'La til {thanks_phrase} i lista')
         except KeyError:
             self.settings_data['takk'] = []
             self.settings_data['takk'].append(thanks_phrase)
