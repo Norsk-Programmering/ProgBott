@@ -16,8 +16,8 @@ import aiohttp
 
 def _get_prefix(bot, message):
     if not message.guild:
-        prefix = bot.settings.default_prefix
-        return commands.when_mentioned_or(prefix)(bot, message)
+        prefixes = settings.prefix
+        return commands.when_mentioned_or(*prefixes)(bot, message)
     prefixes = settings.prefix
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
@@ -44,7 +44,7 @@ class Bot(commands.Bot):
         print(f'Version: {discord.__version__}')
         self.logger.debug("Bot Ready")
 
-        extensions = ['cogs.misc', 'cogs.poeng']
+        extensions = ['cogs.misc', 'cogs.poeng', 'cogs.errors']
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s" % extension)
