@@ -1,7 +1,8 @@
+# Discord Packages
 from discord.ext import commands
 
-import traceback
 import sys
+import traceback
 from datetime import datetime
 
 
