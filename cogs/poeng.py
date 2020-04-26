@@ -23,21 +23,31 @@ class Poeng(commands.Cog):
         self.load_json('teller')
         self.bot.loop.create_task(self.cache_loop())
 
-
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
-        if message.mentions:
-            for word in self.settings_data['takk']:
-                word_ = word.lower()
-                if word_ in message.content.lower() and (message.content.startswith(word_) 
-                or message.content.endswith(word_) 
-                or message.content[:-1].endswith(word_)):
-                    await self.add_star(message)
-                    break
+        elif message.mentions:
+            await self._filter(message)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if after.author.bot:
+            return
+        elif after.mentions and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
+            await self._filter(after)
 
 # TODO: halvstjerner?
+
+    async def _filter(self, message, **kwarg):
+        for word in self.settings_data['takk']:
+            word_ = word.lower()
+            content_ = message.content.lower()
+            if word_ in content_ and (content_.startswith(word_)
+                                      or content_.endswith(word_)
+                                      or content_[:-1].endswith(word_)):
+                await self.add_star(message)
+                break
 
     async def add_star(self, message, **kwarg):
         emoji = '⭐'
@@ -63,8 +73,6 @@ class Poeng(commands.Cog):
         msg = await message.channel.send("Registrerer stjerne")
         await message.channel.trigger_typing()
 
-
-
         def check(reaction, user):
             if user is None or user.id != message.author.id:
                 return False
@@ -74,9 +82,9 @@ class Poeng(commands.Cog):
 
             if reaction.emoji == emoji:
                 return True
-            
+
             return False
-        
+
         try:
             reaction, user = await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
             await message.remove_reaction(emoji, self.bot.user)
@@ -96,7 +104,7 @@ class Poeng(commands.Cog):
             except:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
-
+    @commands.guild_only()
     @commands.group(name="stjerne")
     async def pGroup(self, ctx):
         """Kategori for styring av poeng"""
@@ -110,16 +118,15 @@ class Poeng(commands.Cog):
             user = ctx.author
         embed = easy_embed(self, ctx)
         counter = 0
-        links = []
         for msg in self.teller_data['meldinger']:
             for helper in self.teller_data['meldinger'][msg]['hjelper']:
                 if helper == user.id:
                     counter += 1
                     if counter <= 5:
                         embed.add_field(
-                            name =f"Hjalp {self.bot.get_user(self.teller_data['meldinger'][msg]['giver']).name} her:",
-                            value = f"[Link]({self.teller_data['meldinger'][msg]['link']})",
-                            inline = False
+                            name=f"Hjalp {self.bot.get_user(self.teller_data['meldinger'][msg]['giver']).name} her:",
+                            value=f"[Link]({self.teller_data['meldinger'][msg]['link']})",
+                            inline=False
                         )
         embed.title = "Boken"
         desc = f'{user.mention} har {counter} stjerner i boka.'
@@ -130,7 +137,7 @@ class Poeng(commands.Cog):
         if 10 <= counter:
             desc = f'{user.mention} har jobbet bra, her er det {counter} stjerner i boka!'
         if 15 <= counter:
-            desc = f'{user.mention} har lagt inn en fantastisk jobb, {counter} stjerner i boka!'            
+            desc = f'{user.mention} har lagt inn en fantastisk jobb, {counter} stjerner i boka!'
         if embed.fields:
             desc += f'\n\nViser de {len(embed.fields)} første:'
         embed.description = desc
@@ -177,20 +184,19 @@ class Poeng(commands.Cog):
             with codecs.open(self.settings_file, 'r', encoding='utf8') as json_file:
                 self.settings_data = json.load(json_file)
 
-
     def save_json(self, mode):
         if mode == 'teller':
             try:
                 with codecs.open(self.teller_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.teller_data, outfile, indent=4, sort_keys=True)
             except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e,self.teller_data))
+                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.teller_data))
         elif mode == 'settings':
             try:
                 with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.settings_data, outfile, indent=4, sort_keys=True)
             except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n\n%s' % (e,self.settings_data))
+                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n\n%s' % (e, self.settings_data))
 
 
 def check_folder(data_dir):
@@ -201,9 +207,9 @@ def check_folder(data_dir):
 
 def check_files(data_dir):
     files = [
-        {f'{data_dir}/poeng/teller.json': {'meldinger':{}}}, 
-        {f'{data_dir}/poeng/innstilinger.json': {'takk':[]}}
-        ]
+        {f'{data_dir}/poeng/teller.json': {'meldinger': {}}},
+        {f'{data_dir}/poeng/innstilinger.json': {'takk': []}}
+    ]
     for i in files:
         for file, default in i.items():
             try:
