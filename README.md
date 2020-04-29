@@ -8,10 +8,10 @@ Prosjektet er skrevet i Python, og kan derfor kjøres nesten over alt. Jeg tilby
 
 <details>
     <summary>Manuelt</summary>
-  
+
 For å sette opp programvaren, må du ha Python 3,8 eller nyere.
-    
-    
+
+
 ```bash
 git clone https://github.com/Roxedus/ProgBott progbott
 python -m pip install -r /progbott/requirements.txt
@@ -24,7 +24,7 @@ cp /progbott/settings.example.json /progbott/data/settings.json
 
 <details>
   <summary>Docker</summary>
-  
+
 Eksempel docker-compose.yml
 
 ```yml
@@ -36,10 +36,10 @@ Eksempel docker-compose.yml
     volumes:
       - ./progbott:/app/data
 ```
-  
+
 </details>
 
 
 Opprett en [bot-token](https://discordapp.com/developers/docs/topics/oauth2#bots), og fyll inn token-feltet i `/progbott/data/settings.json`
 
-Du er nå klar til å starte. 
+Du er nå klar til å starte.

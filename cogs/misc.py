@@ -40,6 +40,23 @@ class Misc(commands.Cog):
         days, hours, minutes, seconds = self.get_uptime()
         await ctx.send(f'{days}d {hours}h {minutes}m {seconds}s')
 
+    @commands.command(aliases=["farge"])
+    async def syntax(self, ctx):
+        """
+        Guide på hvoran bruke kodeblokker
+        """
+        embed = easy_embed(self, ctx)
+        embed.title = "Hvordan få vakre meldinger når man poster kode"
+        embed.description = """
+        Hei, du kan gjøre koden din mer leselig med å sende koden i kodeblokker.\n\n
+        For vanlig kodeblokk skriv:\n\`\`\`\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
+        Den kommer til å se ut som dette:\n```\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```\n
+        Du kan også definere et språk, for å få syntax highlighting.\n
+        For fargerik kodeblokk skriv:\n\`\`\`js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
+        Den kommer til å se ut som dette:\n```js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```
+        """
+        await ctx.send(embed=embed)
+
     @commands.command(name='guilds')
     @commands.is_owner()
     async def _guilds(self, ctx):
