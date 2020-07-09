@@ -64,7 +64,7 @@ class GitHub(commands.Cog):
                 with codecs.open(self.brukere_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.brukere_data, outfile, indent=4, sort_keys=True)
             except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.teller_data))
+                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.brukere_data))
         elif mode == 'settings':
             try:
                 with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
