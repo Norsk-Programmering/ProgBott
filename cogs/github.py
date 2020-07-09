@@ -11,6 +11,7 @@ import json
 import os
 import time
 
+
 class GitHub(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -23,7 +24,7 @@ class GitHub(commands.Cog):
     @commands.guild_only()
     @commands.group(name="github")
     async def ghGroup(self, ctx):
-        """Kategori for styring av poeng"""
+        """Kategori for styring av github brukere"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
@@ -49,11 +50,6 @@ class GitHub(commands.Cog):
             embed.url = self.brukere_data[str(user.id)]
         await ctx.send(embed=embed)
 
-        
-
-        
-            
-
     def load_json(self, mode):
         if mode == 'brukere':
             with codecs.open(self.brukere_file, 'r', encoding='utf8') as json_file:
@@ -76,8 +72,9 @@ class GitHub(commands.Cog):
             except Exception as e:
                 return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n\n%s' % (e, self.settings_data))
 
+
 def check_folder(data_dir):
-    f = f'{data_dir}/poeng'
+    f = f'{data_dir}/github'
     if not os.path.exists(f):
         os.makedirs(f)
 
@@ -95,6 +92,7 @@ def check_files(data_dir):
             except FileNotFoundError:
                 with codecs.open(file, 'w', encoding='utf8') as outfile:
                     json.dump(default, outfile)
+
 
 def setup(bot):
     check_folder(bot.data_dir)
