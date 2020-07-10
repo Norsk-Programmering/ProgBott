@@ -11,12 +11,21 @@ class DB():
         );
         """
 
+        self.create_pending_table = """
+        CREATE TABLE IF NOT EXISTS pending_users (
+            id integer PRIMARY KEY,
+            discord_id string NOT NULL,
+            verification string NOT NULL
+        )
+        """
+
     def populate_tables(self):
         conn = self.create_connection()
 
         try:
             c = conn.cursor()
             c.execute(self.create_github_users)
+            c.execute(self.create_pending_table)
         except Exception as e:
             raise Exception("Something went wrong populating the database.")
 

@@ -20,7 +20,13 @@ def index():
 @app.route("/github/oauth/callback")
 def callback():
     query_code = request.args.get("code")
-    discord_id = request.args.get("discord_id")
+
+    [discord_id, key] = request.args.get("params").split(":")
+
+    is_pending = get_is_pending(discord_id, key)
+
+    if not is_pending:
+        return "NOT_OK"
 
     params = {
         'client_id': settings.github_client_id,
@@ -50,6 +56,7 @@ def callback():
     inserted_user = insert_user(discord_id, access_token, user["login"])
 
     if inserted_user:
+        delete_pending(discord_id)
         return redirect("/github/oauth/complete/{}".format(user["login"]))
     else:
         return "NOT_OK"
@@ -77,6 +84,21 @@ def insert_user(discord_id, auth_token, github_username):
     conn.close()
     return True
 
+def get_is_pending(discord_id, random_string):
+    conn = DB().create_connection()
 
+    cursor = conn.cursor()
 
+    cursor.execute("SELECT * FROM pending_users WHERE discord_id={} AND verification='{}'".format(discord_id, random_string))
 
+    row = cursor.fetchone()
+
+    return row is not None
+
+def delete_pending(discord_id):
+    conn = DB().create_connection()
+
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM pending_users WHERE discord_id={}".format(discord_id))
+
+    conn.commit()
