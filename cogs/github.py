@@ -7,6 +7,10 @@ from db import DB
 
 import string
 import random
+import requests
+import json
+
+from cogs.utils.defaults import easy_embed
 
 settings = Settings(data_dir="data")
 
@@ -43,6 +47,57 @@ class Github(commands.Cog):
 
         return await ctx.send(user_mention + "sender ny registreringslenke på DM!".format(ctx.author.id))
 
+    @ghGroup.command(name="remove")
+    async def remove(self, ctx):
+        user_mention = "<@{}>: ".format(ctx.author.id)
+        conn = DB().create_connection()
+
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM github_users WHERE discord_id={}".format(ctx.author.id))
+
+        conn.commit()
+
+        return await ctx.send(user_mention + "fjernet Githuben din.")
+
+    @ghGroup.command(name="me")
+    async def me(self, ctx):
+        user = self.get_user(ctx.author.id)
+
+        if user is None:
+            return await ctx.send("Du har ikke registrert en bruker enda.")
+
+        (_id, discord_id, auth_token, github_username) = user
+
+        user = requests.get("https://api.github.com/user", headers={
+            'Authorization': "token " + auth_token,
+            'Accept': 'application/json'
+        }).json()
+
+
+        embed = easy_embed(self, ctx)
+
+        embed.title = user["login"]
+        embed.description = user["html_url"]
+
+        embed.set_thumbnail(url=user["avatar_url"])
+
+        embed.add_field(name="Følgere / Følger", value="{} / {}".format(user["followers"], user["following"], inline=False))
+        embed.add_field(name="Biografi", value=user["bio"], inline=False)
+        embed.add_field(name="Offentlige repos", value=user["public_repos"], inline=False)
+
+        return await ctx.send(embed=embed)
+
+    def get_user(self, discord_id):
+        conn = DB().create_connection()
+
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM github_users WHERE discord_id={}".format(discord_id))
+
+        rows = cursor.fetchone()
+
+        return rows
 
 
     def is_user_registered(self, discord_id, random_string):
