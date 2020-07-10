@@ -15,8 +15,6 @@ import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 import threading
 
-import aiohttp
-
 
 def _get_prefix(bot, message):
     if not message.guild:
