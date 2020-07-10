@@ -26,12 +26,14 @@ class Github(commands.Cog):
 
         if not is_user_registered:
             try:
-                registration_link = "https://github.com/login/oauth/authorize?client_id=8acb1c5ac6cf40da86e6&redirect_uri={}&discord_id={}".format(settings.github_callback_uri, ctx.author.id)
+                registration_link = "https://github.com/login/oauth/authorize?client_id=8acb1c5ac6cf40da86e6&redirect_uri={}?discord_id={}".format(settings.github_callback_uri, ctx.author.id)
                 await ctx.author.send("Hei! For å verifisere GitHub kontoen din, følg denne lenken: {}".format(registration_link))
             except Exception as e:
                 return await ctx.send(user_mention + "du har ikke på innstillingen for å motta meldinger.")
 
             return await ctx.send(user_mention + "sender ny registreringslenke på DM!".format(ctx.author.id))
+
+        return await ctx.send(user_mention + "du er allerede registrert!")
     def check_user_registration(self, discord_id):
         conn = DB().create_connection()
 

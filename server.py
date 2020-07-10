@@ -3,6 +3,8 @@ import requests
 import json
 from cogs.utils.settings import Settings
 
+from db import DB
+
 settings = Settings(data_dir="data")
 
 app = Flask(__name__)
@@ -18,6 +20,7 @@ def index():
 @app.route("/github/oauth/callback")
 def callback():
     query_code = request.args.get("code")
+    discord_id = request.args.get("discord_id")
 
     params = {
         'client_id': settings.github_client_id,
@@ -44,12 +47,35 @@ def callback():
         'Accept': 'application/json'
     }).json()
 
-    return redirect("/github/oauth/complete/{}".format(user["login"]))
+    inserted_user = insert_user(discord_id, access_token, user["login"])
+
+    if inserted_user:
+        return redirect("/github/oauth/complete/{}".format(user["login"]))
+    else:
+        return "NOT_OK"
+
+
 
 @app.route("/github/oauth/complete/<name>")
 def oauth_complete(name):
     return render_template("oauth_complete.html", name=name)
 
+
+def insert_user(discord_id, auth_token, github_username):
+    conn = DB().create_connection()
+
+    if conn is None:
+        return False
+
+    cursor = conn.cursor()
+
+    params = (discord_id, auth_token, github_username)
+
+    cursor.execute("INSERT OR REPLACE INTO github_users(discord_id, auth_token, github_username) VALUES(?, ?, ?);", params)
+    conn.commit()
+
+    conn.close()
+    return True
 
 
 

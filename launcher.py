@@ -7,6 +7,7 @@ from cogs.utils.logging import Logger
 from cogs.utils.settings import Settings
 
 from server import Server
+from db import DB
 
 import os
 import time
@@ -88,7 +89,11 @@ if __name__ == '__main__':
 
     logger = Logger(location=data_dir, level=level, to_file=args.log_to_file).logger
     logger.debug("Data folder: %s" % data_dir)
+
     settings = Settings(data_dir=data_dir)
+
+    database = DB()
+    database.populate_tables()
 
     server = threading.Thread(target=Server)
     server.start()
