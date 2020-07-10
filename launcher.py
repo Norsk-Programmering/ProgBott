@@ -6,10 +6,13 @@ from discord.ext import commands
 from cogs.utils.logging import Logger
 from cogs.utils.settings import Settings
 
+from server import Server
+
 import os
 import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
+import threading
 
 import aiohttp
 
@@ -86,4 +89,8 @@ if __name__ == '__main__':
     logger = Logger(location=data_dir, level=level, to_file=args.log_to_file).logger
     logger.debug("Data folder: %s" % data_dir)
     settings = Settings(data_dir=data_dir)
+
+    server = threading.Thread(target=Server)
+    server.start()
+
     Bot().run()
