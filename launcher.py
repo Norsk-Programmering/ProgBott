@@ -11,8 +11,6 @@ import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-import aiohttp
-
 
 def _get_prefix(bot, message):
     if not message.guild:
@@ -28,6 +26,7 @@ class Bot(commands.Bot):
         self.logger = logger
         self.logger.debug("Logging level: %s" % level.upper())
         self.data_dir = data_dir
+        self.settings = settings.extra
 
     async def on_message(self, message):
         if message.author.bot:
@@ -85,5 +84,7 @@ if __name__ == '__main__':
 
     logger = Logger(location=data_dir, level=level, to_file=args.log_to_file).logger
     logger.debug("Data folder: %s" % data_dir)
+
     settings = Settings(data_dir=data_dir)
+
     Bot().run()

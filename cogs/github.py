@@ -1,100 +1,152 @@
 # Discord Packages
-import discord
 from discord.ext import commands
 
 # Bot Utilities
+from cogs.utils.db import DB
 from cogs.utils.defaults import easy_embed
+from cogs.utils.server import Server
 
-import asyncio
-import codecs
-import json
 import os
-import time
+import random
+import string
+import threading
+
+import requests
 
 
-class GitHub(commands.Cog):
+class Github(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
-        self.brukere_data = {}
-        self.settings_file = bot.data_dir + '/github/innstilinger.json'
-        self.brukere_file = bot.data_dir + '/github/brukere.json'
-        self.load_json('settings')
-        self.load_json('brukere')
+        database = DB(data_dir=self.bot.data_dir)
+        database.populate_tables()
+
+    def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))
 
     @commands.guild_only()
     @commands.group(name="github")
     async def ghGroup(self, ctx):
-        """Kategori for styring av github brukere"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @ghGroup.command(name="bind")
-    async def bind(self, ctx, githubURL):
-        self.load_json('brukere')
-        self.brukere_data[ctx.author.id] = githubURL
-        self.save_json('brukere')
+    @ghGroup.command(name="auth")
+    async def auth(self, ctx):
+        # First - attempt to localize if the user has already registered.
+        random_string = self.id_generator()
+        is_user_registered = self.is_user_registered(ctx.author.id, random_string)
+
+        if is_user_registered:
+            return await ctx.send(ctx.author.mention + " du er allerede registrert!")
+
+        try:
+            discord_id_and_key = "{}:{}".format(ctx.author.id, random_string)
+            registration_link = "https://github.com/login/oauth/authorize" \
+                                "?client_id={}&redirect_uri={}?params={}".format(
+                                    self.bot.settings.github["client_id"],
+                                    self.bot.settings.github["callback_uri"], discord_id_and_key
+                                )
+            await ctx.author.send("Hei! For å verifisere GitHub kontoen din, følg denne lenken: {}."
+                                  .format(registration_link))
+        except Exception:
+            return await ctx.send(ctx.author.mention + " du har ikke på innstillingen for å motta meldinger.")
+
+        return await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
+
+    @ghGroup.command(name="remove")
+    async def remove(self, ctx):
+        user_mention = "<@{}>: ".format(ctx.author.id)
+        conn = DB(data_dir=self.bot.data_dir).connection
+
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM github_users WHERE discord_id={}".format(ctx.author.id))
+
+        conn.commit()
+
+        return await ctx.send(user_mention + "fjernet Githuben din.")
+
+    @ghGroup.command(name="me")
+    async def me(self, ctx):
+        user = self.get_user(ctx.author.id)
+
+        if user is None:
+            return await ctx.send("Du har ikke registrert en bruker enda.")
+
+        (_id, discord_id, auth_token, github_username) = user
+
+        user = requests.get("https://api.github.com/user", headers={
+            'Authorization': "token " + auth_token,
+            'Accept': 'application/json'
+        }).json()
+
         embed = easy_embed(self, ctx)
-        embed.title = "Du har nå bundet din github bruker!"
-        await ctx.send(embed=embed)
 
-    @ghGroup.command(name="hent")
-    async def hent(self, ctx, user: discord.Member = None):
-        self.load_json('brukere')
-        embed = easy_embed(self, ctx)
-        if not str(user.id) in self.brukere_data:
-            embed.title = "Fant ikke bruker!"
-            embed.colour = 0xEB4034
-            embed.description = f"{user.display_name} har ikke bundet sin GitHub bruker til ProgBott."
-        else:
-            embed.title = f"{user.display_name} sin GitHub"
-            embed.url = self.brukere_data[str(user.id)]
-        await ctx.send(embed=embed)
+        embed.title = user["login"]
+        embed.description = user["html_url"]
 
-    def load_json(self, mode):
-        if mode == 'brukere':
-            with codecs.open(self.brukere_file, 'r', encoding='utf8') as json_file:
-                self.brukere_data = json.load(json_file)
-        elif mode == 'settings':
-            with codecs.open(self.settings_file, 'r', encoding='utf8') as json_file:
-                self.settings_data = json.load(json_file)
+        embed.set_thumbnail(url=user["avatar_url"])
 
-    def save_json(self, mode):
-        if mode == 'brukere':
-            try:
-                with codecs.open(self.brukere_file, 'w', encoding='utf8') as outfile:
-                    json.dump(self.brukere_data, outfile, indent=4, sort_keys=True)
-            except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.brukere_data))
-        elif mode == 'settings':
-            try:
-                with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
-                    json.dump(self.settings_data, outfile, indent=4, sort_keys=True)
-            except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n\n%s' % (e, self.settings_data))
+        embed.add_field(name="Følgere / Følger",
+                        value="{} / {}".format(user["followers"], user["following"]), inline=False)
+        embed.add_field(name="Biografi", value=user["bio"], inline=False)
+        embed.add_field(name="Offentlige repos", value=user["public_repos"], inline=False)
+
+        return await ctx.send(embed=embed)
+
+    def get_user(self, discord_id):
+        conn = DB(data_dir=self.bot.data_dir).connection
+
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM github_users WHERE discord_id={}".format(discord_id))
+
+        rows = cursor.fetchone()
+
+        return rows
+
+    def is_user_registered(self, discord_id, random_string):
+        conn = DB(data_dir=self.bot.data_dir).connection
+
+        if conn is None:
+            return False
+
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM github_users WHERE discord_id={}".format(discord_id))
+
+        rows = cursor.fetchone()
+
+        if rows is not None:
+            conn.close()
+            return True
+
+        cursor.execute("SELECT * FROM pending_users WHERE discord_id={}".format(discord_id))
+
+        row = cursor.fetchone()
+
+        if row is not None:
+            cursor.execute("DELETE FROM pending_users WHERE discord_id={}".format(discord_id))
+
+        cursor.execute("INSERT INTO pending_users(discord_id, verification) VALUES(?, ?);", (discord_id, random_string))
+
+        conn.commit()
+        conn.close()
+        return False
 
 
 def check_folder(data_dir):
-    f = f'{data_dir}/github'
+    f = f'{data_dir}/db'
     if not os.path.exists(f):
         os.makedirs(f)
 
 
-def check_files(data_dir):
-    files = [
-        {f'{data_dir}/github/brukere.json': {}},
-        {f'{data_dir}/github/innstilinger.json': {}}
-    ]
-    for i in files:
-        for file, default in i.items():
-            try:
-                with codecs.open(file, 'r', encoding='utf8') as json_file:
-                    json.load(json_file)
-            except FileNotFoundError:
-                with codecs.open(file, 'w', encoding='utf8') as outfile:
-                    json.dump(default, outfile)
+def start_server(bot):
+    server = threading.Thread(target=Server, kwargs={'data_dir': bot.data_dir, 'settings': bot.settings.github})
+    server.start()
 
 
 def setup(bot):
     check_folder(bot.data_dir)
-    check_files(bot.data_dir)
-    bot.add_cog(GitHub(bot))
+    start_server(bot)
+    bot.add_cog(Github(bot))

@@ -1,10 +1,6 @@
 # Discord Packages
 from discord.ext import commands
 
-import sys
-import traceback
-from datetime import datetime
-
 
 class Errors(commands.Cog):
     def __init__(self, bot):
@@ -38,7 +34,7 @@ class Errors(commands.Cog):
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 return await ctx.send(f'`{ctx.command}` kan ikke brukes i DMs')
-            except:
+            except Exception:
                 pass
 
         elif isinstance(error, commands.CheckFailure):
@@ -46,7 +42,7 @@ class Errors(commands.Cog):
 
         try:
             await ctx.send('En ukjent feil oppstod. Be båtteier om å sjekke feilen')
-        except:
+        except Exception:
             pass
 
 
