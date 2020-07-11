@@ -13,7 +13,7 @@ class Server:
     def __init__(self, debug=False, **kwargs):
         for key, value in kwargs.items():
             app.config[key] = value
-        app.run(debug=debug)
+        app.run(debug=debug, host="0.0.0.0")
 
 
 @app.route("/")
