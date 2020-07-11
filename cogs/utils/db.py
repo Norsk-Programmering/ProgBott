@@ -31,7 +31,7 @@ class DB():
             c = self.connection.cursor()
             c.execute(self._create_github_users)
             c.execute(self._create_pending_table)
-        except Exception as e:
+        except Exception:
             raise Exception("Something went wrong populating the database.")
 
         self.connection.close()

@@ -1,17 +1,17 @@
+# Discord Packages
 from discord.ext import commands
 
-from cogs.utils.defaults import easy_embed
-from cogs.utils.settings import Settings
-
-import random
-import requests
-import string
-
-
-from cogs.utils.server import Server
+# Bot Utilities
 from cogs.utils.db import DB
-import threading
+from cogs.utils.defaults import easy_embed
+from cogs.utils.server import Server
+
 import os
+import random
+import string
+import threading
+
+import requests
 
 
 class Github(commands.Cog):
@@ -36,21 +36,22 @@ class Github(commands.Cog):
         random_string = self.id_generator()
         is_user_registered = self.is_user_registered(ctx.author.id, random_string)
 
-        user_mention = "<@{}>: ".format(ctx.author.id)
-
         if is_user_registered:
-            return await ctx.send(user_mention + "du er allerede registrert!")
+            return await ctx.send(ctx.author.mention + " du er allerede registrert!")
 
         try:
             discord_id_and_key = "{}:{}".format(ctx.author.id, random_string)
-            registration_link = "https://github.com/login/oauth/authorize?client_id=8acb1c5ac6cf40da86e6&redirect_uri={}?params={}".format(
-                self.bot.settings.github["callback_uri"], discord_id_and_key
-            )
-            await ctx.author.send("Hei! For å verifisere GitHub kontoen din, følg denne lenken: {}.".format(registration_link))
+            registration_link = "https://github.com/login/oauth/authorize" \
+                                "?client_id={}&redirect_uri={}?params={}".format(
+                                    self.bot.settings.github["client_id"],
+                                    self.bot.settings.github["callback_uri"], discord_id_and_key
+                                )
+            await ctx.author.send("Hei! For å verifisere GitHub kontoen din, følg denne lenken: {}."
+                                  .format(registration_link))
         except Exception:
-            return await ctx.send(user_mention + "du har ikke på innstillingen for å motta meldinger.")
+            return await ctx.send(ctx.author.mention + " du har ikke på innstillingen for å motta meldinger.")
 
-        return await ctx.send(user_mention + "sender ny registreringslenke på DM!".format(ctx.author.id))
+        return await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
 
     @ghGroup.command(name="remove")
     async def remove(self, ctx):
@@ -87,7 +88,7 @@ class Github(commands.Cog):
         embed.set_thumbnail(url=user["avatar_url"])
 
         embed.add_field(name="Følgere / Følger",
-                        value="{} / {}".format(user["followers"], user["following"], inline=False))
+                        value="{} / {}".format(user["followers"], user["following"]), inline=False)
         embed.add_field(name="Biografi", value=user["bio"], inline=False)
         embed.add_field(name="Offentlige repos", value=user["public_repos"], inline=False)
 

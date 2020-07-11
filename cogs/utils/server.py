@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, redirect
-import requests
+# Bot Utilities
+from cogs.utils.db import DB
+
 import json
 
-from cogs.utils.db import DB
+import requests
+from flask import Flask, redirect, render_template, request
 
 app = Flask(__name__, static_folder='../../static', template_folder='../../templates')
 
@@ -39,11 +41,7 @@ def callback():
     }
 
     check_key = requests.post('https://github.com/login/oauth/access_token',
-                              params=params,
-                              headers={
-                                  'Accept': 'application/json'
-                              }
-                              )
+                              params=params, headers={'Accept': 'application/json'})
 
     check_key_json = check_key.json()
 

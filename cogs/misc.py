@@ -54,7 +54,7 @@ class Misc(commands.Cog):
         Du kan også definere et språk, for å få syntax highlighting.\n
         For fargerik kodeblokk skriv:\n\`\`\`js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
         Den kommer til å se ut som dette:\n```js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```
-        """
+        """  # noqa: W605
         await ctx.send(embed=embed)
 
     @commands.command(name='guilds')
