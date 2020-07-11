@@ -1,21 +1,23 @@
 from flask import Flask, request, render_template, redirect
 import requests
 import json
-from cogs.utils.settings import Settings
 
-from db import DB
+from cogs.utils.db import DB
 
-settings = Settings(data_dir="data")
+app = Flask(__name__, static_folder='../../static', template_folder='../../templates')
 
-app = Flask(__name__)
 
 class Server:
-    def __init__(self):
-        app.run(debug=False)
+    def __init__(self, debug=False, **kwargs):
+        for key, value in kwargs.items():
+            app.config[key] = value
+        app.run(debug=debug)
+
 
 @app.route("/")
 def index():
     return "Hello, world!"
+
 
 @app.route("/github/oauth/callback")
 def callback():
@@ -25,21 +27,23 @@ def callback():
 
     is_pending = get_is_pending(discord_id, key)
 
+    settings = app.config['settings']
+
     if not is_pending:
         return "NOT_OK"
 
     params = {
-        'client_id': settings.github_client_id,
-        'client_secret': settings.github_secret,
+        'client_id': settings['client_id'],
+        'client_secret': settings['secret'],
         "code": query_code
     }
 
     check_key = requests.post('https://github.com/login/oauth/access_token',
-       params=params,
-       headers={
-           'Accept': 'application/json'
-       }
-    )
+                              params=params,
+                              headers={
+                                  'Accept': 'application/json'
+                              }
+                              )
 
     check_key_json = check_key.json()
 
@@ -62,14 +66,13 @@ def callback():
         return "NOT_OK"
 
 
-
 @app.route("/github/oauth/complete/<name>")
 def oauth_complete(name):
     return render_template("oauth_complete.html", name=name)
 
 
 def insert_user(discord_id, auth_token, github_username):
-    conn = DB().create_connection()
+    conn = DB(data_dir=app.config['data_dir']).connection
 
     if conn is None:
         return False
@@ -84,8 +87,9 @@ def insert_user(discord_id, auth_token, github_username):
     conn.close()
     return True
 
+
 def get_is_pending(discord_id, random_string):
-    conn = DB().create_connection()
+    conn = DB(data_dir=app.config['data_dir']).connection
 
     cursor = conn.cursor()
 
@@ -95,8 +99,9 @@ def get_is_pending(discord_id, random_string):
 
     return row is not None
 
+
 def delete_pending(discord_id):
-    conn = DB().create_connection()
+    conn = DB(data_dir=app.config['data_dir']).connection
 
     cursor = conn.cursor()
     cursor.execute("DELETE FROM pending_users WHERE discord_id={}".format(discord_id))

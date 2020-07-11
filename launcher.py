@@ -6,14 +6,10 @@ from discord.ext import commands
 from cogs.utils.logging import Logger
 from cogs.utils.settings import Settings
 
-from server import Server
-from db import DB
-
 import os
 import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
-import threading
 
 
 def _get_prefix(bot, message):
@@ -30,6 +26,7 @@ class Bot(commands.Bot):
         self.logger = logger
         self.logger.debug("Logging level: %s" % level.upper())
         self.data_dir = data_dir
+        self.settings = settings.extra
 
     async def on_message(self, message):
         if message.author.bot:
@@ -89,11 +86,5 @@ if __name__ == '__main__':
     logger.debug("Data folder: %s" % data_dir)
 
     settings = Settings(data_dir=data_dir)
-
-    database = DB()
-    database.populate_tables()
-
-    server = threading.Thread(target=Server)
-    server.start()
 
     Bot().run()

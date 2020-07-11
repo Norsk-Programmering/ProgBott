@@ -14,9 +14,6 @@ class Settings:
             _json = json.load(f)
             self.token = _json["token"]
             self.prefix = _json["prefixes"]
-            self.github_secret = _json["github"]["secret"]
-            self.github_client_id = _json["github"]["client_id"]
-            self.github_callback_uri = _json["github"]["callback_uri"]
 
             try:
                 self.extra = namedtuple("settings", _json["extra"].keys())(*_json["extra"].values())

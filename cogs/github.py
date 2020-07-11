@@ -1,4 +1,3 @@
-from db import DB
 from discord.ext import commands
 
 from cogs.utils.defaults import easy_embed
@@ -9,14 +8,18 @@ import requests
 import string
 
 
-settings = Settings(data_dir="data")
+from cogs.utils.server import Server
+from cogs.utils.db import DB
+import threading
+import os
 
 
 class Github(commands.Cog):
 
     def __init__(self, bot):
-
         self.bot = bot
+        database = DB(data_dir=self.bot.data_dir)
+        database.populate_tables()
 
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
@@ -41,7 +44,7 @@ class Github(commands.Cog):
         try:
             discord_id_and_key = "{}:{}".format(ctx.author.id, random_string)
             registration_link = "https://github.com/login/oauth/authorize?client_id=8acb1c5ac6cf40da86e6&redirect_uri={}?params={}".format(
-                settings.github_callback_uri, discord_id_and_key
+                self.bot.settings.github["callback_uri"], discord_id_and_key
             )
             await ctx.author.send("Hei! For å verifisere GitHub kontoen din, følg denne lenken: {}.".format(registration_link))
         except Exception:
@@ -52,7 +55,7 @@ class Github(commands.Cog):
     @ghGroup.command(name="remove")
     async def remove(self, ctx):
         user_mention = "<@{}>: ".format(ctx.author.id)
-        conn = DB().create_connection()
+        conn = DB(data_dir=self.bot.data_dir).connection
 
         cursor = conn.cursor()
 
@@ -83,14 +86,15 @@ class Github(commands.Cog):
 
         embed.set_thumbnail(url=user["avatar_url"])
 
-        embed.add_field(name="Følgere / Følger", value="{} / {}".format(user["followers"], user["following"], inline=False))
+        embed.add_field(name="Følgere / Følger",
+                        value="{} / {}".format(user["followers"], user["following"], inline=False))
         embed.add_field(name="Biografi", value=user["bio"], inline=False)
         embed.add_field(name="Offentlige repos", value=user["public_repos"], inline=False)
 
         return await ctx.send(embed=embed)
 
     def get_user(self, discord_id):
-        conn = DB().create_connection()
+        conn = DB(data_dir=self.bot.data_dir).connection
 
         cursor = conn.cursor()
 
@@ -101,7 +105,7 @@ class Github(commands.Cog):
         return rows
 
     def is_user_registered(self, discord_id, random_string):
-        conn = DB().create_connection()
+        conn = DB(data_dir=self.bot.data_dir).connection
 
         if conn is None:
             return False
@@ -130,5 +134,18 @@ class Github(commands.Cog):
         return False
 
 
+def check_folder(data_dir):
+    f = f'{data_dir}/db'
+    if not os.path.exists(f):
+        os.makedirs(f)
+
+
+def start_server(bot):
+    server = threading.Thread(target=Server, kwargs={'data_dir': bot.data_dir, 'settings': bot.settings.github})
+    server.start()
+
+
 def setup(bot):
+    check_folder(bot.data_dir)
+    start_server(bot)
     bot.add_cog(Github(bot))
