@@ -33,14 +33,19 @@ main {
 }
 
 .oauth-complete-box span {
-    margin: 10px 0;
-    opacity: 0.4;
+  margin: 10px 0;
+  opacity: 0.4;
 }
 
 .oauth-complete-box h1 {
-    text-align: center;
+  text-align: center;
 }
 
 .oauth-complete-box img {
-    width: 300px;
+  width: 300px;
+}
+
+.error-box {
+  max-width: 400px;
+  text-align: center;
 }
