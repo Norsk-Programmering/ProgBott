@@ -1,3 +1,4 @@
+# Bot Utilities
 from cogs.utils.db import DB
 
 
