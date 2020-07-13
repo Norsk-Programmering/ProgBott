@@ -1,6 +1,6 @@
 # Discord Packages
-from discord.ext import commands
 import discord
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.db import DB
