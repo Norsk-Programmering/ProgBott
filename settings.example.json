@@ -1,9 +1,11 @@
 {
     "token": "",
     "prefixes": "]",
-    "github": {
-        "secret": "123",
-        "client_id": "1236",
-        "callback_uri": "http://localhost:5000/github/oauth/callback"
+    "extra": {
+        "github": {
+            "secret": "123",
+            "client_id": "1236",
+            "callback_uri": "http://localhost:5000/github/oauth/callback"
+        }
     }
 }
