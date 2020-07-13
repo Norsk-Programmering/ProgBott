@@ -26,7 +26,7 @@ class Bot(commands.Bot):
         self.logger = logger
         self.logger.debug("Logging level: %s" % level.upper())
         self.data_dir = data_dir
-        self.settings = settings.extra
+        self.settings = settings
 
     async def on_message(self, message):
         if message.author.bot:
@@ -43,7 +43,7 @@ class Bot(commands.Bot):
         print(f'Version: {discord.__version__}')
         self.logger.debug("Bot Ready")
 
-        extensions = ['cogs.misc', 'cogs.poeng', 'cogs.errors', 'cogs.github']
+        extensions = ['cogs.misc', 'cogs.poeng', 'cogs.errors', 'cogs.ranks']
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s" % extension)
