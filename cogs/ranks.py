@@ -5,7 +5,6 @@ from discord.ext import commands, tasks
 # Bot Utilities
 from cogs.utils.defaults import easy_embed, timed_question, random_hex_color
 
-import asyncio
 import codecs
 import json
 import os
