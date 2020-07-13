@@ -41,7 +41,7 @@ class Ranks(commands.Cog):
             embed.description = f"Rollen {rank} finnes ikke i denne serveren.\n"
             embed.description += "Hvis du vil legge til rollen i serveren, kontakt en server moderator."
             return await ctx.send(embed=embed)
-            
+
         embed.colour = role.colour
         if role.id not in self.whitelist_data['whitelist']:
             embed.title = f"Denne rollen er utilgjengelig!"
@@ -77,6 +77,18 @@ class Ranks(commands.Cog):
         embed.colour = role.colour
         await ctx.send(embed=embed)
 
+    @rGroup.command(name="list")
+    async def list(self, ctx):
+        self.load_json('whitelist')
+        embed = easy_embed(self, ctx)
+        embed.title = "Tilgjengelige roller"
+        embed.description = ""
+        for roleID in self.whitelist_data['whitelist']:
+            role = ctx.guild.get_role(roleID)
+            embed.description += role.name + "\n"
+        await ctx.send(embed=embed)
+
+
     def load_json(self, mode):
         if mode == 'whitelist':
             with codecs.open(self.whitelist_file, 'r', encoding='utf8') as json_file:
@@ -99,7 +111,7 @@ def check_folder(data_dir):
 
 def check_files(data_dir):
     files = [
-        {f'{data_dir}/ranks/whitelist.json': {"whitelist":[]}},
+        {f'{data_dir}/ranks/whitelist.json': {"whitelist":{}}},
     ]
     for i in files:
         for file, default in i.items():
