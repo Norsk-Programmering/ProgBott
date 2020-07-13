@@ -1,8 +1,10 @@
 # Discord Packages
 from discord.ext import commands
+import discord
 
 # Bot Utilities
 from cogs.utils.db import DB
+from cogs.utils.db_tools import get_user
 from cogs.utils.defaults import easy_embed
 from cogs.utils.server import Server
 
@@ -25,14 +27,15 @@ class Github(commands.Cog):
         return ''.join(random.choice(chars) for _ in range(size))
 
     @commands.guild_only()
-    @commands.group(name="github")
+    @commands.group(name="github", aliases=["gh"])
     async def ghGroup(self, ctx):
+        """Gruppe for Github kommandoer"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @ghGroup.command(name="auth")
+    @ghGroup.command(name="auth", aliases=["add", "verify", "verifiser", "koble"])
     async def auth(self, ctx):
-        # First - attempt to localize if the user has already registered.
+        """Kommando for å koble din Github- til din Discord-bruker"""
         random_string = self.id_generator()
         is_user_registered = self.is_user_registered(ctx.author.id, random_string)
 
@@ -40,21 +43,24 @@ class Github(commands.Cog):
             return await ctx.send(ctx.author.mention + " du er allerede registrert!")
 
         try:
+            embed = easy_embed(self, ctx)
             discord_id_and_key = "{}:{}".format(ctx.author.id, random_string)
             registration_link = "https://github.com/login/oauth/authorize" \
                                 "?client_id={}&redirect_uri={}?params={}".format(
                                     self.bot.settings.github["client_id"],
                                     self.bot.settings.github["callback_uri"], discord_id_and_key
                                 )
-            await ctx.author.send("Hei! For å verifisere GitHub kontoen din, følg denne lenken: {}."
-                                  .format(registration_link))
-        except Exception:
-            return await ctx.send(ctx.author.mention + " du har ikke på innstillingen for å motta meldinger.")
+            embed.title = "Hei! For å verifisere GitHub kontoen din, følg lenken under"
+            embed.description = f"[Verifiser med GitHub]({registration_link})"
+            await ctx.author.send(embed=embed)
+        except Exception as E:
+            self.bot.logger.warn('Error when verifying Github user:\n%s', E)
 
         return await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
 
-    @ghGroup.command(name="remove")
+    @ghGroup.command(name="remove", aliases=["fjern"])
     async def remove(self, ctx):
+        """Kommando for å fjerne kobling mellom Github- og Discord-bruker"""
         user_mention = "<@{}>: ".format(ctx.author.id)
         conn = DB(data_dir=self.bot.data_dir).connection
 
@@ -66,44 +72,40 @@ class Github(commands.Cog):
 
         return await ctx.send(user_mention + "fjernet Githuben din.")
 
-    @ghGroup.command(name="me")
-    async def me(self, ctx):
-        user = self.get_user(ctx.author.id)
+    @ghGroup.command(name="user", aliases=["meg", "bruker"])
+    async def show_user(self, ctx, user: discord.Member = None):
+        is_self = False
+        if not user:
+            user = ctx.author
+            is_self = True
+        gh_user = get_user(self, user.id)
 
-        if user is None:
-            return await ctx.send("Du har ikke registrert en bruker enda.")
+        if gh_user is None:
+            usr = user.name
+            if is_self:
+                usr = "Du"
+            return await ctx.send(f"{usr} har ikke registrert en bruker enda.")
 
-        (_id, discord_id, auth_token, github_username) = user
+        (_id, discord_id, auth_token, github_username) = gh_user
 
-        user = requests.get("https://api.github.com/user", headers={
+        gh_user = requests.get("https://api.github.com/user", headers={
             'Authorization': "token " + auth_token,
             'Accept': 'application/json'
         }).json()
 
         embed = easy_embed(self, ctx)
 
-        embed.title = user["login"]
-        embed.description = user["html_url"]
+        embed.title = gh_user["login"]
+        embed.description = gh_user["html_url"]
 
-        embed.set_thumbnail(url=user["avatar_url"])
+        embed.set_thumbnail(url=gh_user["avatar_url"])
 
         embed.add_field(name="Følgere / Følger",
-                        value="{} / {}".format(user["followers"], user["following"]), inline=False)
-        embed.add_field(name="Biografi", value=user["bio"], inline=False)
-        embed.add_field(name="Offentlige repos", value=user["public_repos"], inline=False)
+                        value="{} / {}".format(gh_user["followers"], gh_user["following"]), inline=False)
+        embed.add_field(name="Biografi", value=gh_user["bio"], inline=False)
+        embed.add_field(name="Offentlige repos", value=gh_user["public_repos"], inline=False)
 
         return await ctx.send(embed=embed)
-
-    def get_user(self, discord_id):
-        conn = DB(data_dir=self.bot.data_dir).connection
-
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM github_users WHERE discord_id={}".format(discord_id))
-
-        rows = cursor.fetchone()
-
-        return rows
 
     def is_user_registered(self, discord_id, random_string):
         conn = DB(data_dir=self.bot.data_dir).connection
