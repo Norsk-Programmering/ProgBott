@@ -57,6 +57,7 @@ class Ranks(commands.Cog):
         embed.title = f"La til rollen: {rank}!"
         await ctx.send(embed = embed)
 
+    @commands.has_permissions(manage_roles=True)
     @rGroup.command(name="whitelist")
     async def whitelist(self, ctx, *, rank):
         self.load_json('whitelist')
