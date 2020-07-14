@@ -1,6 +1,8 @@
 # Discord Packages
 from discord.ext import commands
 
+import traceback
+
 
 class Errors(commands.Cog):
     def __init__(self, bot):
@@ -40,10 +42,12 @@ class Errors(commands.Cog):
         elif isinstance(error, commands.CheckFailure):
             return
 
-        try:
+        else:
             await ctx.send('En ukjent feil oppstod. Be båtteier om å sjekke feilen')
-        except Exception:
-            pass
+            tb = error.__traceback__
+            traceback.print_tb(tb)
+            print(error)
+            self.bot.logger.error("Error running command: %s\nError: %s\nTraceback: %s" % (ctx.command, error, tb))
 
 
 def setup(bot):
