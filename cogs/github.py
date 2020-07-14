@@ -8,6 +8,7 @@ from cogs.utils.db_tools import get_user
 from cogs.utils.defaults import easy_embed
 from cogs.utils.server import Server
 
+import operator
 import os
 import random
 import string
@@ -72,8 +73,62 @@ class Github(commands.Cog):
 
         return await ctx.send(user_mention + "fjernet Githuben din.")
 
-    @ghGroup.command(name="user", aliases=["meg", "bruker"])
+    @ghGroup.command(name="repos", aliases=["stars", "stjerner"])
+    async def show_repos(self, ctx, user: discord.Member = None):
+        """Viser mest stjernede repoene til brukeren. maks  5"""
+        is_self = False
+        if not user:
+            user = ctx.author
+            is_self = True
+        gh_user = get_user(self, user.id)
+
+        if gh_user is None:
+            usr = user.name
+            if is_self:
+                usr = "Du"
+            return await ctx.send(f"{usr} har ikke registrert en bruker enda.")
+
+        embed = easy_embed(self, ctx)
+        (_id, discord_id, auth_token, github_username) = gh_user
+
+        gh_repos = requests.get(f"https://api.github.com/users/{github_username}/repos", headers={
+            'Authorization': "token " + auth_token,
+            'Accept': 'application/json'
+        }).json()
+
+        if len(gh_repos) == 0:
+            return await ctx.send("Denne brukeren har ingen repos")
+
+        stars = {}
+        new_obj = {}
+
+        for gh_repo in gh_repos:
+            if gh_repo['private']:
+                print(gh_repo['name'])
+                continue
+            stars[gh_repo['id']] = gh_repo['stargazers_count']
+            new_obj[gh_repo['id']] = gh_repo
+
+        stars = dict(sorted(stars.items(), key=operator.itemgetter(1), reverse=True))
+        stop = 5 if (len(stars) >= 5) else len(stars)
+        idrr = list(stars.items())
+        embed.title = f"{stop} mest stjernede repoer"
+
+        for n in range(0, stop):
+            repo_id, *overflow = idrr[n]
+            repo = new_obj[repo_id]
+            title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
+            desc = repo['description']
+            if not repo['description']:
+                desc = "Ingen beskrivelse oppgitt"
+            desc += f"\n[Link]({repo['html_url']})"
+            embed.add_field(name=title, value=desc, inline=False)
+
+        await ctx.send(embed=embed)
+
+    @ ghGroup.command(name="user", aliases=["meg", "bruker"])
     async def show_user(self, ctx, user: discord.Member = None):
+        """Kommando som vier et sammendrag fra github brukeren"""
         is_self = False
         if not user:
             user = ctx.author
