@@ -43,7 +43,7 @@ class Poeng(commands.Cog):
         for word in self.settings_data['takk']:
             word_ = word.lower()
             content_ = message.content.lower()
-            if word_ in content_ and (content_.startswith(word_)
+            if word_ in content_ or (content_.startswith(word_)
                                       or content_.endswith(word_)
                                       or content_[:-1].endswith(word_)):
                 await self.add_star(message)
