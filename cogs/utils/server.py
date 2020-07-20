@@ -1,8 +1,6 @@
 # Bot Utilities
 from cogs.utils.db import DB
 
-import json
-
 import requests
 from flask import Flask, redirect, render_template, request
 
@@ -89,7 +87,8 @@ def insert_user(discord_id, auth_token, github_username):
 
     params = (discord_id, auth_token, github_username)
 
-    cursor.execute("INSERT OR REPLACE INTO github_users(discord_id, auth_token, github_username) VALUES(?, ?, ?);", params)
+    cursor.execute("INSERT OR REPLACE INTO github_users(discord_id, auth_token, github_username) VALUES(?, ?, ?);",
+                   params)
     conn.commit()
 
     conn.close()
@@ -101,7 +100,8 @@ def get_is_pending(discord_id, random_string):
 
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM pending_users WHERE discord_id={} AND verification='{}'".format(discord_id, random_string))
+    cursor.execute("SELECT * FROM pending_users WHERE discord_id={} AND verification='{}'".format(discord_id,
+                   random_string))
 
     row = cursor.fetchone()
 

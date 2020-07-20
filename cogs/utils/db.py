@@ -6,7 +6,7 @@ class DB():
         self.data_dir = data_dir
         try:
             self.connection = sqlite3.connect(f"{data_dir}/db/github.sqlite")
-        except:
+        except Exception:
             raise Exception("Something went wrong connecting to the database. Are you sure github.sqlite exists?")
 
     _create_github_users = """

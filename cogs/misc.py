@@ -25,6 +25,9 @@ class Misc(commands.Cog):
 
     @commands.command(name='ping', hidden=True)
     async def _ping(self, ctx):
+        """
+        Komando for ping
+        """
         embed = easy_embed(self, ctx)
         embed.title = "Ping!"
         start = time.perf_counter()
@@ -37,6 +40,9 @@ class Misc(commands.Cog):
 
     @commands.command(name='oppetid', aliases=["uptime"], hidden=True)
     async def _uptime(self, ctx):
+        """
+        Komando for oppetid
+        """
         days, hours, minutes, seconds = self.get_uptime()
         await ctx.send(f'{days}d {hours}h {minutes}m {seconds}s')
 
@@ -60,6 +66,9 @@ class Misc(commands.Cog):
     @commands.command(name='guilds')
     @commands.is_owner()
     async def _guilds(self, ctx):
+        """
+        Komando for å liste servere
+        """
         embed = easy_embed(self, ctx)
         guilds = ""
         for guild in self.bot.guilds:

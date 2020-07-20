@@ -1,6 +1,5 @@
 import codecs
 import json
-import os
 from collections import namedtuple
 
 

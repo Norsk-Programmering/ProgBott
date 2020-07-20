@@ -1,3 +1,4 @@
+# pylint: disable=W0201
 # Discord Packages
 import discord
 from discord.ext import commands
@@ -24,7 +25,7 @@ class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=_get_prefix)
         self.logger = logger
-        self.logger.debug("Logging level: %s" % level.upper())
+        self.logger.debug("Logging level: %s", level.upper())
         self.data_dir = data_dir
         self.settings = settings.extra
 
@@ -46,10 +47,10 @@ class Bot(commands.Bot):
         extensions = ['cogs.misc', 'cogs.poeng', 'cogs.errors', 'cogs.github']
         for extension in extensions:
             try:
-                self.logger.debug("Loading extension %s" % extension)
+                self.logger.debug("Loading extension %s", extension)
                 self.load_extension(extension)
             except Exception:
-                self.logger.exception("Loading of extension %s failed" % extension)
+                self.logger.exception("Loading of extension %s failed", extension)
 
     def run(self):
         try:
@@ -83,7 +84,7 @@ if __name__ == '__main__':
         data_dir = str(args.data_directory)
 
     logger = Logger(location=data_dir, level=level, to_file=args.log_to_file).logger
-    logger.debug("Data folder: %s" % data_dir)
+    logger.debug("Data folder: %s", data_dir)
 
     settings = Settings(data_dir=data_dir)
 

@@ -30,13 +30,17 @@ class Github(commands.Cog):
     @commands.guild_only()
     @commands.group(name="github", aliases=["gh"])
     async def ghGroup(self, ctx):
-        """Gruppe for Github kommandoer"""
+        """
+        Gruppe for Github kommandoer
+        """
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @ghGroup.command(name="auth", aliases=["add", "verify", "verifiser", "koble"])
     async def auth(self, ctx):
-        """Kommando for å koble din Github- til din Discord-bruker"""
+        """
+        Kommando for å koble din Github- til din Discord-bruker
+        """
         random_string = self.id_generator()
         is_user_registered = self.is_user_registered(ctx.author.id, random_string)
 
@@ -61,8 +65,9 @@ class Github(commands.Cog):
 
     @ghGroup.command(name="remove", aliases=["fjern"])
     async def remove(self, ctx):
-        """Kommando for å fjerne kobling mellom Github- og Discord-bruker"""
-        user_mention = "<@{}>: ".format(ctx.author.id)
+        """
+        Kommando for å fjerne kobling mellom Github- og Discord-bruker
+        """
         conn = DB(data_dir=self.bot.data_dir).connection
 
         cursor = conn.cursor()
@@ -71,11 +76,13 @@ class Github(commands.Cog):
 
         conn.commit()
 
-        return await ctx.send(user_mention + "fjernet Githuben din.")
+        return await ctx.send(ctx.author.mention + "fjernet Githuben din.")
 
     @ghGroup.command(name="repos", aliases=["stars", "stjerner"])
     async def show_repos(self, ctx, user: discord.Member = None):
-        """Viser mest stjernede repoene til brukeren. maks  5"""
+        """
+        Viser mest stjernede repoene til brukeren. maks  5
+        """
         is_self = False
         if not user:
             user = ctx.author
@@ -128,7 +135,9 @@ class Github(commands.Cog):
 
     @ ghGroup.command(name="user", aliases=["meg", "bruker"])
     async def show_user(self, ctx, user: discord.Member = None):
-        """Kommando som vier et sammendrag fra github brukeren"""
+        """
+        Kommando som vier et sammendrag fra github brukeren
+        """
         is_self = False
         if not user:
             user = ctx.author

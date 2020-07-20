@@ -1,6 +1,6 @@
 # Discord Packages
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
@@ -25,16 +25,13 @@ class Poeng(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot:
-            return
-        elif message.mentions:
+        if not message.author.bot and message.mentions:
             await self._filter(message)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if after.author.bot:
-            return
-        elif after.mentions and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
+        if not after.author.bot and after.mentions \
+                and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
             await self._filter(after)
 
 # TODO: halvstjerner?
@@ -86,11 +83,11 @@ class Poeng(commands.Cog):
             return False
 
         try:
-            reaction, user = await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
+            await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
-            except:
+            except Exception:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
             await msg.delete()
 
@@ -101,19 +98,24 @@ class Poeng(commands.Cog):
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
-            except:
+            except Exception:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
     @commands.guild_only()
     @commands.group(name="stjerne")
     async def pGroup(self, ctx):
-        """Kategori for styring av poeng"""
+        """
+        Kategori for styring av poeng
+        """
 
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @pGroup.command(name="sjekk")
     async def check(self, ctx, user: discord.Member = None):
+        """
+        Komanndo for å sjekke stjerner
+        """
         if not user:
             user = ctx.author
         embed = easy_embed(self, ctx)
@@ -146,20 +148,25 @@ class Poeng(commands.Cog):
     @commands.is_owner()
     @pGroup.group()
     async def admin(self, ctx):
-        """Kategori for instillinger"""
+        """
+        Kategori for instillinger
+        """
 
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @admin.command(name='takk')
     async def set_thanks(self, ctx, thanks_phrase):
+        """
+        Kommando for å sette takkeord
+        """
         try:
             self.settings_data['takk'].append(thanks_phrase)
             await ctx.send(f'La til {thanks_phrase} i lista')
         except KeyError:
             self.settings_data['takk'] = []
             self.settings_data['takk'].append(thanks_phrase)
-        except:
+        except Exception:
             return self.bot.logger.error("Failed to set thanks_phrase: %s" % thanks_phrase)
         self.save_json('settings')
         self.load_json('settings')
@@ -196,7 +203,7 @@ class Poeng(commands.Cog):
                 with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.settings_data, outfile, indent=4, sort_keys=True)
             except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n\n%s' % (e, self.settings_data))
+                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.settings_data))
 
 
 def check_folder(data_dir):
