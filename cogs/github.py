@@ -264,10 +264,21 @@ class Github(commands.Cog):
         self.all_repos = {}
         users = get_users(self)
 
+        members = []
+        for guild in self.bot.guilds:
+            for member in guild.members:
+                if member.id in members:
+                    pass
+                else:
+                    members.append(member.id)
+
         stars = {}
 
         for user in users:
             (_id, discord_id, auth_token, github_username) = user
+
+            if discord_id not in members:
+                continue
 
             gh_repos = requests.get(f"https://api.github.com/users/{github_username}/repos", headers={
                 'Authorization': "token " + auth_token,
@@ -284,6 +295,16 @@ class Github(commands.Cog):
                 stars[gh_repo['id']] = gh_repo['stargazers_count']
                 self.all_repos[gh_repo['id']] = {'discord_user': discord_id, **gh_repo}
         self.all_stars = dict(sorted(stars.items(), key=operator.itemgetter(1), reverse=True))
+
+    async def remover(self, member):
+        try:
+            conn = DB(data_dir=self.bot.data_dir).connection
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM github_users WHERE discord_id={}".format(member.id))
+            conn.commit()
+            self.bot.logger.info("%s left, purged from database", member.name)
+        except:
+            pass
 
     class Cacher():
         def __init__(self, bot):
@@ -309,4 +330,6 @@ def start_server(bot):
 def setup(bot):
     check_folder(bot.data_dir)
     start_server(bot)
-    bot.add_cog(Github(bot))
+    n = Github(bot)
+    bot.add_listener(n.remover, "on_member_remove")
+    bot.add_cog(n)
