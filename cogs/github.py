@@ -176,7 +176,37 @@ class Github(commands.Cog):
 
         return await ctx.send(embed=embed)
 
-    @ ghGroup.command(name="users", aliases=["brukere"])
+    @ ghGroup.command(name="combined", aliases=["kombinert"])
+    async def combined_stars(self, ctx):
+        """
+        Kommando som vier de 15 brukerene med mest stjerner totalt
+        """
+        embed = easy_embed(self, ctx)
+
+        tot_stars = {}
+
+        for repo_ in self.all_repos:
+            repo = self.all_repos[repo_]
+            try:
+                tot_stars[str(repo['discord_user'])] = tot_stars[str(repo['discord_user'])] + repo['stargazers_count']
+            except KeyError:
+                tot_stars[str(repo['discord_user'])] = repo['stargazers_count']
+
+        tot_stars = dict(sorted(tot_stars.items(), key=operator.itemgetter(1), reverse=True))
+
+        stop = 15 if (len(tot_stars) >= 15) else len(tot_stars)
+        idrr = list(tot_stars.items())
+        embed.title = f"{stop} mest stjernede brukere"
+
+        for n in range(0, stop):
+            discord_user, stars = idrr[n]
+            title = f"⭐:{stars}"
+            desc = f"{self.bot.get_user(int(discord_user)).mention}"
+            embed.add_field(name=title, value=desc, inline=False)
+
+        return await ctx.send(embed=embed)
+
+    @ ghGroup.command(name="users", aliases=["brukere", "total"])
     async def show_users(self, ctx):
         """
         Kommando som vier top 10 stjernede repoer samlet mellom alle registrerte brukere
