@@ -4,10 +4,11 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.db import DB
-from cogs.utils.db_tools import get_user
+from cogs.utils.db_tools import get_user, get_users
 from cogs.utils.defaults import easy_embed
 from cogs.utils.server import Server
 
+import asyncio
 import operator
 import os
 import random
@@ -21,6 +22,8 @@ class Github(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        cacher = self.Cacher(self)
+        self.bot.loop.create_task(cacher.loop())
         database = DB(data_dir=self.bot.data_dir)
         database.populate_tables()
 
@@ -61,7 +64,9 @@ class Github(commands.Cog):
         except Exception as E:
             self.bot.logger.warn('Error when verifying Github user:\n%s', E)
 
-        return await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
+        await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
+        asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
+        self._get_users()
 
     @ghGroup.command(name="remove", aliases=["fjern"])
     async def remove(self, ctx):
@@ -171,6 +176,29 @@ class Github(commands.Cog):
 
         return await ctx.send(embed=embed)
 
+    @ ghGroup.command(name="users", aliases=["brukere"])
+    async def show_users(self, ctx):
+        """
+        Kommando som vier top 10 stjernede repoer samlet mellom alle registrerte brukere
+        """
+        embed = easy_embed(self, ctx)
+
+        stop = 10 if (len(self.all_stars) >= 10) else len(self.all_stars)
+        idrr = list(self.all_stars.items())
+        embed.title = f"{stop} mest stjernede repoer"
+
+        for n in range(0, stop):
+            repo_id, *overflow = idrr[n]
+            repo = self.all_repos[repo_id]
+            title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
+            desc = repo['description']
+            if not repo['description']:
+                desc = "Ingen beskrivelse oppgitt"
+            desc += f"\n[Link]({repo['html_url']}) - {self.bot.get_user(repo['discord_user']).mention}"
+            embed.add_field(name=title, value=desc, inline=False)
+
+        return await ctx.send(embed=embed)
+
     def is_user_registered(self, discord_id, random_string):
         conn = DB(data_dir=self.bot.data_dir).connection
 
@@ -199,6 +227,42 @@ class Github(commands.Cog):
         conn.commit()
         conn.close()
         return False
+
+    def _get_users(self):
+        self.bot.logger.debug("Running GitHub user fetcher")
+        self.all_stars = {}
+        self.all_repos = {}
+        users = get_users(self)
+
+        stars = {}
+
+        for user in users:
+            (_id, discord_id, auth_token, github_username) = user
+
+            gh_repos = requests.get(f"https://api.github.com/users/{github_username}/repos", headers={
+                'Authorization': "token " + auth_token,
+                'Accept': 'application/json'
+            }).json()
+
+            if len(gh_repos) == 0:
+                continue
+
+            for gh_repo in gh_repos:
+                if gh_repo['private']:
+                    print(gh_repo['name'])
+                    continue
+                stars[gh_repo['id']] = gh_repo['stargazers_count']
+                self.all_repos[gh_repo['id']] = {'discord_user': discord_id, **gh_repo}
+        self.all_stars = dict(sorted(stars.items(), key=operator.itemgetter(1), reverse=True))
+
+    class Cacher():
+        def __init__(self, bot):
+            self.bot = bot
+
+        async def loop(self):
+            while True:
+                self.bot._get_users()
+                await asyncio.sleep(60*60*12)
 
 
 def check_folder(data_dir):
