@@ -65,7 +65,7 @@ class Github(commands.Cog):
             self.bot.logger.warn('Error when verifying Github user:\n%s', E)
 
         await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
-        asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
+        await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
         self._get_users()
 
     @ghGroup.command(name="remove", aliases=["fjern"])
