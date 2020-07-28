@@ -103,10 +103,7 @@ class Github(commands.Cog):
         embed = easy_embed(self, ctx)
         (_id, discord_id, auth_token, github_username) = gh_user
 
-        gh_repos = requests.get(f"https://api.github.com/users/{github_username}/repos", headers={
-            'Authorization': "token " + auth_token,
-            'Accept': 'application/json'
-        }).json()
+        gh_repos = self._get_repos(github_username, auth_token)
 
         if len(gh_repos) == 0:
             return await ctx.send("Denne brukeren har ingen repos")
@@ -258,6 +255,22 @@ class Github(commands.Cog):
         conn.close()
         return False
 
+    def _get_repos(self, user, token):
+        headers = {
+            'Authorization': "token " + token,
+            'Accept': 'application/json'
+        }
+
+        url = f"https://api.github.com/users/{user}/repos"
+        res = requests.get(url, headers=headers, params={'per_page': 100, 'page': 1})
+
+        gh_repos = res.json()
+        while 'next' in res.links.keys():
+            res = requests.get(res.links['next']['url'], headers=headers)
+            gh_repos.extend(res.json())
+
+        return gh_repos
+
     def _get_users(self):
         self.bot.logger.debug("Running GitHub user fetcher")
         self.all_stars = {}
@@ -280,10 +293,7 @@ class Github(commands.Cog):
             if discord_id not in members:
                 continue
 
-            gh_repos = requests.get(f"https://api.github.com/users/{github_username}/repos", headers={
-                'Authorization': "token " + auth_token,
-                'Accept': 'application/json'
-            }).json()
+            gh_repos = self._get_repos(github_username, auth_token)
 
             if len(gh_repos) == 0:
                 continue
