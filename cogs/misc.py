@@ -1,6 +1,4 @@
 # Discord Packages
-from itertools import count
-from operator import le
 import discord
 from discord import embeds
 from discord.ext import commands
@@ -9,12 +7,14 @@ from discord.ext import commands
 from cogs.utils.Bot_version import bot_version
 from cogs.utils.defaults import easy_embed
 
+import operator
 import platform
 import time
 from io import StringIO
+from itertools import count
+from operator import le
 from re import sub
 from urllib import parse
-import operator
 
 
 class Misc(commands.Cog):
