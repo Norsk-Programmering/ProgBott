@@ -212,8 +212,8 @@ class Misc(commands.Cog):
         if bruker.premium_since:
             premium_index = sorted(ctx.guild.premium_subscribers, key=lambda m: m.premium_since).index(bruker) + 1
 
-        bruker_joined_date = bruker.joined_at.strftime('%d %b %Y %H:%M')
-        bruker_created_date = bruker.created_at.strftime('%d %b %Y %H:%M')
+        bruker_joined_date = bruker.joined_at.strftime('%d. %b. %Y - %H:%M')
+        bruker_created_date = bruker.created_at.strftime('%d. %b. %Y - %H:%M')
         since_joined_days = (ctx.message.created_at - bruker.joined_at).days
         since_created_days = (ctx.message.created_at - bruker.created_at).days
         if since_created_days == 1:
@@ -226,7 +226,7 @@ class Misc(commands.Cog):
             since_joined_days_string = 'dager'
 
         if bruker.premium_since:
-            premium_since = bruker.premium_since.strftime('%d %b %Y %H:%M')
+            premium_since = bruker.premium_since.strftime('%d. %b. %Y - %H:%M')
             premium_since_days = (ctx.message.created_at - bruker.premium_since).days
             if since_joined_days == 1:
                 premium_since_days_string = 'dag'
@@ -251,10 +251,10 @@ class Misc(commands.Cog):
             color = discord.Colour(0x99AAB5)
 
         statuses = {
-            'online': 'Pålogget',
-            'idle': 'Inaktiv',
-            'dnd': 'Ikke forstyrr',
-            'offline': 'Frakoblet'
+            'online': '🟢 Pålogget',
+            'idle': '🟡 Inaktiv',
+            'dnd': '🔴 Ikke forstyrr',
+            'offline': '⚫ Frakoblet'
         }
         status = statuses[str(bruker.status)]
 
@@ -344,7 +344,7 @@ class Misc(commands.Cog):
         else:
             hoisted = 'Nei'
 
-        rolle_created_date = rolle.created_at.strftime('%d %b %Y %H:%M')
+        rolle_created_date = rolle.created_at.strftime('%d. %b. %Y - %H:%M')
         since_created_days = (ctx.message.created_at - rolle.created_at).days
 
         if since_created_days == 1:
