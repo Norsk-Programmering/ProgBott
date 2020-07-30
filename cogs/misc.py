@@ -251,10 +251,10 @@ class Misc(commands.Cog):
             color = discord.Colour(0x99AAB5)
 
         statuses = {
-            'online': 'Pålogget',
-            'idle': 'Inaktiv',
-            'dnd': 'Ikke forstyrr',
-            'offline': 'Frakoblet'
+            'online': '🟢 Pålogget',
+            'idle': '🟡 Inaktiv',
+            'dnd': '🔴 Ikke forstyrr',
+            'offline': '⚫ Frakoblet'
         }
         status = statuses[str(bruker.status)]
 
