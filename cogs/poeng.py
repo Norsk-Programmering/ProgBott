@@ -167,7 +167,7 @@ class Poeng(commands.Cog):
             self.settings_data['takk'] = []
             self.settings_data['takk'].append(thanks_phrase)
         except Exception:
-            return self.bot.logger.error("Failed to set thanks_phrase: %s" % thanks_phrase)
+            return self.bot.logger.error(f"Failed to set thanks_phrase: {thanks_phrase}")
         self.save_json('settings')
         self.load_json('settings')
 
@@ -197,13 +197,13 @@ class Poeng(commands.Cog):
                 with codecs.open(self.teller_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.teller_data, outfile, indent=4, sort_keys=True)
             except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.teller_data))
+                return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{e}\n{self.teller_data}')
         elif mode == 'settings':
             try:
                 with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.settings_data, outfile, indent=4, sort_keys=True)
             except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.settings_data))
+                return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{e}\n{self.settings_data}')
 
 
 def check_folder(data_dir):

@@ -52,17 +52,16 @@ class Github(commands.Cog):
 
         try:
             embed = easy_embed(self, ctx)
-            discord_id_and_key = "{}:{}".format(ctx.author.id, random_string)
+            discord_id_and_key = f"{ctx.author.id}:{random_string}"
             registration_link = "https://github.com/login/oauth/authorize" \
-                                "?client_id={}&redirect_uri={}?params={}".format(
-                                    self.bot.settings.github["client_id"],
-                                    self.bot.settings.github["callback_uri"], discord_id_and_key
-                                )
+                                f"?client_id={self.bot.settings.github['client_id']}" \
+                                f"&redirect_uri={self.bot.settings.github['callback_uri']}" \
+                                f"?params={discord_id_and_key}"
             embed.title = "Hei! For å verifisere GitHub kontoen din, følg lenken under"
             embed.description = f"[Verifiser med GitHub]({registration_link})"
             await ctx.author.send(embed=embed)
         except Exception as E:
-            self.bot.logger.warn('Error when verifying Github user:\n%s', E)
+            self.bot.logger.warn(f'Error when verifying Github user:\n{E}')
 
         await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
         await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
@@ -77,7 +76,7 @@ class Github(commands.Cog):
 
         cursor = conn.cursor()
 
-        cursor.execute("DELETE FROM github_users WHERE discord_id={}".format(ctx.author.id))
+        cursor.execute(f"DELETE FROM github_users WHERE discord_id={ctx.author.id}")
 
         conn.commit()
 
@@ -167,7 +166,7 @@ class Github(commands.Cog):
         embed.set_thumbnail(url=gh_user["avatar_url"])
 
         embed.add_field(name="Følgere / Følger",
-                        value="{} / {}".format(gh_user["followers"], gh_user["following"]), inline=False)
+                        value=f"{gh_user['followers']} / {gh_user['following']}", inline=False)
         embed.add_field(name="Biografi", value=gh_user["bio"], inline=False)
         embed.add_field(name="Offentlige repos", value=gh_user["public_repos"], inline=False)
 
@@ -234,7 +233,7 @@ class Github(commands.Cog):
 
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM github_users WHERE discord_id={}".format(discord_id))
+        cursor.execute(f"SELECT * FROM github_users WHERE discord_id={discord_id}")
 
         rows = cursor.fetchone()
 
@@ -242,12 +241,12 @@ class Github(commands.Cog):
             conn.close()
             return True
 
-        cursor.execute("SELECT * FROM pending_users WHERE discord_id={}".format(discord_id))
+        cursor.execute(f"SELECT * FROM pending_users WHERE discord_id={discord_id}")
 
         row = cursor.fetchone()
 
         if row is not None:
-            cursor.execute("DELETE FROM pending_users WHERE discord_id={}".format(discord_id))
+            cursor.execute(f"DELETE FROM pending_users WHERE discord_id={discord_id}")
 
         cursor.execute("INSERT INTO pending_users(discord_id, verification) VALUES(?, ?);", (discord_id, random_string))
 
@@ -310,9 +309,9 @@ class Github(commands.Cog):
         try:
             conn = DB(data_dir=self.bot.data_dir).connection
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM github_users WHERE discord_id={}".format(member.id))
+            cursor.execute(f"DELETE FROM github_users WHERE discord_id={member.id}")
             conn.commit()
-            self.bot.logger.info("%s left, purged from database", member.name)
+            self.bot.logger.info(f"{member.name} left, purged from database")
         except:
             pass
 

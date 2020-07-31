@@ -18,7 +18,7 @@ class Logger(object):
             if not os.path.isdir(self.log_location):
                 os.makedirs(self.log_location)
                 print(f"Creating logging directory: {self.log_location}")
-            self.logger.debug("Logging directory: %s" % log_dir)
+            self.logger.debug(f"Logging directory: {log_dir}")
             file_handler = logging.handlers.RotatingFileHandler(log_dir, mode='a',
                                                                 maxBytes=5000, encoding="UTF-8", delay=0, backupCount=5)
             file_handler.setLevel(self.log_level)

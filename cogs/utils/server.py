@@ -67,7 +67,7 @@ def callback():
 
     if inserted_user:
         delete_pending(discord_id)
-        return redirect("/github/oauth/complete/{}".format(user["login"]))
+        return redirect(f"/github/oauth/complete/{user['login']}")
     else:
         return "NOT_OK"
 
@@ -100,8 +100,7 @@ def get_is_pending(discord_id, random_string):
 
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM pending_users WHERE discord_id={} AND verification='{}'".format(discord_id,
-                   random_string))
+    cursor.execute(f"SELECT * FROM pending_users WHERE discord_id={discord_id} AND verification='{random_string}'")
 
     row = cursor.fetchone()
 
@@ -112,6 +111,6 @@ def delete_pending(discord_id):
     conn = DB(data_dir=app.config['data_dir']).connection
 
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM pending_users WHERE discord_id={}".format(discord_id))
+    cursor.execute(f"DELETE FROM pending_users WHERE discord_id={discord_id}")
 
     conn.commit()
