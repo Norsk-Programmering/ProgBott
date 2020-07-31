@@ -282,7 +282,8 @@ class Misc(commands.Cog):
                 if not activity.name:
                     continue
                 games += f'{activity.name}\n'
-            embed.add_field(name='Spiller', value=games, inline=False)
+            if games:
+                embed.add_field(name='Spiller', value=games, inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['userroles'])
