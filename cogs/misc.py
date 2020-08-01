@@ -158,6 +158,193 @@ class Misc(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.bot_has_permissions(embed_links=True, external_emojis=True)
+    @commands.guild_only()
+    @commands.cooldown(1, 2, commands.BucketType.guild)
+    @commands.command(aliases=["guildinfo", "server", "serverinfo", "si", "gi"])
+    async def guild(self, ctx):
+        """Viser info om guilden"""
+
+        guild_created_date = ctx.guild.created_at.strftime("%d. %b. %Y - %H:%M")
+        since_created_days = (ctx.message.created_at - ctx.guild.created_at).days
+
+        if since_created_days is 1:
+            since_created_days_string = "dag"
+        else:
+            since_created_days_string = "dager"
+
+        total_members = ctx.guild.member_count
+        bot_members = 0
+        online_members = 0
+        idle_members = 0
+        dnd_members = 0
+        offline_members = 0
+        for member in ctx.guild.members:
+            if member.bot:
+                bot_members += 1
+            if str(member.status) == "online":
+                online_members += 1
+            elif str(member.status) == "idle":
+                idle_members += 1
+            elif str(member.status) == "dnd":
+                dnd_members += 1
+            elif str(member.status) == "offline":
+                offline_members += 1
+
+        roles = []
+        for role in ctx.guild.roles:
+            if role.name != "@everyone":
+                roles.append(role.name)
+        roles.reverse()
+        roles = ", ".join(roles)
+        if len(roles) > 1024:
+            roles = f"Skriv `{self.bot.prefix}guildroller` for å se rollene"
+        if roles == "":
+            roles = "**Ingen roller**"
+
+        boosters = []
+        premium_subscribers = sorted(
+            ctx.guild.premium_subscribers, key=lambda m: m.premium_since)
+        for booster in premium_subscribers:
+            boosters.append(f"{booster.name}#{booster.discriminator}")
+        boosters = ", ".join(boosters)
+        if len(boosters) > 1024:
+            boosters = f"Skriv `{self.bot.prefix}boosters` for å se boosters"
+        if boosters == "":
+            boosters = "**Ingen boosters**"
+
+        text_channels = len(ctx.guild.text_channels)
+        voice_channels = len(ctx.guild.voice_channels)
+        categories = len(ctx.guild.categories)
+        total_channels = text_channels + voice_channels
+
+        flags = {
+            "us": ":flag_us:",
+            "eu": ":flag_eu:",
+            "singapore": ":flag_sg:",
+            "london": ":flag_gb:",
+            "sydney": ":flag_au:",
+            "amsterdam": ":flag_nl:",
+            "frankfurt": ":flag_de:",
+            "brazil": ":flag_br:",
+            "dubai": ":flag_ae:",
+            "japan": ":flag_jp:",
+            "russia": ":flag_ru:",
+            "southafrica": ":flag_za:",
+            "hongkong": ":flag_hk:",
+            "india": ":flag_in:"
+            }
+        region = str(ctx.guild.region)
+        if region.startswith("us"):
+            region = "us"
+        elif region.startswith("eu"):
+            region = "eu"
+        elif region.startswith("amsterdam"):
+            region = "amsterdam"
+        try:
+            flag = flags[region]
+        except KeyError:
+            flag = ":question:"
+
+        region_names = {
+            "eu-central": "Sentral-Europa",
+            "eu-west": "Vest-Europa",
+            "europe": "Europa",
+            "hongkong": "Hong Kong",
+            "russia": "Russland",
+            "southafrica": "Sør-Afrika",
+            "us-central": "Midt-USA",
+            "us-east": "New Jersey",
+            "us-south": "Sør-USA",
+            "us-west": "California",
+            "vip-amsterdam": "Amsterdam (VIP)",
+            "vip-us-east": "Øst-USA (VIP)",
+            "vip-us-west": "Vest-USA (VIP)",
+        }
+        try:
+            region_name = region_names[str(ctx.guild.region)]
+        except KeyError:
+            region_name = str(ctx.guild.region).title()
+
+        features_string = ""
+        if ctx.guild.features is not []:
+            features = {
+                "VIP_REGIONS": "VIP",
+                "VANITY_URL": "Egen URL",
+                "INVITE_SPLASH": "Invitasjonsbilde",
+                "VERIFIED": "Verifisert",
+                "PARTNERED": "Discord Partner",
+                "MORE_EMOJI": "Ekstra emoji",
+                "DISCOVERABLE": "Fremhevet",
+                "FEATURABLE": "Kan fremheves",
+                "COMMERCE": "Butikkanaler",
+                "PUBLIC": "Offentlig guild",
+                "NEWS": "Nyhetskanaler",
+                "BANNER": "Banner",
+                "ANIMATED_ICON": "Animert ikon",
+                "PUBLIC_DISABLED": "Ikke offentlig",
+                "WELCOME_SCREEN_ENABLED": "Velkomstvindu"
+            }
+            for feature in ctx.guild.features:
+                features_string += f"{features[feature]}\n"
+
+        photos = {}
+        if ctx.guild.splash_url:
+            photos["Invitasjonsbilde"] = ctx.guild.splash_url_as(format="png")
+        if ctx.guild.banner_url:
+            photos["Banner"] = ctx.guild.banner_url_as(format="png")
+
+        verification_level = {
+            "none": "ingen",
+            "low": "e-post",
+            "medium": "e-post, registrert i 5 min",
+            "high": "e-post, registrert i 5 min, medlem i 10 min",
+            "extreme": "telefon"
+        }
+        verification = verification_level[str(ctx.guild.verification_level)]
+
+        content_filter = {
+            "disabled": "nei",
+            "no_role": "for alle uten rolle",
+            "all_members": "ja"
+        }
+        content = content_filter[str(ctx.guild.explicit_content_filter)]
+
+        embed = discord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
+                                                              f"**Innholdsfilter:** {content}\n" +
+                                                              f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
+                                                              f"**Emoji:** {len(ctx.guild.emojis)}")
+        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed.set_thumbnail(url=ctx.guild.icon_url_as(static_format="png"))
+        embed.add_field(name="ID", value=ctx.guild.id)
+        embed.add_field(name="Eier", value=ctx.guild.owner.mention)
+        embed.add_field(name="Region", value=f"{flag} {region_name}")
+        embed.add_field(name="Opprettet", value=f"{guild_created_date}\n{since_created_days} " +
+                                                f"{since_created_days_string} siden")
+        embed.add_field(name=f"Kanaler ({total_channels})", value=f"💬 Tekst: **{text_channels}**\n" +
+                                                                  f"🔊 Tale: **{voice_channels}**\n" +
+                                                                  f"🗃️ Kategorier: **{categories}**")
+        embed.add_field(name=f"Medlemmer ({total_members})",
+                        value=f"👤 Mennesker: **{int(total_members) - int(bot_members)}**\n" +
+                              f"🤖 Båtter: **{bot_members}**\n" +
+                              f"{self.bot.emoji['online']}{online_members} " +
+                              f"{self.bot.emoji['idle']}{idle_members} " +
+                              f"{self.bot.emoji['dnd']}{dnd_members} " +
+                              f"{self.bot.emoji['offline']}{offline_members}")
+        embed.add_field(name=f"Roller ({len(ctx.guild.roles) - 1})", value=roles, inline=False)
+        if ctx.guild.premium_tier != 0:
+            embed.add_field(name=f"Boosters ({ctx.guild.premium_subscription_count})", value=boosters, inline=False)
+
+        if features_string != "":
+            embed.add_field(name="Tillegsfunksjoner", value=features_string)
+
+        if photos != {}:
+            photos_string = ""
+            for key, value in photos.items():
+                photos_string += f"[{key}]({value})\n"
+            embed.add_field(name="Bilder", value=photos_string)
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=["serverroller", "guildroles", "serverroles"])
     async def guildroller(self, ctx):
         """Viser rollene i en guild"""
