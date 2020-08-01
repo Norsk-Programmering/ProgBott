@@ -331,10 +331,10 @@ class Misc(commands.Cog):
         embed.add_field(name=f"Medlemmer ({total_members})",
                         value=f"👤 Mennesker: **{int(total_members) - int(bot_members)}**\n" +
                               f"🤖 Båtter: **{bot_members}**\n" +
-                              f"{self.bot.emoji['online']}{online_members} " +
-                              f"{self.bot.emoji['idle']}{idle_members} " +
-                              f"{self.bot.emoji['dnd']}{dnd_members} " +
-                              f"{self.bot.emoji['offline']}{offline_members}")
+                              f"🟢{online_members} " +
+                              f"🟡{idle_members} " +
+                              f"🔴{dnd_members} " +
+                              f"⚫{offline_members}")
         embed.add_field(name=f"Roller ({len(ctx.guild.roles) - 1})", value=roles, inline=False)
         if ctx.guild.premium_tier != 0:
             embed.add_field(name=f"Boosters ({ctx.guild.premium_subscription_count})", value=boosters, inline=False)
