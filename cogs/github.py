@@ -125,11 +125,11 @@ class Github(commands.Cog):
         for n in range(0, stop):
             repo_id, *overflow = idrr[n]
             repo = new_obj[repo_id]
-            title = f"{repo["name"]} - ⭐:{repo["stargazers_count"]}"
+            title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
             desc = repo["description"]
             if not repo["description"]:
                 desc = "Ingen beskrivelse oppgitt"
-            desc += f"\n[Link]({repo["html_url"]})"
+            desc += f"\n[Link]({repo['html_url']})"
             embed.add_field(name=title, value=desc, inline=False)
 
         await ctx.send(embed=embed)
