@@ -137,7 +137,7 @@ class Github(commands.Cog):
     @ ghGroup.command(name="user", aliases=["meg", "bruker"])
     async def show_user(self, ctx, user: discord.Member = None):
         """
-        Kommando som vier et sammendrag fra github brukeren
+        Kommando som viser et sammendrag fra github brukeren
         """
         is_self = False
         if not user:
@@ -175,7 +175,7 @@ class Github(commands.Cog):
     @ ghGroup.command(name="combined", aliases=["kombinert"])
     async def combined_stars(self, ctx):
         """
-        Kommando som vier de 15 brukerene med mest stjerner totalt
+        Kommando som viser de 15 brukerene med mest stjerner totalt
         """
         embed = easy_embed(self, ctx)
 
@@ -205,7 +205,7 @@ class Github(commands.Cog):
     @ ghGroup.command(name="users", aliases=["brukere", "total"])
     async def show_users(self, ctx):
         """
-        Kommando som vier top 10 stjernede repoer samlet mellom alle registrerte brukere
+        Kommando som viser top 10 stjernede repoer samlet mellom alle registrerte brukere
         """
         embed = easy_embed(self, ctx)
 
