@@ -127,7 +127,9 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=["regel3"])
     async def lmgtfy(self, ctx, *, søkeord: str):
-        """Fordi noen trenger en internett 101 leksjon"""
+        """
+        Fordi noen trenger en internett 101 leksjon
+        """
 
         url = "https://lmgtfy.com/?" + parse.urlencode({"q": søkeord})
 
@@ -163,7 +165,9 @@ class Misc(commands.Cog):
     @commands.cooldown(1, 2, commands.BucketType.guild)
     @commands.command(aliases=["guildinfo", "server", "serverinfo", "si", "gi"])
     async def guild(self, ctx):
-        """Viser info om guilden"""
+        """
+        Viser info om guilden
+        """
 
         guild_created_date = ctx.guild.created_at.strftime("%d. %b. %Y - %H:%M")
         since_created_days = (ctx.message.created_at - ctx.guild.created_at).days
@@ -347,7 +351,9 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=["serverroller", "guildroles", "serverroles"])
     async def guildroller(self, ctx):
-        """Viser rollene i en guild"""
+        """
+        Viser rollene i en guild
+        """
 
         roles = []
         for role in ctx.guild.roles:
@@ -381,7 +387,9 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=["userinfo", "ui", "brukerinfo", "user"])
     async def bruker(self, ctx, *, bruker: discord.Member = None):
-        """Viser info om en bruker"""
+        """
+        Viser info om en bruker
+        """
 
         if not bruker:
             bruker = ctx.author
@@ -475,7 +483,9 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=["userroles"])
     async def brukerroller(self, ctx, bruker: discord.Member = None):
-        """Viser rollene til en bruker"""
+        """
+        Viser rollene til en bruker
+        """
 
         if not bruker:
             bruker = ctx.author
@@ -512,7 +522,9 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=["roleinfo", "rolleinfo"])
     async def rolle(self, ctx, *, rolle: discord.Role):
-        """Viser info om en rolle"""
+        """
+        Viser info om en rolle
+        """
 
         if rolle.name == "@everyone":
             return await ctx.send("Skriv inn en annen rolle enn `@everyone`")
