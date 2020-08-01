@@ -63,7 +63,7 @@ class Bot(commands.Bot):
 
 if __name__ == "__main__":
     parser = ArgumentParser(prog="Roxedus' ProgBott",
-                            description="Programmerings bot",
+                            description="Programmeringsbot",
                             formatter_class=RawTextHelpFormatter)
 
     parser.add_argument("-D", "--debug", action="store_true", help="Sets debug to true")
