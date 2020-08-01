@@ -61,7 +61,7 @@ class Github(commands.Cog):
             embed.description = f"[Verifiser med GitHub]({registration_link})"
             await ctx.author.send(embed=embed)
         except Exception as E:
-            self.bot.logger.warn(f"Error when verifying Github user:\n{E}")
+            self.bot.logger.warn('Error when verifying Github user:\n%s', E)
 
         await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
         await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
@@ -311,7 +311,7 @@ class Github(commands.Cog):
             cursor = conn.cursor()
             cursor.execute(f"DELETE FROM github_users WHERE discord_id={member.id}")
             conn.commit()
-            self.bot.logger.info(f"{member.name} left, purged from database")
+            self.bot.logger.info("%s left, purged from database", member.name)
         except:
             pass
 

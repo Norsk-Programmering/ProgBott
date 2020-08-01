@@ -47,7 +47,7 @@ class Errors(commands.Cog):
             tb = error.__traceback__
             traceback.print_tb(tb)
             print(error)
-            self.bot.logger.error(f"Error running command: {ctx.command}\nError: {error}\nTraceback: {tb}")
+            self.bot.logger.error("Error running command: %s\nError: %s\nTraceback: %s" % (ctx.command, error, tb))
 
 
 def setup(bot):
