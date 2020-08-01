@@ -172,7 +172,7 @@ class Misc(commands.Cog):
         guild_created_date = ctx.guild.created_at.strftime("%d. %b. %Y - %H:%M")
         since_created_days = (ctx.message.created_at - ctx.guild.created_at).days
 
-        if since_created_days is 1:
+        if since_created_days == 1:
             since_created_days_string = "dag"
         else:
             since_created_days_string = "dager"
