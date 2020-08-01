@@ -35,16 +35,16 @@ class Bot(commands.Bot):
         await self.process_commands(message)
 
     async def on_ready(self):
-        if not hasattr(self, 'uptime'):
+        if not hasattr(self, "uptime"):
             self.uptime = time.time()
-        if not hasattr(self, 'appinfo'):
+        if not hasattr(self, "appinfo"):
             self.appinfo = await self.application_info()
 
-        print(f'Logged in as: {self.user.name} in {len(self.guilds)} servers.')
-        print(f'Version: {discord.__version__}')
+        print(f"Logged in as: {self.user.name} in {len(self.guilds)} servers.")
+        print(f"Version: {discord.__version__}")
         self.logger.debug("Bot Ready")
 
-        extensions = ['cogs.misc', 'cogs.poeng', 'cogs.errors', 'cogs.github']
+        extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github"]
         for extension in extensions:
             try:
                 self.logger.debug(f"Loading extension {extension}")
@@ -61,23 +61,23 @@ class Bot(commands.Bot):
             print(e)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = ArgumentParser(prog="Roxedus' ProgBott",
-                            description='Programmerings bot',
+                            description="Programmerings bot",
                             formatter_class=RawTextHelpFormatter)
 
-    parser.add_argument("-D", "--debug", action='store_true', help='Sets debug to true')
-    parser.add_argument("-l", "--level", help='Sets debug level',
+    parser.add_argument("-D", "--debug", action="store_true", help="Sets debug to true")
+    parser.add_argument("-l", "--level", help="Sets debug level",
                         choices=["critical", "error", "warning", "info", "debug"], default="warning")
-    parser.add_argument("-d", "--data-directory", help='Define an alternate data directory location', default="data")
-    parser.add_argument("-f", "--log-to-file", action='store_true', help='Save log to file', default=True)
+    parser.add_argument("-d", "--data-directory", help="Define an alternate data directory location", default="data")
+    parser.add_argument("-f", "--log-to-file", action="store_true", help="Save log to file", default=True)
 
     args = parser.parse_args()
 
     level = args.level
     data_dir = args.data_directory
 
-    if args.debug or os.environ.get('debug'):
+    if args.debug or os.environ.get("debug"):
         level = "debug"
 
     if args.data_directory:

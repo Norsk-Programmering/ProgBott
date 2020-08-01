@@ -28,7 +28,7 @@ class Github(commands.Cog):
         database.populate_tables()
 
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
-        return ''.join(random.choice(chars) for _ in range(size))
+        return "".join(random.choice(chars) for _ in range(size))
 
     @commands.guild_only()
     @commands.group(name="github", aliases=["gh"])
@@ -61,7 +61,7 @@ class Github(commands.Cog):
             embed.description = f"[Verifiser med GitHub]({registration_link})"
             await ctx.author.send(embed=embed)
         except Exception as E:
-            self.bot.logger.warn(f'Error when verifying Github user:\n{E}')
+            self.bot.logger.warn(f"Error when verifying Github user:\n{E}")
 
         await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
         await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
@@ -111,11 +111,11 @@ class Github(commands.Cog):
         new_obj = {}
 
         for gh_repo in gh_repos:
-            if gh_repo['private']:
-                print(gh_repo['name'])
+            if gh_repo["private"]:
+                print(gh_repo["name"])
                 continue
-            stars[gh_repo['id']] = gh_repo['stargazers_count']
-            new_obj[gh_repo['id']] = gh_repo
+            stars[gh_repo["id"]] = gh_repo["stargazers_count"]
+            new_obj[gh_repo["id"]] = gh_repo
 
         stars = dict(sorted(stars.items(), key=operator.itemgetter(1), reverse=True))
         stop = 5 if (len(stars) >= 5) else len(stars)
@@ -125,11 +125,11 @@ class Github(commands.Cog):
         for n in range(0, stop):
             repo_id, *overflow = idrr[n]
             repo = new_obj[repo_id]
-            title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
-            desc = repo['description']
-            if not repo['description']:
+            title = f"{repo["name"]} - ⭐:{repo["stargazers_count"]}"
+            desc = repo["description"]
+            if not repo["description"]:
                 desc = "Ingen beskrivelse oppgitt"
-            desc += f"\n[Link]({repo['html_url']})"
+            desc += f"\n[Link]({repo["html_url"]})"
             embed.add_field(name=title, value=desc, inline=False)
 
         await ctx.send(embed=embed)
@@ -154,8 +154,8 @@ class Github(commands.Cog):
         (_id, discord_id, auth_token, github_username) = gh_user
 
         gh_user = requests.get("https://api.github.com/user", headers={
-            'Authorization': "token " + auth_token,
-            'Accept': 'application/json'
+            "Authorization": "token " + auth_token,
+            "Accept": "application/json"
         }).json()
 
         embed = easy_embed(self, ctx)
@@ -184,9 +184,9 @@ class Github(commands.Cog):
         for repo_ in self.all_repos:
             repo = self.all_repos[repo_]
             try:
-                tot_stars[str(repo['discord_user'])] = tot_stars[str(repo['discord_user'])] + repo['stargazers_count']
+                tot_stars[str(repo["discord_user"])] = tot_stars[str(repo["discord_user"])] + repo["stargazers_count"]
             except KeyError:
-                tot_stars[str(repo['discord_user'])] = repo['stargazers_count']
+                tot_stars[str(repo["discord_user"])] = repo["stargazers_count"]
 
         tot_stars = dict(sorted(tot_stars.items(), key=operator.itemgetter(1), reverse=True))
 
@@ -217,8 +217,8 @@ class Github(commands.Cog):
             repo_id, *overflow = idrr[n]
             repo = self.all_repos[repo_id]
             title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
-            desc = repo['description']
-            if not repo['description']:
+            desc = repo["description"]
+            if not repo["description"]:
                 desc = "Ingen beskrivelse oppgitt"
             desc += f"\n[Link]({repo['html_url']}) - {self.bot.get_user(repo['discord_user']).mention}"
             embed.add_field(name=title, value=desc, inline=False)
@@ -256,16 +256,16 @@ class Github(commands.Cog):
 
     def _get_repos(self, user, token):
         headers = {
-            'Authorization': "token " + token,
-            'Accept': 'application/json'
+            "Authorization": "token " + token,
+            "Accept": "application/json"
         }
 
         url = f"https://api.github.com/users/{user}/repos"
-        res = requests.get(url, headers=headers, params={'per_page': 100, 'page': 1})
+        res = requests.get(url, headers=headers, params={"per_page": 100, "page": 1})
 
         gh_repos = res.json()
-        while 'next' in res.links.keys():
-            res = requests.get(res.links['next']['url'], headers=headers)
+        while "next" in res.links.keys():
+            res = requests.get(res.links["next"]["url"], headers=headers)
             gh_repos.extend(res.json())
 
         return gh_repos
@@ -298,11 +298,11 @@ class Github(commands.Cog):
                 continue
 
             for gh_repo in gh_repos:
-                if gh_repo['private']:
-                    print(gh_repo['name'])
+                if gh_repo["private"]:
+                    print(gh_repo["name"])
                     continue
-                stars[gh_repo['id']] = gh_repo['stargazers_count']
-                self.all_repos[gh_repo['id']] = {'discord_user': discord_id, **gh_repo}
+                stars[gh_repo["id"]] = gh_repo["stargazers_count"]
+                self.all_repos[gh_repo["id"]] = {"discord_user": discord_id, **gh_repo}
         self.all_stars = dict(sorted(stars.items(), key=operator.itemgetter(1), reverse=True))
 
     async def remover(self, member):
@@ -326,13 +326,13 @@ class Github(commands.Cog):
 
 
 def check_folder(data_dir):
-    f = f'{data_dir}/db'
+    f = f"{data_dir}/db"
     if not os.path.exists(f):
         os.makedirs(f)
 
 
 def start_server(bot):
-    server = threading.Thread(target=Server, kwargs={'data_dir': bot.data_dir, 'settings': bot.settings.github})
+    server = threading.Thread(target=Server, kwargs={"data_dir": bot.data_dir, "settings": bot.settings.github})
     server.start()
 
 
