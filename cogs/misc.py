@@ -160,9 +160,6 @@ class Misc(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.bot_has_permissions(embed_links=True, external_emojis=True)
-    @commands.guild_only()
-    @commands.cooldown(1, 2, commands.BucketType.guild)
     @commands.command(aliases=["guildinfo", "server", "serverinfo", "si", "gi"])
     async def guild(self, ctx):
         """
@@ -237,7 +234,7 @@ class Misc(commands.Cog):
             "southafrica": ":flag_za:",
             "hongkong": ":flag_hk:",
             "india": ":flag_in:"
-            }
+        }
         region = str(ctx.guild.region)
         if region.startswith("us"):
             region = "us"

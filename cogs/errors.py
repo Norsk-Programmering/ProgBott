@@ -45,9 +45,15 @@ class Errors(commands.Cog):
         else:
             await ctx.send("En ukjent feil oppstod. Be båtteier om å sjekke feilen")
             tb = error.__traceback__
+            e_traceback = traceback.format_exception(error.__class__, error, error.__traceback__)
+            traceback_lines = []
+            for line in [line.rstrip('\n') for line in e_traceback]:
+                traceback_lines.extend(line.splitlines())
             traceback.print_tb(tb)
             print(error)
-            self.bot.logger.error("Error running command: %s\nError: %s\nTraceback: %s" % (ctx.command, error, tb))
+            self.bot.logger.exception("Error running command: %s Error: %s Traceback: %s" %
+                                    (ctx.command, error, traceback_lines.__str__()))
+
 
 
 def setup(bot):
