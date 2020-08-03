@@ -7,7 +7,7 @@ def get_user(self, discord_id):
 
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM github_users WHERE discord_id={}".format(discord_id))
+    cursor.execute(f"SELECT * FROM github_users WHERE discord_id={discord_id}")
 
     rows = cursor.fetchone()
 
