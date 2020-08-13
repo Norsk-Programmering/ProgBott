@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+Norsk Programmering Bot Server
+{% endblock %}
+
+{% block oauth_box %}
+<h1>Hei du!</h1>
+<div class="txt-box">
+  <p>Her er det ikke mye spennende, sjekk heller ut
+    <a href="https://norskprogrammering.no/">norskprogrammering.no</a>
+    !
+  </p>
+</div>
+<img src="{{ url_for('static', filename='images/street.png') }}" />
+{% endblock %}
