@@ -9,9 +9,9 @@ def get_user(self, discord_id):
 
     cursor.execute(f"SELECT * FROM github_users WHERE discord_id={discord_id}")
 
-    rows = cursor.fetchone()
+    row = cursor.fetchone()
 
-    return rows
+    return row
 
 
 def get_users(self):
