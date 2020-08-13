@@ -80,6 +80,7 @@ jobs:
       - name: Tag :latest Docker image
         env:
           REPO: ${{ steps.vars.outputs.repo }}
+          BRANCH: ${{ steps.vars.outputs.branch }}
         if: github.ref == 'refs/heads/master'
         run: |
           docker tag $REPO:$BRANCH $REPO:latest
