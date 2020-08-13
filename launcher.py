@@ -49,15 +49,15 @@ class Bot(commands.Bot):
             try:
                 self.logger.debug("Loading extension %s", extension)
                 self.load_extension(extension)
-            except Exception:
-                self.logger.exception("Loading of extension %s failed", extension)
+            except Exception as e:
+                self.logger.exception("Loading of extension %s failed: %s", extension, e)
 
     def run(self):
         try:
             super().run(settings.token)
         except Exception as e:
             tb = e.__traceback__
-            logger.error(traceback.extract_tb(tb))
+            self.logger.error(traceback.extract_tb(tb))
             print(e)
 
 
