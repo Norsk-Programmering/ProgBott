@@ -1,6 +1,6 @@
-from logging import getLogger, Formatter, StreamHandler
-from logging.handlers import RotatingFileHandler
 import os
+from logging import Formatter, StreamHandler, getLogger
+from logging.handlers import RotatingFileHandler
 
 
 class Logger(object):
