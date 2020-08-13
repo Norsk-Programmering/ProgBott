@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favico.ico') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/oauth.css') }}" />
+</head>
+
+<main>
+  <div class="oauth-complete-box">
+    {% block oauth_box %}
+    {% endblock %}
+  </div>
+</main>
+
+</html>

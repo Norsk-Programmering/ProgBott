@@ -16,7 +16,7 @@ class Server:
 
 @app.route("/")
 def index():
-    return "Hello, world!"
+    return render_template("index.html")
 
 
 @app.errorhandler(404)

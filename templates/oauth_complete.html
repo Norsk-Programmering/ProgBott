@@ -1,25 +1,14 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-  <head>
-    <title>Norsk Programmering Github Oauth</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/oauth.css') }}"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+{% block title %}
+Norsk Programmering Github oauth
+{% endblock %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/oauth.css') }}" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet" />
+</head>
 
-  <main>
-    <div class="oauth-complete-box">
-      <h1>Verifisert!</h1>
-      <span>{{name}}</span>
-      <img
-        src="{{ url_for('static', filename='images/oauth_complete.png') }}"
-      />
-    </div>
-  </main>
-</html>
+{% block oauth_box %}
+<h1>Verifisert!</h1>
+<span>{{name}}</span>
+<img src="{{ url_for('static', filename='images/oauth_complete.png') }}" />
+{% endblock %}

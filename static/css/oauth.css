@@ -45,7 +45,14 @@ main {
   width: 300px;
 }
 
-.error-box {
+.txt-box {
   max-width: 400px;
   text-align: center;
+}
+
+.txt-box a,
+a:visited,
+a:hover,
+a:active {
+  color: inherit;
 }
