@@ -19,7 +19,7 @@ COPY / /app
 RUN apk add --no-cache --virtual=build-dependencies --update \
         gcc \
         musl-dev \
-        python-dev && \
+        python3-dev && \
     python3 -m pip install -r /app/requirements.txt && \
     apk del build-dependencies
 
