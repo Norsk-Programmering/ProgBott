@@ -21,6 +21,7 @@ class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.repo = "https://github.com/Roxedus/ProgBott"
+        self.ico = "https://github.com/Norsk-Programmering/Profilering/raw/master/BotAvatar.gif"
 
     def get_uptime(self):
         now = time.time()
@@ -103,7 +104,8 @@ class Misc(commands.Cog):
                f"\nForbedringforslag mottas på [GitHub]({self.repo})"
 
         py_ver = platform.python_version()
-        how = f"**Python-versjon:** " \
+        how = "Med Python såklart!" \
+              f"\n**Python-versjon:** " \
               f"[{py_ver}](https://python.org/downloads/release/python-{py_ver.replace('.', '')}/)" \
               f"\n**Discord.py-versjon:** " \
               f"[{discord.__version__}](https://github.com/Rapptz/discord.py/releases/tag/v{discord.__version__}/)" \
@@ -112,12 +114,11 @@ class Misc(commands.Cog):
         guilds = len(self.bot.guilds)
         members = len(membercount)
         days, hours, minutes, seconds = self.get_uptime()
-        avatar = self.bot.user.avatar_url_as(format=None, static_format="png", size=1024)
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
-        embed = discord.Embed(color=discord.Colour.from_rgb(245, 151, 47), description=desc)
+        embed = discord.Embed(color=discord.Colour.from_rgb(244, 1, 110), description=desc)
         embed.set_author(name=dev.name, icon_url=dev.avatar_url)
-        embed.set_thumbnail(url=avatar)
+        embed.set_thumbnail(url=self.ico)
 
         embed.add_field(name="Tjenere", value=str(guilds))
         embed.add_field(name="Hvor mange?", value=f"{members} brukere")
@@ -157,6 +158,7 @@ class Misc(commands.Cog):
 
         embed.description = desc
         embed.title = f"Viser top {counter} roller"
+        embed.set_thumbnail(url=self.ico)
 
         await ctx.send(embed=embed)
 
@@ -328,10 +330,10 @@ class Misc(commands.Cog):
         embed.add_field(name=f"Medlemmer ({total_members})",
                         value=f"👤 Mennesker: **{int(total_members) - int(bot_members)}**\n" +
                               f"🤖 Båtter: **{bot_members}**\n" +
-                              f"🟢{online_members} " +
-                              f"🟡{idle_members} " +
-                              f"🔴{dnd_members} " +
-                              f"⚫{offline_members}")
+                              f"<:online:743471541169291335>{online_members} " +
+                              f"<:idle:743471541127348255>{idle_members} " +
+                              f"<:dnd:743471541093662840>{dnd_members} " +
+                              f"<:offline:743471543543136266>{offline_members}")
         embed.add_field(name=f"Roller ({len(ctx.guild.roles) - 1})", value=roles, inline=False)
         if ctx.guild.premium_tier != 0:
             embed.add_field(name=f"Boosters ({ctx.guild.premium_subscription_count})", value=boosters, inline=False)
@@ -443,10 +445,10 @@ class Misc(commands.Cog):
             color = discord.Colour(0x99AAB5)
 
         statuses = {
-            "online": "🟢 Pålogget",
-            "idle": "🟡 Inaktiv",
-            "dnd": "🔴 Ikke forstyrr",
-            "offline": "⚫ Frakoblet"
+            "online": "<:online:743471541169291335> Pålogget",
+            "idle": "<:idle:743471541127348255> Inaktiv",
+            "dnd": "<:dnd:743471541093662840> Ikke forstyrr",
+            "offline": "<:offline:743471543543136266> Frakoblet"
         }
         status = statuses[str(bruker.status)]
 

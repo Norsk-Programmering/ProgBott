@@ -40,14 +40,14 @@ class Poeng(commands.Cog):
         for word in self.settings_data['takk']:
             word_ = word.lower()
             content_ = message.content.lower()
-            if word_ in content_ and (content_.startswith(word_)
-                                      or content_.endswith(word_)
-                                      or content_[:-1].endswith(word_)):
+            if (word_ in content_ and ("hjelp" in (message.channel.name or message.channel.category.name))) or \
+                    (content_.startswith(word_) or content_.endswith(word_) or content_[:-1].endswith(word_)):
                 await self.add_star(message)
                 break
 
     async def add_star(self, message, **kwarg):
-        emoji = '⭐'
+        emoji = self.bot.get_emoji(743471543706976256)
+        emoji_str = f'<:forkast:{emoji.id}>'
         dudes = {'id': [], 'mention': []}
         embed = easy_embed(self, message)
         for dude in message.mentions:
@@ -67,7 +67,7 @@ class Poeng(commands.Cog):
         }
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {",".join(dudes["mention"])} en stjerne!'
-        msg = await message.channel.send("Registrerer stjerne")
+        msg = await message.channel.send(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
         await message.channel.trigger_typing()
 
         def check(reaction, user):
