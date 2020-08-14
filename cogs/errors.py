@@ -1,5 +1,6 @@
 # Discord Packages
 from discord.ext import commands
+from cogs.utils.my_errors import NoDM
 
 import traceback
 
@@ -38,6 +39,9 @@ class Errors(commands.Cog):
                 return await ctx.send(f"`{ctx.command}` kan ikke brukes i DMs")
             except Exception:
                 pass
+
+        elif isinstance(error, NoDM):
+            return await ctx.send(f"Hei! {ctx.message.author.mention} jeg kan ikke sende deg DMs")
 
         elif isinstance(error, commands.CheckFailure):
             return

@@ -6,6 +6,7 @@ from discord.ext import commands
 from cogs.utils.db import DB
 from cogs.utils.db_tools import get_user, get_users
 from cogs.utils.defaults import easy_embed
+from cogs.utils.my_errors import NoDM
 from cogs.utils.server import Server
 
 import asyncio
@@ -60,12 +61,14 @@ class Github(commands.Cog):
             embed.title = "Hei! For å verifisere GitHub kontoen din, følg lenken under"
             embed.description = f"[Verifiser med GitHub]({registration_link})"
             await ctx.author.send(embed=embed)
+
+            await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
+            await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
+            self._get_users()
+        except discord.Forbidden:
+            raise NoDM
         except Exception as E:
             self.bot.logger.warn('Error when verifying Github user:\n%s', E)
-
-        await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
-        await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
-        self._get_users()
 
     @ghGroup.command(name="remove", aliases=["fjern"])
     async def remove(self, ctx):
