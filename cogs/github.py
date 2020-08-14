@@ -322,7 +322,7 @@ class Github(commands.Cog):
         async def loop(self):
             while True:
                 self.bot._get_users()
-                await asyncio.sleep(60*60*12)
+                await asyncio.sleep(int(60*60*12))
 
 
 def check_folder(data_dir):
