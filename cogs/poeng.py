@@ -71,7 +71,7 @@ class Poeng(commands.Cog):
         await message.channel.trigger_typing()
 
         def check(reaction, user):
-            if user is None or user.id != message.author.id:
+            if user is None or user.id != message.author.id or user.id == 120970603556503552:
                 return False
 
             if reaction.message.id != message.id:
