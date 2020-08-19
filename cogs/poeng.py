@@ -174,7 +174,7 @@ class Poeng(commands.Cog):
     async def cache_loop(self):
         while True:
             self.cacher()
-            await asyncio.sleep(30*60)
+            await asyncio.sleep(60*60*5)
 
     def cacher(self):
         if time.time() - 120 > float(self.cache_time):
