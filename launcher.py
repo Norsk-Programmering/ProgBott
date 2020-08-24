@@ -44,7 +44,7 @@ class Bot(commands.Bot):
         print(f"Version: {discord.__version__}")
         self.logger.debug("Bot Ready")
 
-        extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github"]
+        extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.broder"]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)
