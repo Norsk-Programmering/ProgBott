@@ -138,6 +138,14 @@ class Misc(commands.Cog):
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=["pullrequest", "draforespørsel"], hidden=True)
+    async def pr(self, ctx):
+        """
+        Pwease appwove my puww wequest senpai ^_^ uwu
+        """
+
+        await ctx.send("Pwease appwove my puww wequest senpai ^_^ uwu\nhttps://youtu.be/5xooMXyleXM")
+
     @commands.command()
     async def toproller(self, ctx, antall: int = None):
         roles = {}
