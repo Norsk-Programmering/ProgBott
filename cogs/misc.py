@@ -561,7 +561,7 @@ class Misc(commands.Cog):
         if len(members) == 0:
             members = "**Ingen**"
 
-        permissions = sub("\D", "", str(rolle.permissions))
+        permissions = ", ".join([permission for permission, value in iter(rolle.permissions) if value is True])
 
         embed = discord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
         embed.set_author(name=rolle.guild.name, icon_url=rolle.guild.icon_url)
