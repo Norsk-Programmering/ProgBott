@@ -201,7 +201,7 @@ class Misc(commands.Cog):
         roles.reverse()
         roles = ", ".join(roles)
         if len(roles) > 1024:
-            roles = f"Skriv `{self.bot.prefix}guildroller` for å se rollene"
+            roles = "Skriv `.guildroller` for å se rollene"
         if roles == "":
             roles = "**Ingen roller**"
 
@@ -212,7 +212,7 @@ class Misc(commands.Cog):
             boosters.append(f"{booster.name}#{booster.discriminator}")
         boosters = ", ".join(boosters)
         if len(boosters) > 1024:
-            boosters = f"Skriv `{self.bot.prefix}boosters` for å se boosters"
+            boosters = "For mange boosters for å vise her"
         if boosters == "":
             boosters = "**Ingen boosters**"
 
@@ -435,7 +435,7 @@ class Misc(commands.Cog):
         roles = ", ".join(roles)
 
         if len(roles) > 1024:
-            roles = f"Skriv `{self.bot.prefix}{ctx.command}` for å se rollene"
+            roles = "Skriv `.brukerroller` for å se rollene"
         if roles == "":
             roles = "**Ingen roller**"
 
