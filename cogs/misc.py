@@ -138,6 +138,14 @@ class Misc(commands.Cog):
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=["pullrequest", "draforespørsel"], hidden=True)
+    async def pr(self, ctx):
+        """
+        Pwease appwove my puww wequest senpai ^_^ uwu
+        """
+
+        await ctx.send("Pwease appwove my puww wequest senpai ^_^ uwu\nhttps://youtu.be/5xooMXyleXM")
+
     @commands.command()
     async def toproller(self, ctx, antall: int = None):
         roles = {}
@@ -201,7 +209,7 @@ class Misc(commands.Cog):
         roles.reverse()
         roles = ", ".join(roles)
         if len(roles) > 1024:
-            roles = f"Skriv `{self.bot.prefix}guildroller` for å se rollene"
+            roles = "Skriv `.guildroller` for å se rollene"
         if roles == "":
             roles = "**Ingen roller**"
 
@@ -212,7 +220,7 @@ class Misc(commands.Cog):
             boosters.append(f"{booster.name}#{booster.discriminator}")
         boosters = ", ".join(boosters)
         if len(boosters) > 1024:
-            boosters = f"Skriv `{self.bot.prefix}boosters` for å se boosters"
+            boosters = "For mange boosters for å vise her"
         if boosters == "":
             boosters = "**Ingen boosters**"
 
@@ -435,7 +443,7 @@ class Misc(commands.Cog):
         roles = ", ".join(roles)
 
         if len(roles) > 1024:
-            roles = f"Skriv `{self.bot.prefix}{ctx.command}` for å se rollene"
+            roles = "Skriv `.brukerroller` for å se rollene"
         if roles == "":
             roles = "**Ingen roller**"
 
@@ -561,17 +569,17 @@ class Misc(commands.Cog):
         if len(members) == 0:
             members = "**Ingen**"
 
-        permissions = sub("\D", "", str(rolle.permissions))
+        permissions = ", ".join([permission for permission, value in iter(rolle.permissions) if value is True])
 
         embed = discord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
         embed.set_author(name=rolle.guild.name, icon_url=rolle.guild.icon_url)
         embed.add_field(name="Fargekode", value=str(rolle.color))
         embed.add_field(name="Opprettet", value=f"{rolle_created_date}\n{since_created_days} " +
                                                 f"{since_created_days_string} siden")
-        embed.add_field(name="Tillatelser", value=permissions)
         embed.add_field(name="Posisjon", value=rolle.position)
         embed.add_field(name="Nevnbar", value=mentionable)
         embed.add_field(name="Vises separat i medlemsliste", value=hoisted)
+        embed.add_field(name="Tillatelser", value=permissions, inline=False)
         embed.add_field(name=f"Brukere med rollen ({len(rolle.members)})", value=members, inline=False)
         await ctx.send(embed=embed)
 
