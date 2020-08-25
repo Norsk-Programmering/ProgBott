@@ -568,10 +568,10 @@ class Misc(commands.Cog):
         embed.add_field(name="Fargekode", value=str(rolle.color))
         embed.add_field(name="Opprettet", value=f"{rolle_created_date}\n{since_created_days} " +
                                                 f"{since_created_days_string} siden")
-        embed.add_field(name="Tillatelser", value=permissions)
         embed.add_field(name="Posisjon", value=rolle.position)
         embed.add_field(name="Nevnbar", value=mentionable)
         embed.add_field(name="Vises separat i medlemsliste", value=hoisted)
+        embed.add_field(name="Tillatelser", value=permissions, inline=False)
         embed.add_field(name=f"Brukere med rollen ({len(rolle.members)})", value=members, inline=False)
         await ctx.send(embed=embed)
 
