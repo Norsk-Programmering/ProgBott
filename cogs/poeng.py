@@ -71,13 +71,13 @@ class Poeng(commands.Cog):
         await message.channel.trigger_typing()
 
         def check(reaction, user):
-            if user is None or user.id != message.author.id or user.id == 120970603556503552:
+            if user is None or user.id != message.author.id:
                 return False
 
             if reaction.message.id != message.id:
                 return False
 
-            if reaction.emoji == emoji:
+            if reaction.emoji == emoji or (reaction.emoji == emoji and user.id == 120970603556503552):
                 return True
 
             return False
