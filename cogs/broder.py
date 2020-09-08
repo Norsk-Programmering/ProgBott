@@ -13,7 +13,7 @@ class Broder(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if not after.author.bot and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
+        if not after.author.bot:
             await self._filter(after)
 
     async def _filter(self, message, **kwarg):
