@@ -288,6 +288,7 @@ class Misc(commands.Cog):
                 "MORE_EMOJI": "Ekstra emoji",
                 "DISCOVERABLE": "Fremhevet",
                 "FEATURABLE": "Kan fremheves",
+                "COMMUNITY": "Sammfunsguild",
                 "COMMERCE": "Butikkanaler",
                 "PUBLIC": "Offentlig guild",
                 "NEWS": "Nyhetskanaler",
