@@ -144,7 +144,7 @@ class Misc(commands.Cog):
         Pwease appwove my puww wequest senpai ^_^ uwu
         """
 
-        await ctx.send("Pwease appwove my puww wequest senpai ^_^ uwu\nhttps://youtu.be/5xooMXyleXM")
+        await ctx.send("https://youtu.be/5xooMXyleXM")
 
     @commands.command()
     async def toproller(self, ctx, antall: int = None):
