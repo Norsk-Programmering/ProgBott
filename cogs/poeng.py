@@ -79,6 +79,7 @@ class Poeng(commands.Cog):
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {",".join(dudes["mention"])} en stjerne!'
         msg = await message.channel.send(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
+        await message.channel.trigger_typing()
 
         def check(reaction, user):
             if user is None or user.id != message.author.id:
@@ -92,25 +93,24 @@ class Poeng(commands.Cog):
 
             return False
 
-        async with message.channel.trigger_typing():
+        try:
+            await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
+            await message.remove_reaction(emoji, self.bot.user)
             try:
-                await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
-                await message.remove_reaction(emoji, self.bot.user)
-                try:
-                    await message.remove_reaction(emoji, message.author)
-                except Exception:
-                    self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
-                return await msg.delete()
+                await message.remove_reaction(emoji, message.author)
+            except Exception:
+                self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
+            return await msg.delete()
 
-            except asyncio.TimeoutError:
-                self.teller_data['meldinger'][str(message.id)] = msg_data
-                self.cacher()
-                await msg.edit(content=None, embed=embed)
-                await message.remove_reaction(emoji, self.bot.user)
-                try:
-                    return await message.remove_reaction(emoji, message.author)
-                except Exception:
-                    return self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
+        except asyncio.TimeoutError:
+            self.teller_data['meldinger'][str(message.id)] = msg_data
+            self.cacher()
+            await msg.edit(content=None, embed=embed)
+            await message.remove_reaction(emoji, self.bot.user)
+            try:
+                return await message.remove_reaction(emoji, message.author)
+            except Exception:
+                return self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
     @commands.guild_only()
     @commands.group(name="stjerne")
