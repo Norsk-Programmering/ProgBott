@@ -12,6 +12,15 @@ import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
+intents = discord.Intents.none()
+intents.guilds = True
+intents.members = True
+intents.emojis = True
+intents.presences = True
+intents.messages = True
+intents.guild_reactions = True
+intents.guild_typing = True
+
 
 def _get_prefix(bot, message):
     if not message.guild:
@@ -23,7 +32,7 @@ def _get_prefix(bot, message):
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=_get_prefix)
+        super().__init__(command_prefix=_get_prefix, intents=intents)
         self.logger = logger
         self.logger.debug("Logging level: %s", level.upper())
         self.data_dir = data_dir

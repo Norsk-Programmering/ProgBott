@@ -1,6 +1,10 @@
 # Discord Packages
 import discord
 
+booler = {
+    True: ":white_check_mark:",
+    False: ":x:"
+}
 
 flags = {
     "us": ":flag_us:",
@@ -60,6 +64,28 @@ statuses = {
     "dnd": "<:dnd:743471541093662840> Ikke forstyrr",
     "offline": "<:offline:743471543543136266> Frakoblet"
 }
+
+intents = {
+    "guilds": "guilds",
+    "members": "medlemmer",
+    "bans": "bans",
+    "emojis": "emojis",
+    "integrations": "integrasjoner",
+    "webhooks": "internettkroker",
+    "invites": "invitasjoner",
+    "voice_states": "stemme-tilstander",
+    "presences": "tilstedeværelse",
+    "messages": "meldinger",
+    "guild_messages": "guild-meldinger",
+    "dm_messages": "dm-meldinger",
+    "reactions": "reaksjoner",
+    "guild_reactions": "guild-reaksjoner",
+    "dm_reactions": "dm-reaksjoner",
+    "typing": "skrivestatus",
+    "guild_typing": "guild-skrivestatus",
+    "dm_typing": "dm-skrivestatus"
+}
+
 
 def easy_embed(self, ctx, big_embed: bool = False):
     avatar = self.bot.user.avatar_url_as(format=None, static_format="png", size=1024)
