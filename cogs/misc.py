@@ -5,7 +5,7 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
-from cogs.utils.defaults import easy_embed, features, flags, intents, region_names, statuses, booler
+from cogs.utils.defaults import booler, easy_embed, features, flags, intents, region_names, statuses
 
 import operator
 import platform
