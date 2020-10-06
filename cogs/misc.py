@@ -5,15 +5,12 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
-from cogs.utils.defaults import easy_embed
+from cogs.utils.defaults import easy_embed, features, flags, region_names, statuses
 
 import operator
 import platform
 import time
 from io import StringIO
-from itertools import count
-from operator import le
-from re import sub
 from urllib import parse
 
 
@@ -111,6 +108,11 @@ class Misc(commands.Cog):
               f"[{discord.__version__}](https://github.com/Rapptz/discord.py/releases/tag/v{discord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
+        intents_string = ""
+        if ctx.bot.intents is not []:
+            for intent, val in ctx.bot.intents:
+                intents_string += f"{intents[intent]}: {booler[val]}\n"
+
         guilds = len(self.bot.guilds)
         members = len(membercount)
         days, hours, minutes, seconds = self.get_uptime()
@@ -124,6 +126,10 @@ class Misc(commands.Cog):
         embed.add_field(name="Hvor mange?", value=f"{members} brukere")
         embed.add_field(name="Oppetid", value=uptimetext)
         embed.add_field(name="Hvordan?", value=how, inline=False)
+
+        if intents_string != "":
+            embed.add_field(name="Intensjoner", value=intents_string)
+
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["regel3"])
@@ -229,22 +235,6 @@ class Misc(commands.Cog):
         categories = len(ctx.guild.categories)
         total_channels = text_channels + voice_channels
 
-        flags = {
-            "us": ":flag_us:",
-            "eu": ":flag_eu:",
-            "singapore": ":flag_sg:",
-            "london": ":flag_gb:",
-            "sydney": ":flag_au:",
-            "amsterdam": ":flag_nl:",
-            "frankfurt": ":flag_de:",
-            "brazil": ":flag_br:",
-            "dubai": ":flag_ae:",
-            "japan": ":flag_jp:",
-            "russia": ":flag_ru:",
-            "southafrica": ":flag_za:",
-            "hongkong": ":flag_hk:",
-            "india": ":flag_in:"
-        }
         region = str(ctx.guild.region)
         if region.startswith("us"):
             region = "us"
@@ -257,21 +247,6 @@ class Misc(commands.Cog):
         except KeyError:
             flag = ":question:"
 
-        region_names = {
-            "eu-central": "Sentral-Europa",
-            "eu-west": "Vest-Europa",
-            "europe": "Europa",
-            "hongkong": "Hong Kong",
-            "russia": "Russland",
-            "southafrica": "Sør-Afrika",
-            "us-central": "Midt-USA",
-            "us-east": "New Jersey",
-            "us-south": "Sør-USA",
-            "us-west": "California",
-            "vip-amsterdam": "Amsterdam (VIP)",
-            "vip-us-east": "Øst-USA (VIP)",
-            "vip-us-west": "Vest-USA (VIP)",
-        }
         try:
             region_name = region_names[str(ctx.guild.region)]
         except KeyError:
@@ -279,24 +254,6 @@ class Misc(commands.Cog):
 
         features_string = ""
         if ctx.guild.features is not []:
-            features = {
-                "VIP_REGIONS": "VIP",
-                "VANITY_URL": "Egen URL",
-                "INVITE_SPLASH": "Invitasjonsbilde",
-                "VERIFIED": "Verifisert",
-                "PARTNERED": "Discord Partner",
-                "MORE_EMOJI": "Ekstra emoji",
-                "DISCOVERABLE": "Fremhevet",
-                "FEATURABLE": "Kan fremheves",
-                "COMMUNITY": "Sammfunsguild",
-                "COMMERCE": "Butikkanaler",
-                "PUBLIC": "Offentlig guild",
-                "NEWS": "Nyhetskanaler",
-                "BANNER": "Banner",
-                "ANIMATED_ICON": "Animert ikon",
-                "PUBLIC_DISABLED": "Ikke offentlig",
-                "WELCOME_SCREEN_ENABLED": "Velkomstvindu"
-            }
             for feature in ctx.guild.features:
                 features_string += f"{features[feature]}\n"
 
@@ -453,12 +410,6 @@ class Misc(commands.Cog):
         else:
             color = discord.Colour(0x99AAB5)
 
-        statuses = {
-            "online": "<:online:743471541169291335> Pålogget",
-            "idle": "<:idle:743471541127348255> Inaktiv",
-            "dnd": "<:dnd:743471541093662840> Ikke forstyrr",
-            "offline": "<:offline:743471543543136266> Frakoblet"
-        }
         status = statuses[str(bruker.status)]
 
         embed = discord.Embed(color=color, description=f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}")
