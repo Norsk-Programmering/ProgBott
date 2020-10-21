@@ -108,10 +108,7 @@ class Misc(commands.Cog):
               f"[{discord.__version__}](https://github.com/Rapptz/discord.py/releases/tag/v{discord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
-        intents_string = ""
-        if ctx.bot.intents is not []:
-            for intent, val in ctx.bot.intents:
-                intents_string += f"{intents[intent]}: {booler[val]}\n"
+        intents_list = [intents[intent] for intent, val in ctx.bot.intents if intent]
 
         guilds = len(self.bot.guilds)
         members = len(membercount)
@@ -127,8 +124,8 @@ class Misc(commands.Cog):
         embed.add_field(name="Oppetid", value=uptimetext)
         embed.add_field(name="Hvordan?", value=how, inline=False)
 
-        if intents_string != "":
-            embed.add_field(name="Intensjoner", value=intents_string)
+        if intents_list:
+            embed.add_field(name="Mine Intensjoner:", value=", ".join(intents_list))
 
         await ctx.send(embed=embed)
 
