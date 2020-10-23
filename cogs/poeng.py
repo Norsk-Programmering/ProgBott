@@ -136,8 +136,13 @@ class Poeng(commands.Cog):
                 if helper == user.id:
                     counter += 1
                     if counter <= 5:
+                        fyr = "Ukjent bruker"
+                        try:
+                            fyr = self.bot.get_user(self.teller_data['meldinger'][msg]['giver']).name
+                        except AttributeError:
+                            pass
                         embed.add_field(
-                            name=f"Hjalp {self.bot.get_user(self.teller_data['meldinger'][msg]['giver']).name} her:",
+                            name=f"Hjalp {fyr} her:",
                             value=f"[Link]({self.teller_data['meldinger'][msg]['link']})",
                             inline=False
                         )
