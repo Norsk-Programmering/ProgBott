@@ -54,10 +54,11 @@ class Github(commands.Cog):
         try:
             embed = easy_embed(self, ctx)
             discord_id_and_key = f"{ctx.author.id}:{random_string}"
+            callback = f"{self.bot.settings.github['callback_uri']}" \
+                       f"?params={discord_id_and_key}"
             registration_link = "https://github.com/login/oauth/authorize" \
                                 f"?client_id={self.bot.settings.github['client_id']}" \
-                                f"&redirect_uri={self.bot.settings.github['callback_uri']}" \
-                                f"?params={discord_id_and_key}"
+                                f"&redirect_uri={callback}"
             embed.title = "Hei! For å verifisere GitHub kontoen din, følg lenken under"
             embed.description = f"[Verifiser med GitHub]({registration_link})"
             await ctx.author.send(embed=embed)
