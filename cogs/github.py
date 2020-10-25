@@ -115,7 +115,6 @@ class Github(commands.Cog):
 
         for gh_repo in gh_repos:
             if gh_repo["private"]:
-                print(gh_repo["name"])
                 continue
             stars[gh_repo["id"]] = gh_repo["stargazers_count"]
             new_obj[gh_repo["id"]] = gh_repo
@@ -302,7 +301,6 @@ class Github(commands.Cog):
 
             for gh_repo in gh_repos:
                 if gh_repo["private"]:
-                    print(gh_repo["name"])
                     continue
                 stars[gh_repo["id"]] = gh_repo["stargazers_count"]
                 self.all_repos[gh_repo["id"]] = {"discord_user": discord_id, **gh_repo}
