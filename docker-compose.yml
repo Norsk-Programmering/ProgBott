@@ -1,0 +1,12 @@
+version: "2.4"
+
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    user: "1000:1000"
+    ports:
+      - 27017:27017
+    volumes:
+      - "./mongo:/data/db"
+      - "/etc/passwd:/etc/passwd:ro"

@@ -1,4 +1,5 @@
 # Bot Utilities
+import re
 from cogs.utils.db import DB
 
 import requests
@@ -29,6 +30,22 @@ def internal_server_error(e):
     return render_template("error.html", error=e, code=500), 500
 
 
+@app.route("/jobb/test/<discord_id>")
+def test_(discord_id):
+    bot = app.config["bot"]
+    guild = bot.get_guild(bot.client.progbott.settings.find_one({"_id": "jobbkanal"}))
+    user = guild.get_member(int(discord_id))
+
+    data = {
+        "roles": {}
+    }
+
+    for role in user.roles:
+        data["roles"][role.name] = {"position": role.position, "color": role.color.value}
+
+    return data
+
+
 @app.route("/github/oauth/callback")
 def callback():
     query_code = request.args.get("code")
@@ -43,8 +60,8 @@ def callback():
         return "NOT_OK"
 
     params = {
-        "client_id": settings["client_id"],
-        "client_secret": settings["secret"],
+        "client_id": settings.extra.github["client_id"],
+        "client_secret": settings.extra.github["secret"],
         "code": query_code
     }
 

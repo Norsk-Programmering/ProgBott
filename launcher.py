@@ -5,21 +5,25 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.logging import Logger
+from cogs.utils.server import Server
 from cogs.utils.settings import Settings
 
 import os
+import threading
 import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
+from pymongo import MongoClient
+
 intents = discord.Intents.none()
+intents.emojis = True
+intents.guild_typing = True
 intents.guilds = True
 intents.members = True
-intents.emojis = True
-intents.presences = True
 intents.messages = True
-intents.guild_reactions = True
-intents.guild_typing = True
+intents.presences = True
+intents.reactions = True
 
 
 def _get_prefix(bot, message):
@@ -37,6 +41,7 @@ class Bot(commands.Bot):
         self.logger.debug("Logging level: %s", level.upper())
         self.data_dir = data_dir
         self.settings = settings.extra
+        self.client = MongoClient('localhost', 27017)
 
     async def on_message(self, message):
         if message.author.bot:
@@ -53,7 +58,8 @@ class Bot(commands.Bot):
         print(f"Version: {discord.__version__}")
         self.logger.debug("Bot Ready")
 
-        extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.broder"]
+        #extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.jobb", "cogs.broder"]
+        extensions = ["cogs.errors", "cogs.misc", "cogs.jobb"]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)
@@ -97,4 +103,9 @@ if __name__ == "__main__":
 
     settings = Settings(data_dir=data_dir)
 
-    Bot().run()
+    bot = Bot()
+
+    server = threading.Thread(target=Server, kwargs={"data_dir": data_dir, "settings": settings, "bot": bot})
+    server.start()
+
+    bot.run()

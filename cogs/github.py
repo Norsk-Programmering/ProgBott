@@ -7,14 +7,12 @@ from cogs.utils.db import DB
 from cogs.utils.db_tools import get_user, get_users
 from cogs.utils.defaults import easy_embed
 from cogs.utils.my_errors import NoDM
-from cogs.utils.server import Server
 
 import asyncio
 import operator
 import os
 import random
 import string
-import threading
 
 import requests
 
@@ -333,14 +331,8 @@ def check_folder(data_dir):
         os.makedirs(f)
 
 
-def start_server(bot):
-    server = threading.Thread(target=Server, kwargs={"data_dir": bot.data_dir, "settings": bot.settings.github})
-    server.start()
-
-
 def setup(bot):
     check_folder(bot.data_dir)
-    start_server(bot)
     n = Github(bot)
     bot.add_listener(n.remover, "on_member_remove")
     bot.add_cog(n)

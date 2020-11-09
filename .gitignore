@@ -1,6 +1,7 @@
 tests/.venv/
 .idea/
 data/
+mongo/
 .vscode
 
 # Created by .ignore support plugin (hsz.mobi)
