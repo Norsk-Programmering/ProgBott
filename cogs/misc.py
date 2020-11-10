@@ -177,7 +177,7 @@ class Misc(commands.Cog):
                 break
 
         embed.description = desc
-        embed.title = f"Viser top {counter} roller"
+        embed.title = f"Viser topp {counter} roller"
         embed.set_thumbnail(url=self.ico)
 
         await ctx.send(embed=embed)
