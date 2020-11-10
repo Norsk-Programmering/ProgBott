@@ -4,7 +4,7 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.db import DB
-from cogs.utils.db_tools import get_user, get_discord_user, get_users
+from cogs.utils.db_tools import get_discord_user, get_user, get_users
 from cogs.utils.defaults import easy_embed
 from cogs.utils.my_errors import NoDM
 from cogs.utils.server import Server
