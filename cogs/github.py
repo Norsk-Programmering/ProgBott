@@ -4,7 +4,7 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.db import DB
-from cogs.utils.db_tools import get_user, get_users
+from cogs.utils.db_tools import get_user, get_discord_user, get_users
 from cogs.utils.defaults import easy_embed
 from cogs.utils.my_errors import NoDM
 from cogs.utils.server import Server
@@ -175,6 +175,23 @@ class Github(commands.Cog):
         embed.add_field(name="Biografi", value=gh_user["bio"], inline=False)
         embed.add_field(name="Offentlige repos", value=gh_user["public_repos"], inline=False)
 
+        return await ctx.send(embed=embed)
+
+    @ ghGroup.command(name="discord", aliases=["discordbruker"])
+    async def show_discord_user(self, ctx, username):
+        """
+        Kommando som viser hvilken Discord-bruker som eier en GitHub-konto
+        """
+        discord_user = get_discord_user(self, username)
+        if discord_user is None:
+            return await ctx.send("GitHub-brukeren har ikke knyttet en konto til sin Discord-bruker")
+
+        (_id, discord_id, auth_token, github_username) = discord_user
+
+        user = self.bot.get_user(discord_id)
+
+        embed = easy_embed(self, ctx)
+        embed.description = f"Discord-brukeren til `{github_username}` er {user.mention}"
         return await ctx.send(embed=embed)
 
     @ ghGroup.command(name="combined", aliases=["kombinert"])
