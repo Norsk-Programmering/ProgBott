@@ -30,12 +30,12 @@ jobs:
       - name: Check with Isort
         run: |
           pip install isort
-          isort --check -sp setup.cfg $CheckFiles
+          isort --check --sp setup.cfg $CheckFiles
 
       - name: Sort with Isort
         if: failure()
         run: |
-          isort -sp setup.cfg $CheckFiles
+          isort --sp setup.cfg $CheckFiles
 
       - name: Create Pull Request
         if: failure()
