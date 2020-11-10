@@ -149,10 +149,20 @@ class Misc(commands.Cog):
 
         await ctx.send("https://youtu.be/5xooMXyleXM")
 
-    @commands.command()
+    @commands.command(aliases=["topproller"])
     async def toproller(self, ctx, antall: int = None):
+
+        guild_roles = ctx.guild.roles  # Avoids fetching roles multiple times.
+
+        if len(guild_roles) == 1:
+            return await ctx.send("Serveren har ikke nok roller")
+
+        if antall is not None:  # Had to use "is not" due to 0 being type-casted to False
+            if antall > len(guild_roles) - 1 or antall < 1:
+                return await ctx.send(f"Du må gi meg et rolleantall som er mellom 1 og {len(guild_roles) - 1}")
+
         roles = {}
-        for role in ctx.guild.roles:
+        for role in guild_roles:
             if role.name != "@everyone":
                 roles[role.id] = len(role.members)
 
@@ -168,7 +178,7 @@ class Misc(commands.Cog):
                 break
 
         embed.description = desc
-        embed.title = f"Viser top {counter} roller"
+        embed.title = f"Viser topp {counter} roller"
         embed.set_thumbnail(url=self.ico)
 
         await ctx.send(embed=embed)
