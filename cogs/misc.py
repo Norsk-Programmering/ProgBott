@@ -149,7 +149,7 @@ class Misc(commands.Cog):
 
         await ctx.send("https://youtu.be/5xooMXyleXM")
 
-    @commands.command()
+    @commands.command(aliases=["topproller"])
     async def toproller(self, ctx, antall: int = None):
 
         guild_roles = ctx.guild.roles  # Avoids fetching roles multiple times.
