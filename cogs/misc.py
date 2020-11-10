@@ -151,8 +151,14 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def toproller(self, ctx, antall: int = None):
+
+        guild_roles = ctx.guild.roles  # Avoids fetching roles multiple times.
+
+        if antall > len(guild_roles) - 1 or antall < 1:
+            await ctx.send(f"Du må gi meg et rolleantall som er mellom 1 og {len(guild_roles)}")
+
         roles = {}
-        for role in ctx.guild.roles:
+        for role in guild_roles:
             if role.name != "@everyone":
                 roles[role.id] = len(role.members)
 
