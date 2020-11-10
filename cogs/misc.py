@@ -155,10 +155,11 @@ class Misc(commands.Cog):
         guild_roles = ctx.guild.roles  # Avoids fetching roles multiple times.
 
         if len(guild_roles) == 1:
-            await ctx.send("Serveren har ikke nok roller")
+            return await ctx.send("Serveren har ikke nok roller")
 
-        if antall > len(guild_roles) - 1 or antall < 1:
-            await ctx.send(f"Du må gi meg et rolleantall som er mellom 1 og {len(guild_roles)}")
+        if antall is not None:  # Had to use "is not" due to 0 being type-casted to False
+            if antall > len(guild_roles) - 1 or antall < 1:
+                return await ctx.send(f"Du må gi meg et rolleantall som er mellom 1 og {len(guild_roles) - 1}")
 
         roles = {}
         for role in guild_roles:
