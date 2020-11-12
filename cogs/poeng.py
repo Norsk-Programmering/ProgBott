@@ -32,29 +32,37 @@ class Poeng(commands.Cog):
     async def on_message_edit(self, before, after):
         if not after.author.bot and after.mentions \
                 and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
-            await self._filter(after)
+            await self._filter(after, before=before)
 
 # TODO: halvstjerner?
 
-    async def _filter(self, message, **kwarg):
-        for word in self.settings_data['takk']:
-            word_ = word.lower()
-            content_ = message.content.lower()
-            if (
-                word_ in content_ and
-                    (
-                        "hjelp" in
+    async def _filter(self, message, before=None, **kwarg):
+        def check(message):
+            for word in self.settings_data['takk']:
+                word_ = word.lower()
+                content_ = message.content.lower()
+                if (
+                    word_ in content_ and
                         (
-                            message.channel.name or
-                            message.channel.category.name).lower()
-                    )
-                ) or (
-                    content_.startswith(word_) or
-                    content_.endswith(word_) or
-                    content_[:-1].endswith(word_)
-            ):
-                await self.add_star(message)
-                break
+                            "hjelp" in
+                            (
+                                message.channel.name or
+                                message.channel.category.name).lower()
+                        )
+                    ) or (
+                        content_.startswith(word_) or
+                        content_.endswith(word_) or
+                        content_[:-1].endswith(word_)
+                ):
+                    return True
+        if not before:
+            if check(message):
+                return await self.add_star(message)
+        elif before:
+            if check(before):
+                return
+            if check(message):
+                return await self.add_star(message)
 
     async def add_star(self, message, **kwarg):
         emoji = self.bot.get_emoji(743471543706976256)
