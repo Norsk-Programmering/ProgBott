@@ -1,4 +1,5 @@
 discord.py>=1.5.0
 pymongo>=3.11.0
-flask
+python-dotenv
+quart
 requests

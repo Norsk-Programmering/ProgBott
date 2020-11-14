@@ -1,5 +1,6 @@
 # Discord Packages
 import discord
+from typing import Union
 
 booler = {
     True: ":white_check_mark:",
@@ -93,4 +94,30 @@ def easy_embed(self, ctx, big_embed: bool = False):
     embed.set_footer(text=f"{ctx.author}", icon_url=ctx.author.avatar_url)
     if big_embed:
         embed.set_thumbnail(url=avatar)
+    return embed
+
+
+def embeder(self, ctx, data=None, title: str = None, description: str = None):
+    if not data:
+        data = self.db.find_one({"bruker": ctx if isinstance(ctx, str) else ctx.author.id})
+
+    embed = discord.Embed(title=title, description=description)
+
+    if not description and (fritekst := data.get("fritekst")):
+        embed.description = fritekst.replace("\\n", "\n")
+
+    if not title:
+        embed.title = f"Jeg ser etter en {data['stilling'].lower()} stilling"
+
+    if utdanning := data.get("utdanning"):
+        embed.add_field(name="Utdanning", value=utdanning.replace("\\n", "\n"), inline=False)
+
+    if erfaring := data.get("erfaring"):
+        embed.add_field(name="Erfaring", value=erfaring.replace("\\n", "\n"), inline=False)
+
+    if nokkel := data.get("nokkelord"):
+        embed.add_field(name="Nøkkelkunnskaper", value=", ".join(nokkel), inline=False)
+
+    embed.add_field(name="Hvor", value=data["plass"].title(), inline=True)
+    embed.add_field(name="Hva", value=data["stilling"].title(), inline=True)
     return embed

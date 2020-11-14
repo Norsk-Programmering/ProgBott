@@ -1,13 +1,12 @@
 # pylint: disable=W0201
 # Discord Packages
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 # Bot Utilities
 from cogs.utils.logging import Logger
-from cogs.utils.server import Server
 from cogs.utils.settings import Settings
-
+import asyncio
 import os
 import threading
 import time
@@ -57,8 +56,7 @@ class Bot(commands.Bot):
         print(f"Logged in as: {self.user.name} in {len(self.guilds)} servers.")
         print(f"Version: {discord.__version__}")
         self.logger.debug("Bot Ready")
-
-        #extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.jobb", "cogs.broder"]
+        # extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.jobb", "cogs.broder"]
         extensions = ["cogs.errors", "cogs.misc", "cogs.jobb"]
         for extension in extensions:
             try:
@@ -104,8 +102,5 @@ if __name__ == "__main__":
     settings = Settings(data_dir=data_dir)
 
     bot = Bot()
-
-    server = threading.Thread(target=Server, kwargs={"data_dir": data_dir, "settings": settings, "bot": bot})
-    server.start()
 
     bot.run()

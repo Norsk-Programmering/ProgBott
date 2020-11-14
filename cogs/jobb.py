@@ -1,11 +1,12 @@
 # Discord Packages
 from os import name
 import discord
+from cogs.utils.defaults import embeder
 from discord import embeds
 from discord import message
 from discord.ext import commands
 import asyncio
-from typing import Optional
+from typing import Optional, List
 import pprint
 
 
@@ -54,6 +55,25 @@ class Jobb(commands.Cog):
             self.db.update_one({"_id": "jobbkanal"}, {"$set": data})
         await ctx.send("Annonse kanal satt til: " + channel.mention)
 
+    @sok_adm.group(name="rolle")
+    async def adm_rolle(self, ctx):
+        """
+        Kategori for å håntere roller til annonse
+        """
+
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @adm_rolle.command(name="+")
+    async def rolle_add(self, ctx, role: discord.Role):
+        data = self.settings.find_one({"_id": "jobbkanal"})
+        if not data:
+            return await ctx.send(f"Ingen kanal er satt, bruk `{ctx.prefix}sok_adm kanal` for å sette kanal")
+
+        data["ignore_roles"] = data["ignore_roles"].append(role.name) if data.get("ignore_roles") else [role.name]
+        self.settings.update_one({"_id": "jobbkanal"}, {"$set": data})
+        await ctx.send(f"La til {role.name} i lista")
+
     @commands.dm_only()
     @commands.group(name="sok")
     async def sok(self, ctx):
@@ -68,11 +88,10 @@ class Jobb(commands.Cog):
     async def reg(self, ctx, plass: str, stilling: str):
         """Kommando for å registrere jobbsøker-annonse"""
         if self.db.find_one({"bruker": ctx.author.id}):
-            pass
-            # return await ctx.send("Already reg")
-        data = {"bruker": ctx.author.id, "plass": plass, "stilling": stilling}
+            return await ctx.send("Allerede registert")
+        data = {"bruker": ctx.author.id, "plass": plass.replace("\"", ""), "stilling": stilling.replace("\"", "")}
         try:
-            embed = await self.embeder(ctx, data=data)
+            embed = embeder(self, ctx, data=data)
             await ctx.send(embed=embed, content="Din annonse ser nå slik ut, du kan fortsette med å utype annonsen "
                            f"med `{ctx.prefix}sok nokkelord`")
             self.db.insert_one(data)
@@ -87,11 +106,13 @@ class Jobb(commands.Cog):
         if not data:
             return await ctx.send("Du har ikke registrert deg")
 
-        ignored_roles = ["-", "Datasnok", "Support", "Server Booster", "Guru", "Senior", "Utvikler", "Junior", "Robot",
-                         "Progbott-utvikler", "Student", "Hobby", "Har ikke introdusert seg", "Vil lære koding.",
-                         "Skammekroken", "Dyno", "ProgBott", "@everyone"]
+        try:
+            ignored_roles = self.settings.find_one({"_id": "jobbkanal"}).get("ignore_roles")
+        except KeyError:
+            return await ctx.send("Denne botten er ikke satt opp til jobbanonser enda")
 
-        guild = self.bot.get_guild(511934458304397312)  # TODO: Change #386655733107785738
+        guild_id = self.settings.find_one({"_id": "jobbkanal"})
+        guild = self.bot.get_guild(int(guild_id["guild"]))
         g_user = guild.get_member(ctx.author.id)
 
         roles = [role.name for role in g_user.roles if role.name not in ignored_roles]
@@ -114,7 +135,7 @@ class Jobb(commands.Cog):
             data["nokkelord"] = nokkel
             self.db.update_one({"bruker": ctx.author.id}, {"$set": data})
 
-            embed = await self.embeder(ctx, data=data)
+            embed = embeder(self, ctx, data=data)
             await ctx.send(embed=embed, content="Din annonse ser nå slik ut, du kan fortsette med å utype annonsen "
                            f"med `{ctx.prefix}sok utdanning`")
         await self.updater(ctx=ctx, data=data)
@@ -129,7 +150,7 @@ class Jobb(commands.Cog):
         data["utdanning"] = tekst
         self.db.update_one({"bruker": ctx.author.id}, {"$set": data})
 
-        embed = await self.embeder(ctx, data=data)
+        embed = embeder(self, ctx, data=data)
         await ctx.send(embed=embed, content="Din annonse ser nå slik ut, du kan fortsette med å utype annonsen med "
                        f"`{ctx.prefix}sok erfaring`")
         await self.updater(ctx=ctx, data=data)
@@ -144,7 +165,7 @@ class Jobb(commands.Cog):
         data["fritekst"] = tekst
         self.db.update_one({"bruker": ctx.author.id}, {"$set": data})
 
-        embed = await self.embeder(ctx, data=data)
+        embed = embeder(self, ctx, data=data)
         await ctx.send(embed=embed, content="Din annonse ser nå slik ut, du kan fortsette med å utype annonsen med "
                        f"`{ctx.prefix}sok erfaring`")
         await self.updater(ctx=ctx, data=data)
@@ -159,7 +180,7 @@ class Jobb(commands.Cog):
         data["erfaring"] = tekst
         self.db.update_one({"bruker": ctx.author.id}, {"$set": data})
 
-        embed = await self.embeder(ctx, data=data)
+        embed = embeder(self, ctx, data=data)
         await ctx.send(embed=embed, content="Din annonse ser nå slik ut, du kan fortsette med å utype annonsen med "
                        f"`{ctx.prefix}sok om_meg`")
         await self.updater(ctx=ctx, data=data)
@@ -213,35 +234,10 @@ class Jobb(commands.Cog):
 
         msg = await channel.fetch_message(data["id"])
 
-        embed = await self.embeder(ctx=ctx, data=data)
+        embed = embeder(self, ctx=ctx, data=data)
         content = f"For å ta kontakt med søker, send DM til {ctx.me.mention} med `{ctx.prefix}kontakt {msg.id}`"
         await msg.edit(content=content, embed=embed)
         await ctx.send("Melding oppdatert!")
-
-    async def embeder(self, ctx, data=None, title: str = None, description: str = None):
-        if not data:
-            data = self.db.find_one({"bruker": ctx.author.id})
-
-        embed = discord.Embed(title=title, description=description)
-
-        if not description and (fritekst := data.get("fritekst")):
-            embed.description = fritekst.replace("\\n", "\n")
-
-        if not title:
-            embed.title = f"Jeg ser etter en {data['stilling'].lower()} stilling"
-
-        if utdanning := data.get("utdanning"):
-            embed.add_field(name="Utdanning", value=utdanning.replace("\\n", "\n"), inline=False)
-
-        if erfaring := data.get("erfaring"):
-            embed.add_field(name="Erfaring", value=erfaring.replace("\\n", "\n"), inline=False)
-
-        if nokkel := data.get("nokkelord"):
-            embed.add_field(name="Nøkkelkunnskaper", value=", ".join(nokkel), inline=False)
-
-        embed.add_field(name="Hvor", value=data["plass"].title(), inline=True)
-        embed.add_field(name="Hva", value=data["stilling"].title(), inline=True)
-        return embed
 
 
 def setup(bot):
