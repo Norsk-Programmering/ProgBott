@@ -1,5 +1,6 @@
 # Discord Packages
 import discord
+
 from typing import Union
 
 booler = {

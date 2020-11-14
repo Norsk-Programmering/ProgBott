@@ -1,13 +1,15 @@
 # Discord Packages
-from os import name
 import discord
-from cogs.utils.defaults import embeder
-from discord import embeds
-from discord import message
+from discord import embeds, message
 from discord.ext import commands
+
+# Bot Utilities
+from cogs.utils.defaults import embeder
+
 import asyncio
-from typing import Optional, List
 import pprint
+from os import name
+from typing import List, Optional
 
 
 class Jobb(commands.Cog):
