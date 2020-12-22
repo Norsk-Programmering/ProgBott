@@ -286,6 +286,8 @@ class Github(commands.Cog):
         res = requests.get(url, headers=headers, params={"per_page": 100, "page": 1})
 
         gh_repos = res.json()
+        if isinstance(gh_repos, dict):
+            return []
         while "next" in res.links.keys():
             res = requests.get(res.links["next"]["url"], headers=headers)
             gh_repos.extend(res.json())
