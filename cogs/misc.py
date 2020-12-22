@@ -5,7 +5,7 @@ from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
-from cogs.utils.defaults import booler, easy_embed, features, flags, intents, region_names, statuses
+from cogs.utils.defaults import booler, easy_embed, features, flags, intents, region_names, statuses, userflags
 
 import operator
 import platform
@@ -419,7 +419,12 @@ class Misc(commands.Cog):
 
         status = statuses[str(bruker.status)]
 
-        embed = discord.Embed(color=color, description=f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}")
+        embed = discord.Embed(color=color)
+        if bruker.public_flags.all():
+            embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app} \
+                {' '.join(userflags[m] for m, v in bruker.public_flags.all())}"
+        else:
+            embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}"
         if bruker.display_name == bruker.name:
             embed.set_author(name=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.avatar_url)
         else:

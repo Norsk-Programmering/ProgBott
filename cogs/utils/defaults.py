@@ -65,6 +65,19 @@ statuses = {
     "offline": "<:offline:743471543543136266> Frakoblet"
 }
 
+userflags = {
+    "bug_hunter_level_2": "<:bug_hunter_level_2:791038860887851038>",
+    "bug_hunter": "<:bug_hunter:791038860984713317>",
+    "early_supporter": "<:early_supporter:791038860606832701>",
+    "early_verified_bot_developer": "<:early_verified_bot_developer:791038860884836383>",
+    "hypesquad_balance": "<:hypesquad_balance:791038861018398720>",
+    "hypesquad_bravery": "<:hypesquad_bravery:791038860889030747>",
+    "hypesquad_brilliance": "<:hypesquad_brilliance:791038860892700702>",
+    "hypesquad": "<:hypesquad:791038860817596427>",
+    "partner": "<:partner:791038861114736681>",
+    "staff": "<:staff:791038860787712031>"
+}
+
 intents = {
     "guilds": "guilds",
     "members": "medlemmer",
