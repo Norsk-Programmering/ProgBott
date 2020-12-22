@@ -422,7 +422,7 @@ class Misc(commands.Cog):
         embed = discord.Embed(color=color)
         if bruker.public_flags.all():
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app} \
-                {' '.join(userflags[m] for m, v in bruker.public_flags.all())}"
+                {' '.join(userflags[m] for m, v in bruker.public_flags.all() if m in userflags)}"
         else:
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}"
         if bruker.display_name == bruker.name:
