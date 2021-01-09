@@ -38,18 +38,18 @@ class Errors(commands.Cog):
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                return await ctx.send(f"`{ctx.command}` kan ikke brukes i DMs")
+                return await ctx.reply(f"`{ctx.command}` kan ikke brukes i DMs")
             except Exception:
                 pass
 
         elif isinstance(error, NoDM):
-            return await ctx.send(f"Hei! {ctx.message.author.mention} jeg kan ikke sende deg DMs")
+            return await ctx.reply(f"Hei! {ctx.message.author.mention} jeg kan ikke sende deg DMs")
 
         elif isinstance(error, commands.CheckFailure):
             return
 
         else:
-            await ctx.send("En ukjent feil oppstod. Be båtteier om å sjekke feilen")
+            await ctx.reply("En ukjent feil oppstod. Be båtteier om å sjekke feilen")
             tb = error.__traceback__
             e_traceback = traceback.format_exception(error.__class__, error, error.__traceback__)
             traceback_lines = []

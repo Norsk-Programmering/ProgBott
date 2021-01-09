@@ -49,7 +49,7 @@ class Github(commands.Cog):
         is_user_registered = self.is_user_registered(ctx.author.id, random_string)
 
         if is_user_registered:
-            return await ctx.send(ctx.author.mention + " du er allerede registrert!")
+            return await ctx.reply(ctx.author.mention + " du er allerede registrert!")
 
         try:
             embed = easy_embed(self, ctx)
@@ -63,7 +63,7 @@ class Github(commands.Cog):
             embed.description = f"[Verifiser med GitHub]({registration_link})"
             await ctx.author.send(embed=embed)
 
-            await ctx.send(ctx.author.mention + " sender ny registreringslenke på DM!")
+            await ctx.reply(ctx.author.mention + " sender ny registreringslenke på DM!")
             await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
             self._get_users()
         except discord.Forbidden:
@@ -84,7 +84,7 @@ class Github(commands.Cog):
 
         conn.commit()
 
-        return await ctx.send(ctx.author.mention + "fjernet Githuben din.")
+        return await ctx.reply(ctx.author.mention + "fjernet Githuben din.")
 
     @ghGroup.command(name="repos", aliases=["stars", "stjerner"])
     async def show_repos(self, ctx, user: discord.Member = None):
@@ -101,7 +101,7 @@ class Github(commands.Cog):
             usr = user.name
             if is_self:
                 usr = "Du"
-            return await ctx.send(f"{usr} har ikke registrert en bruker enda.")
+            return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
         embed = easy_embed(self, ctx)
         embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar_url)
@@ -110,7 +110,7 @@ class Github(commands.Cog):
         gh_repos = self._get_repos(github_username, auth_token)
 
         if len(gh_repos) == 0:
-            return await ctx.send("Denne brukeren har ingen repos")
+            return await ctx.reply("Denne brukeren har ingen repos")
 
         stars = {}
         new_obj = {}
@@ -136,7 +136,7 @@ class Github(commands.Cog):
             desc += f"\n[Link]({repo['html_url']})"
             embed.add_field(name=title, value=desc, inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @ ghGroup.command(name="user", aliases=["meg", "bruker"])
     async def show_user(self, ctx, user: discord.Member = None):
@@ -153,7 +153,7 @@ class Github(commands.Cog):
             usr = user.name
             if is_self:
                 usr = "Du"
-            return await ctx.send(f"{usr} har ikke registrert en bruker enda.")
+            return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
         (_id, discord_id, auth_token, github_username) = gh_user
 
@@ -175,7 +175,7 @@ class Github(commands.Cog):
         embed.add_field(name="Biografi", value=gh_user["bio"], inline=False)
         embed.add_field(name="Offentlige repos", value=gh_user["public_repos"], inline=False)
 
-        return await ctx.send(embed=embed)
+        return await ctx.reply(embed=embed)
 
     @ ghGroup.command(name="discord", aliases=["discordbruker"])
     async def show_discord_user(self, ctx, username):
@@ -184,7 +184,7 @@ class Github(commands.Cog):
         """
         discord_user = get_discord_user(self, username)
         if discord_user is None:
-            return await ctx.send("GitHub-brukeren har ikke knyttet en konto til sin Discord-bruker")
+            return await ctx.reply("GitHub-brukeren har ikke knyttet en konto til sin Discord-bruker")
 
         (_id, discord_id, auth_token, github_username) = discord_user
 
@@ -192,7 +192,7 @@ class Github(commands.Cog):
 
         embed = easy_embed(self, ctx)
         embed.description = f"Discord-brukeren til `{github_username}` er {user.mention}"
-        return await ctx.send(embed=embed)
+        return await ctx.reply(embed=embed)
 
     @ ghGroup.command(name="combined", aliases=["kombinert"])
     async def combined_stars(self, ctx):
@@ -222,7 +222,7 @@ class Github(commands.Cog):
             desc = f"{self.bot.get_user(int(discord_user)).mention}"
             embed.add_field(name=title, value=desc, inline=False)
 
-        return await ctx.send(embed=embed)
+        return await ctx.reply(embed=embed)
 
     @ ghGroup.command(name="users", aliases=["brukere", "total"])
     async def show_users(self, ctx):
@@ -245,7 +245,7 @@ class Github(commands.Cog):
             desc += f"\n[Link]({repo['html_url']}) - {self.bot.get_user(repo['discord_user']).mention}"
             embed.add_field(name=title, value=desc, inline=False)
 
-        return await ctx.send(embed=embed)
+        return await ctx.reply(embed=embed)
 
     def is_user_registered(self, discord_id, random_string):
         conn = DB(data_dir=self.bot.data_dir).connection

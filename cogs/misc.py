@@ -1,6 +1,6 @@
 # Discord Packages
 import discord
-from discord import embeds
+from discord import RoleTags
 from discord.ext import commands
 
 # Bot Utilities
@@ -11,6 +11,7 @@ import operator
 import platform
 import time
 from io import StringIO
+from os import listdir, name
 from urllib import parse
 
 
@@ -36,12 +37,11 @@ class Misc(commands.Cog):
         embed = easy_embed(self, ctx)
         embed.title = "Ping!"
         start = time.perf_counter()
-        message = await ctx.send(embed=embed)
+        message = await ctx.reply(embed=embed)
         end = time.perf_counter()
         duration = int((end - start) * 1000)
-        edit = f"Pong!\nPing: {duration}ms | websocket: {int(self.bot.latency * 1000)}ms"
-        embed.description = edit
-        await message.edit(embed=embed)
+        embed.description = f"Pong!\nPing: {duration}ms | websocket: {int(self.bot.latency * 1000)}ms"
+        await message.edit(embed=embed, mention_author=False)
 
     @commands.command(name="oppetid", aliases=["uptime"], hidden=True)
     async def _uptime(self, ctx):
@@ -49,7 +49,7 @@ class Misc(commands.Cog):
         Komando for oppetid
         """
         days, hours, minutes, seconds = self.get_uptime()
-        await ctx.send(f"{days}d {hours}h {minutes}m {seconds}s")
+        await ctx.reply(f"{days}d {hours}h {minutes}m {seconds}s")
 
     @commands.command(aliases=["farge"])
     async def syntax(self, ctx):
@@ -66,7 +66,7 @@ class Misc(commands.Cog):
         For fargerik kodeblokk skriv:\n\`\`\`js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
         Den kommer til å se ut som dette:\n```js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```
         """  # noqa: W605
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(name="guilds")
     @commands.is_owner()
@@ -80,7 +80,7 @@ class Misc(commands.Cog):
             guilds += f"{guild.name}\n"
         embed.description = f"```\n{guilds}\n```"
         embed.title = f"{self.bot.user.name} is in"
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command()
     async def info(self, ctx):
@@ -127,7 +127,7 @@ class Misc(commands.Cog):
         if intents_list:
             embed.add_field(name="Mine Intensjoner:", value=", ".join(intents_list))
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["regel3"])
     async def lmgtfy(self, ctx, *, søkeord: str):
@@ -139,7 +139,7 @@ class Misc(commands.Cog):
 
         embed = discord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["pullrequest", "draforespørsel"], hidden=True)
     async def pr(self, ctx):
@@ -147,7 +147,7 @@ class Misc(commands.Cog):
         Pwease appwove my puww wequest senpai ^_^ uwu
         """
 
-        await ctx.send("https://youtu.be/5xooMXyleXM")
+        await ctx.reply("https://youtu.be/5xooMXyleXM")
 
     @commands.command(aliases=["topproller"])
     async def toproller(self, ctx, antall: int = None):
@@ -155,11 +155,11 @@ class Misc(commands.Cog):
         guild_roles = ctx.guild.roles  # Avoids fetching roles multiple times.
 
         if len(guild_roles) == 1:
-            return await ctx.send("Serveren har ikke nok roller")
+            return await ctx.reply("Serveren har ikke nok roller")
 
         if antall is not None:  # Had to use "is not" due to 0 being type-casted to False
             if antall > len(guild_roles) - 1 or antall < 1:
-                return await ctx.send(f"Du må gi meg et rolleantall som er mellom 1 og {len(guild_roles) - 1}")
+                return await ctx.reply(f"Du må gi meg et rolleantall som er mellom 1 og {len(guild_roles) - 1}")
 
         roles = {}
         for role in guild_roles:
@@ -181,7 +181,7 @@ class Misc(commands.Cog):
         embed.title = f"Viser topp {counter} roller"
         embed.set_thumbnail(url=self.ico)
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["guildinfo", "server", "serverinfo", "si", "gi"])
     async def guild(self, ctx):
@@ -217,6 +217,9 @@ class Misc(commands.Cog):
 
         roles = []
         for role in ctx.guild.roles:
+            if role.is_premium_subscriber():
+                roles.append(role.name + userflags["boost"])
+                continue
             if role.name != "@everyone":
                 roles.append(role.name)
         roles.reverse()
@@ -319,7 +322,7 @@ class Misc(commands.Cog):
             for key, value in photos.items():
                 photos_string += f"[{key}]({value})\n"
             embed.add_field(name="Bilder", value=photos_string)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["serverroller", "guildroles", "serverroles"])
     async def guildroller(self, ctx):
@@ -329,6 +332,9 @@ class Misc(commands.Cog):
 
         roles = []
         for role in ctx.guild.roles:
+            if role.is_premium_subscriber():
+                roles.append(role.name + userflags["boost"])
+                continue
             if role.name != "@everyone":
                 roles.append(role.name)
         if roles is []:
@@ -343,7 +349,7 @@ class Misc(commands.Cog):
             file = StringIO(roles)
 
             txt_file = discord.File(file, "roller.txt")
-            await ctx.send(file=txt_file)
+            await ctx.reply(file=txt_file)
 
             file.close()
 
@@ -355,7 +361,7 @@ class Misc(commands.Cog):
         embed = discord.Embed(color=ctx.me.color, description=roles)
         embed.set_author(name=f"Roller ({len(ctx.guild.roles) - 1})", icon_url=ctx.guild.icon_url)
         embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userinfo", "ui", "brukerinfo", "user"])
     async def bruker(self, ctx, *, bruker: discord.Member = None):
@@ -450,7 +456,7 @@ class Misc(commands.Cog):
                 games += f"{activity.name}\n"
             if games:
                 embed.add_field(name="Spiller", value=games, inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userroles"])
     async def brukerroller(self, ctx, bruker: discord.Member = None):
@@ -463,6 +469,9 @@ class Misc(commands.Cog):
 
         roles = []
         for role in bruker.roles:
+            if role.is_premium_subscriber():
+                roles.append(role.name + userflags["boost"])
+                continue
             if role.name != "@everyone":
                 roles.append(role.name)
         roles.reverse()
@@ -498,22 +507,20 @@ class Misc(commands.Cog):
         """
 
         if rolle.name == "@everyone":
-            return await ctx.send("Skriv inn en annen rolle enn `@everyone`")
+            return await ctx.reply("Skriv inn en annen rolle enn `@everyone`")
 
         if str(rolle.color) != "#000000":
             color = rolle.color
         else:
             color = discord.Colour(0x99AAB5)
 
-        if rolle.mentionable:
-            mentionable = "Ja"
-        else:
-            mentionable = "Nei"
+        hoisted = "Nei"
+        mentionable = "Nei"
 
         if rolle.hoist:
             hoisted = "Ja"
-        else:
-            hoisted = "Nei"
+        if rolle.mentionable:
+            mentionable = "Ja"
 
         rolle_created_date = rolle.created_at.strftime("%d. %b. %Y - %H:%M")
         since_created_days = (ctx.message.created_at - rolle.created_at).days
@@ -542,11 +549,35 @@ class Misc(commands.Cog):
                                                 f"{since_created_days_string} siden")
         embed.add_field(name="Posisjon", value=rolle.position)
         embed.add_field(name="Nevnbar", value=mentionable)
+        if rolle.is_bot_managed():
+            embed.add_field(name="Bot-håndert", value="Ja")
+        if rolle.is_integration():
+            embed.add_field(name="Integrasjon", value="Ja")
+        if rolle.is_premium_subscriber():
+            embed.add_field(name="Boost", value="Ja")
         embed.add_field(name="Vises separat i medlemsliste", value=hoisted)
         if permissions:
             embed.add_field(name="Tillatelser", value=permissions, inline=False)
         embed.add_field(name=f"Brukere med rollen ({len(rolle.members)})", value=members, inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
+
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.is_owner()
+    @commands.command(hidden=True)
+    async def reload(self, ctx, cog):
+        """Laster inn spesifisert cog på nytt"""
+
+        cogs = [file[:-3] for file in listdir('cogs') if file.endswith('.py')]
+        name_ = cog if cog in cogs else None
+        if not name:
+            return await ctx.reply(f"{cog} was not found")
+
+        try:
+            self.bot.reload_extension(f'cogs.{name_}')
+            await ctx.reply(f"{name_} was reloaded")
+            self.bot.logger.debug("%s was reloaded", name_)
+        except commands.ExtensionNotLoaded:
+            return await ctx.reply(f"{name_} was not loaded")
 
 
 def setup(bot):

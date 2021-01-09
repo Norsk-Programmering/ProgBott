@@ -21,6 +21,11 @@ intents.messages = True
 intents.guild_reactions = True
 intents.guild_typing = True
 
+mentions = discord.AllowedMentions(
+    everyone=False,
+    replied_user=False
+)
+
 
 def _get_prefix(bot, message):
     if not message.guild:
@@ -32,7 +37,7 @@ def _get_prefix(bot, message):
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=_get_prefix, intents=intents)
+        super().__init__(command_prefix=_get_prefix, intents=intents, allowed_mentions=mentions)
         self.logger = logger
         self.logger.debug("Logging level: %s", level.upper())
         self.data_dir = data_dir

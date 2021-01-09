@@ -66,6 +66,7 @@ statuses = {
 }
 
 userflags = {
+    "boost": "<:boost:791038860825198672>",
     "bug_hunter_level_2": "<:bug_hunter_level_2:791038860887851038>",
     "bug_hunter": "<:bug_hunter:791038860984713317>",
     "early_supporter": "<:early_supporter:791038860606832701>",

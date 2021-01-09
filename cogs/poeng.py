@@ -86,7 +86,7 @@ class Poeng(commands.Cog):
         }
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {",".join(dudes["mention"])} en stjerne!'
-        msg = await message.channel.send(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
+        reply = await message.reply(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
         await message.channel.trigger_typing()
 
         def check(reaction, user):
@@ -108,12 +108,12 @@ class Poeng(commands.Cog):
                 await message.remove_reaction(emoji, message.author)
             except Exception:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
-            return await msg.delete()
+            return await reply.delete()
 
         except asyncio.TimeoutError:
             self.teller_data['meldinger'][str(message.id)] = msg_data
             self.cacher()
-            await msg.edit(content=None, embed=embed)
+            await reply.edit(content=None, embed=embed)
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 return await message.remove_reaction(emoji, message.author)

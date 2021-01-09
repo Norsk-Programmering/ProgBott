@@ -20,7 +20,7 @@ class Broder(commands.Cog):
         word_ = "bruh"
         content_ = message.content.lower()
         if word_ in content_:
-            await message.channel.send("bruh")
+            await message.reply("bruh", mention_author=True)
 
 
 def setup(bot):
