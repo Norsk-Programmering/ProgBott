@@ -1,18 +1,10 @@
-FROM python:3.8-alpine3.12
+FROM python:3.9-alpine3.12
 
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
-LABEL maintainer="Roxedus" \
-    org.label-schema.build-date=$BUILD_DATE \
-    org.label-schema.name="ProgBott" \
-    org.label-schema.description="Discord bot for å håndtere hjelpsomme folk" \
-    org.label-schema.url="https://norskprogrammering.no/" \
-    org.label-schema.vcs-ref=$VCS_REF \
-    org.label-schema.vcs-url="https://github.com/Roxedus/ProgBott" \
-    org.label-schema.version=$VERSION \
-    org.label-schema.schema-version="1.0"
+LABEL maintainer="Roxedus"
 
 COPY / /app
 
