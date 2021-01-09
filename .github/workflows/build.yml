@@ -55,45 +55,65 @@ jobs:
     steps:
       - uses: actions/checkout@v2.3.3
       - name: Create VARS
-        env:
-          _repo: ${{github.repository}}
-          _ref: ${{github.ref}}
         id: vars
         run: |
-          echo "::set-output name=branch::$(echo ${_ref} | cut -d/ -f3)"
-          echo "::set-output name=username::$(echo ${_repo} | cut -d/ -f1 | tr '[:upper:]' '[:lower:]')"
-          echo "::set-output name=repo::$(echo ${_repo} | tr '[:upper:]' '[:lower:]')"
+          echo "::set-output name=branch::${GITHUB_REF//refs\/heads\//}"
+          echo "::set-output name=username::$(echo ${GITHUB_REPOSITORY} | cut -d/ -f1 | tr '[:upper:]' '[:lower:]')"
+          echo "::set-output name=source::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_REF//refs\/heads\//}"
+          echo "::set-output name=url::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/master/README.md"
+          echo "::set-output name=tag::$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]'):${GITHUB_SHA}"
 
-      - name: Print VARS
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ steps.vars.outputs.username }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ steps.vars.outputs.username }}
+          password: ${{ secrets.PERSONAL_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+          version: latest
+          driver-opts: image=moby/buildkit:master
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          platforms: ${{ steps.vars.outputs.platform }}
+          file: ./amd64.Dockerfile
+          tags: |
+            ${{ steps.vars.outputs.tag }}
+            ghcr.io/${{ steps.vars.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=${{ steps.vars.outputs.source }}
+            org.opencontainers.image.url=${{ steps.vars.outputs.url }}
+
+      - name: Create manifests for DockerHub
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
-          echo "${{ steps.vars.outputs.branch }} && ${{github.ref}}"
-          echo "${{ steps.vars.outputs.username }} && ${{github.repository}}"
-          echo ${{ steps.vars.outputs.repo }}
+          IMAGE=$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')
+          SOURCE=${IMAGE}:${GITHUB_SHA}
+          docker manifest create ${IMAGE}:${{ steps.vars.outputs.branch }} ${SOURCE} && docker manifest push ${IMAGE}:${{ steps.vars.outputs.branch }}
+          if [[ ${GITHUB_REF//refs\/heads\//} == master ]]; then
+            docker manifest create ${IMAGE}:latest                         ${SOURCE} && docker manifest push ${IMAGE}:latest
+          fi
 
-      - name: Build the Docker image
+      - name: Create manifests for GitHub Container Registry
         env:
-          REPO: ${{ steps.vars.outputs.repo }}
-          BRANCH: ${{ steps.vars.outputs.branch }}
+          DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
-          docker build -t $REPO:$BRANCH -t $REPO:$BRANCH-${{ github.sha }} --build-arg VCS_REF=${{ github.ref	}} --build-arg BUILD_DATE=$(date --utc +%Y-%m-%d_%H) --build-arg VERSION=$(cat cogs/utils/Bot_version.py | cut -d \  -f3 | tr -d \") -f amd64.Dockerfile .
-
-      - name: Tag :latest Docker image
-        env:
-          REPO: ${{ steps.vars.outputs.repo }}
-          BRANCH: ${{ steps.vars.outputs.branch }}
-        if: github.ref == 'refs/heads/master'
-        run: |
-          docker tag $REPO:$BRANCH $REPO:latest
-
-      - name: Login to registry
-        if: github.event_name != 'pull_request' && contains(github.ref, 'actions') != 'true'
-        env:
-          DOCKER_USERNAME: ${{ steps.vars.outputs.username }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-        run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-
-      - name: Pushes the Docker image
-        env:
-          REPO: ${{ steps.vars.outputs.repo }}
-        if: github.event_name != 'pull_request' && contains(github.ref, 'actions') != 'true'
-        run: docker push $REPO
+          IMAGE=ghcr.io/$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')
+          SOURCE=${IMAGE}:${GITHUB_SHA}
+          docker manifest create ${IMAGE}:${{ steps.vars.outputs.branch }}    --amend ${SOURCE} && docker manifest push ${IMAGE}:${{ steps.vars.outputs.branch }}
+          if [[ ${GITHUB_REF//refs\/heads\//} == master ]]; then
+            docker manifest create ${IMAGE}:latest                            --amend ${SOURCE} && docker manifest push ${IMAGE}:latest
+          fi
