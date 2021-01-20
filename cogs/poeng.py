@@ -85,7 +85,7 @@ class Poeng(commands.Cog):
             'link': message.jump_url
         }
         embed.title = "Ny stjerne tildelt!"
-        embed.description = f'{message.author.mention} ga {",".join(dudes["mention"])} en stjerne!'
+        embed.description = f'{message.author.mention} ga {", ".join(dudes["mention"])} en stjerne!'
         reply = await message.reply(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
         await message.channel.trigger_typing()
 
