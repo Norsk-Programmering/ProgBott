@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 class Logger(object):
     def __init__(self, location, to_file, level="info"):
         self.log_location = location + "/logs/"
-        self.log_level = level.upper()
+        self.log_level = level
         log_dir = f"{self.log_location}/bot.log"
 
         self.logger = getLogger("logger")

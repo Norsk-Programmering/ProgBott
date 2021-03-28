@@ -9,7 +9,6 @@
         "request": "launch",
         "program": "launcher.py",
         "console": "integratedTerminal",
-        "args": ["-D", "-d", "data"],
         "host": "localhost"
     }]
 }

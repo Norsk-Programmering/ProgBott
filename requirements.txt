@@ -1,3 +1,5 @@
-discord.py>=1.6.0
-flask
-requests
+discord.py==1.6.0
+environs==9.3.1
+flask==1.1.2
+marshmallow==3.10.0
+requests==2.25.1
