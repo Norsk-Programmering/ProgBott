@@ -1,4 +1,5 @@
 # Bot Utilities
+from types import prepare_class
 from cogs.utils.my_errors import NoToken
 
 import codecs
@@ -10,8 +11,7 @@ from marshmallow.validate import URL
 
 
 class Settings:
-    def __init__(self, data_dir, log_level):
-        self.default_prefix = "^"
+    def __init__(self, data_dir, log_level, log_to_file):
 
         env = Env()
         env.read_env()
@@ -21,6 +21,7 @@ class Settings:
         env.read_env(self.data_dir + "/.env")
 
         self.log_level = env.log_level("PROGBOTT_LOG_LEVEL") or log_level
+        self.log_to_file = env.str("PROGBOTT_LOG_FILE") or log_to_file
 
         setting_path = self.data_dir + "/settings.json"
 
@@ -47,6 +48,9 @@ class Settings:
 
         except EnvError:
             pass
+
+        if not self.prefix:
+            self.prefix = "^"
 
         try:
             isinstance(self.token, str)

@@ -55,7 +55,7 @@ class Bot(commands.Bot):
 
         self.logger.info("Logged in as: %s in %s servers.", self.user.name, len(self.guilds))
         self.logger.info("DiscordPY: %s", discord.__version__)
-        self.logger.debug("Bot Ready")
+        self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
         extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.broder"]
         for extension in extensions:
@@ -94,9 +94,9 @@ if __name__ == "__main__":
     if args.debug:
         level = "debug"
 
-    settings = Settings(data_dir=data_dir, log_level=level)
+    settings = Settings(data_dir=data_dir, log_level=level, log_to_file=args.log_to_file)
 
-    logger = Logger(location=settings.data_dir, level=settings.log_level, to_file=args.log_to_file).logger
+    logger = Logger(location=settings.data_dir, level=settings.log_level, to_file=settings.log_to_file).logger
     logger.debug("Data folder: %s", settings.data_dir)
 
     Bot().run()
