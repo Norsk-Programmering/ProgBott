@@ -116,7 +116,7 @@ class Misc(commands.Cog):
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
         embed = discord.Embed(color=discord.Colour.from_rgb(244, 1, 110), description=desc)
-        embed.set_author(name=dev.name, icon_url=dev.avatar_url)
+        embed.set_author(url=f"https://github.com/{dev.name}", name=dev.name, icon_url=dev.avatar_url)
         embed.set_thumbnail(url=self.ico)
 
         embed.add_field(name="Tjenere", value=str(guilds))
@@ -312,7 +312,7 @@ class Misc(commands.Cog):
                               f"<:offline:743471543543136266>{offline_members}")
         embed.add_field(name=f"Roller ({len(ctx.guild.roles) - 1})", value=roles, inline=False)
         if ctx.guild.premium_tier != 0:
-            embed.add_field(name=f"Boosters ({ctx.guild.premium_subscription_count})", value=boosters, inline=False)
+            embed.add_field(name=f"Boosts ({ctx.guild.premium_subscription_count})", value=boosters, inline=False)
 
         if features_string != "":
             embed.add_field(name="Tillegsfunksjoner", value=features_string)

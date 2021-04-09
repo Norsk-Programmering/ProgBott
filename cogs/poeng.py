@@ -30,9 +30,12 @@ class Poeng(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if not after.author.bot and after.mentions \
-                and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
-            await self._filter(after, before=before)
+        try:
+            if not after.author.bot and after.mentions \
+                    and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
+                await self._filter(after, before=before)
+        except AttributeError:
+            pass
 
 # TODO: halvstjerner?
 

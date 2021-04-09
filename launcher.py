@@ -7,7 +7,6 @@ from discord.ext import commands
 from cogs.utils.logging import Logger
 from cogs.utils.settings import Settings
 
-import os
 import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
