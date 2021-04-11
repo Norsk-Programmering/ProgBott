@@ -1,8 +1,8 @@
 name: Test And Build BOT
 on:
   push:
-    paths:
-      - "!.github/**"
+    paths-ignore:
+      - ".github/**"
   pull_request:
     branches-ignore:
       - "dependabot/**"
