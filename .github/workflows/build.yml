@@ -1,5 +1,9 @@
 name: Test And Build BOT
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "!.github/"
+  pull_request:
 
 jobs:
   tests:
@@ -12,10 +16,10 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install dependencies
         run: |
