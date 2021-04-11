@@ -1,7 +1,7 @@
 name: Test And Build BOT
 on:
   push:
-    paths-ignore:
+    paths:
       - "!.github/**"
   pull_request:
     branches-ignore:
