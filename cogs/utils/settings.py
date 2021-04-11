@@ -1,5 +1,4 @@
 # Bot Utilities
-from types import prepare_class
 from cogs.utils.my_errors import NoToken
 
 import codecs
