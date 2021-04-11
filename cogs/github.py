@@ -89,7 +89,7 @@ class Github(commands.Cog):
     @ghGroup.command(name="repos", aliases=["stars", "stjerner"])
     async def show_repos(self, ctx, user: discord.Member = None):
         """
-        Viser mest stjernede repoene til brukeren. maks  5
+        Viser mest stjernede repoene til brukeren. maks  5 repoer
         """
         is_self = False
         if not user:
