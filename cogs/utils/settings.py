@@ -16,12 +16,22 @@ class Settings:
         env = Env()
         env.read_env()
 
-        self.data_dir = env.str("PROGBOTT_DATA_DIR", data_dir)
+        try:
+            self.data_dir = env.str("PROGBOTT_DATA_DIR")
+        except EnvError:
+            self.data_dir = data_dir
 
         env.read_env(self.data_dir + "/.env")
 
-        self.log_level = env.log_level("PROGBOTT_LOG_LEVEL") or log_level
-        self.log_to_file = env.str("PROGBOTT_LOG_FILE") or log_to_file
+        try:
+            self.log_level = env.log_level("PROGBOTT_LOG_LEVEL")
+        except EnvError:
+            self.log_level = log_level
+
+        try:
+            self.log_to_file = env.str("PROGBOTT_LOG_FILE")
+        except EnvError:
+            self.log_to_file = log_to_file
 
         setting_path = self.data_dir + "/settings.json"
 
