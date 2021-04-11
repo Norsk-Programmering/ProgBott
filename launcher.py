@@ -91,7 +91,7 @@ if __name__ == "__main__":
     data_dir = args.data_directory
 
     if args.debug:
-        level = "debug"
+        level = "DEBUG"
 
     settings = Settings(data_dir=data_dir, log_level=level, log_to_file=args.log_to_file)
 
