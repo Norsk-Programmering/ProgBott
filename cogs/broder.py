@@ -1,6 +1,8 @@
 # Discord Packages
 from discord.ext import commands
 
+from random import randint
+
 
 class Broder(commands.Cog):
     def __init__(self, bot):
@@ -20,7 +22,8 @@ class Broder(commands.Cog):
         word_ = "bruh"
         content_ = message.content.lower()
         if word_ in content_:
-            await message.reply("bruh", mention_author=True)
+            if int(randint(0, 100)) >= int(str(message.author.id)[-2:]):
+                await message.reply("bruh", mention_author=True)
 
 
 def setup(bot):
