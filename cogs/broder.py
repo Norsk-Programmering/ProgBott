@@ -19,11 +19,12 @@ class Broder(commands.Cog):
             await self._filter(after)
 
     async def _filter(self, message, **kwarg):
-        word_ = "bruh"
+        word_ = [("bruh", "bruh"), ("php", "kompis")]
         content_ = message.content.lower()
-        if word_ in content_:
-            if int(randint(0, 100)) >= int(str(message.author.id)[-2:]):
-                await message.reply("bruh", mention_author=True)
+        for word, yeet in word_:
+            if word in content_:
+                if int(randint(0, 100)) >= int(str(message.author.id)[-2:]):
+                    await message.reply(yeet, mention_author=True)
 
 
 def setup(bot):
