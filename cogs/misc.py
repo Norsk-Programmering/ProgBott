@@ -18,7 +18,7 @@ from urllib import parse
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.repo = "https://github.com/Roxedus/ProgBott"
+        self.repo = "https://github.com/Norsk-Programmering/ProgBott"
         self.ico = "https://github.com/Norsk-Programmering/Profilering/raw/master/BotAvatar.gif"
 
     def get_uptime(self):

@@ -13,7 +13,7 @@ For å sette opp programvaren, må du ha Python 3,8 eller nyere.
 
 
 ```bash
-git clone https://github.com/Roxedus/ProgBott progbott
+git clone https://github.com/Norsk-Programmering/ProgBott progbott
 python -m pip install -r /progbott/requirements.txt
 cp /progbott/settings.example.json /progbott/data/settings.json
 ```
@@ -30,7 +30,7 @@ Eksempel docker-compose.yml
 ```yml
   fork:
     container_name: ProgBott
-    image: roxedus/progbott:latest
+    image: norsk-programmering/progbott:latest
     networks:
       - internal
     volumes:
