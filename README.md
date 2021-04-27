@@ -30,7 +30,7 @@ Eksempel docker-compose.yml
 ```yml
   fork:
     container_name: ProgBott
-    image: norsk-programmering/progbott:latest
+    image: ghcr.io/norsk-programmering/progbott:latest
     networks:
       - internal
     volumes:
