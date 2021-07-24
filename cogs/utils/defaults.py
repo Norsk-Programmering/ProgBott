@@ -40,23 +40,21 @@ region_names = {
 }
 
 features = {
-    "ANIMATED_ICON": "Animert ikon",
-    "BANNER": "Banner",
-    "COMMERCE": "Butikkanaler",
-    "COMMUNITY": "Sammfunsguild",
+    "VIP_REGIONS": "VIP",
+    "VANITY_URL": "Egen URL",
+    "INVITE_SPLASH": "Invitasjonsbilde",
+    "VERIFIED": "Verifisert",
+    "PARTNERED": "Discord Partner",
+    "MORE_EMOJI": "Ekstra emoji",
     "DISCOVERABLE": "Fremhevet",
     "FEATURABLE": "Kan fremheves",
-    "INVITE_SPLASH": "Invitasjonsbilde",
-    "MEMBER_VERIFICATION_GATE_ENABLED": "Medlemssjekk",
-    "MORE_EMOJI": "Ekstra emoji",
-    "NEWS": "Nyhetskanaler",
-    "PARTNERED": "Discord Partner",
-    "PREVIEW_ENABLED": "Forhåndsvisning",
-    "PUBLIC_DISABLED": "Ikke offentlig",
+    "COMMUNITY": "Sammfunsguild",
+    "COMMERCE": "Butikkanaler",
     "PUBLIC": "Offentlig guild",
-    "VANITY_URL": "Egen URL",
-    "VERIFIED": "Verifisert",
-    "VIP_REGIONS": "VIP",
+    "NEWS": "Nyhetskanaler",
+    "BANNER": "Banner",
+    "ANIMATED_ICON": "Animert ikon",
+    "PUBLIC_DISABLED": "Ikke offentlig",
     "WELCOME_SCREEN_ENABLED": "Velkomstvindu"
 }
 
@@ -105,9 +103,9 @@ intents = {
 
 
 def easy_embed(self, ctx, big_embed: bool = False):
-    avatar = self.bot.user.avatar.url
+    avatar = self.bot.user.avatar_url_as(format=None, static_format="png", size=1024)
     embed = discord.Embed(colour=ctx.author.colour)
-    embed.set_footer(text=f"{ctx.author}", icon_url=ctx.author.avatar.url)
+    embed.set_footer(text=f"{ctx.author}", icon_url=ctx.author.avatar_url)
     if big_embed:
         embed.set_thumbnail(url=avatar)
     return embed

@@ -167,7 +167,7 @@ class Github(commands.Cog):
         embed.title = gh_user["login"]
         embed.description = gh_user["html_url"]
 
-        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar.url)
+        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar_url)
         embed.set_thumbnail(url=gh_user["avatar_url"])
 
         embed.add_field(name="Følgere / Følger",
