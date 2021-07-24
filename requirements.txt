@@ -1,5 +1,5 @@
-discord.py==1.6.0
-environs==9.3.1
-flask==1.1.2
-marshmallow==3.10.0
+git+https://github.com/Rapptz/discord.py@fc51736b34df3c37c06781ae948b18efb71616fa
+environs==9.3.2
+flask==2.0.1
+marshmallow==3.12.1
 requests==2.25.1
