@@ -98,9 +98,7 @@ class Github(commands.Cog):
         gh_user = get_user(self, user.id)
 
         if gh_user is None:
-            usr = user.name
-            if is_self:
-                usr = "Du"
+            usr = "Du" if is_self else user.name
             return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
         embed = easy_embed(self, ctx)
@@ -150,9 +148,7 @@ class Github(commands.Cog):
         gh_user = get_user(self, user.id)
 
         if gh_user is None:
-            usr = user.name
-            if is_self:
-                usr = "Du"
+            usr = "Du" if is_self else user.name
             return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
         (_id, discord_id, auth_token, github_username) = gh_user
