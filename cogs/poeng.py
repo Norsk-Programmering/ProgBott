@@ -99,7 +99,7 @@ class Poeng(commands.Cog):
             if reaction.message.id != message.id:
                 return False
 
-            if reaction.emoji == emoji or (reaction.emoji == emoji and user.id == 120970603556503552):
+            if reaction.emoji == emoji or (reaction.emoji == emoji and int(user.id) == 120970603556503552):
                 return True
 
             return False
@@ -167,6 +167,10 @@ class Poeng(commands.Cog):
             desc = f'{user.mention} har jobbet bra, her er det {counter} stjerner i boka!'
         if 15 <= counter:
             desc = f'{user.mention} har lagt inn en fantastisk jobb, {counter} stjerner i boka!'
+        if 30 <= counter:
+            desc = f'{user.mention} er utrolig, {counter} stjerner i boka!'
+        if 50 <= counter:
+            desc = f'{user.mention} er uvurderlig, {counter} stjerner i boka!'
         if embed.fields:
             desc += f'\n\nViser de {len(embed.fields)} første:'
         embed.description = desc
