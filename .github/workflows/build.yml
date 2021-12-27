@@ -68,6 +68,7 @@ jobs:
           echo "::set-output name=source::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_REF//refs\/heads\//}"
           echo "::set-output name=url::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/master/README.md"
           echo "::set-output name=tag::$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]'):${GITHUB_SHA}"
+          echo "::set-output name=bot_ver::$(cat cogs/utils/Bot_version.py | cut -d'"' -f 2)"
 
       # - name: Login to DockerHub
       #   uses: docker/login-action@v1
@@ -101,17 +102,6 @@ jobs:
             org.opencontainers.image.source=${{ steps.vars.outputs.source }}
             org.opencontainers.image.url=${{ steps.vars.outputs.url }}
 
-      # - name: Create manifests for DockerHub
-      #   env:
-      #     DOCKER_CLI_EXPERIMENTAL: enabled
-      #   run: |
-      #     IMAGE=$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')
-      #     SOURCE=${IMAGE}:${GITHUB_SHA}
-      #     docker manifest create ${IMAGE}:${{ steps.vars.outputs.branch }} ${SOURCE} && docker manifest push ${IMAGE}:${{ steps.vars.outputs.branch }}
-      #     if [[ ${GITHUB_REF//refs\/heads\//} == master ]]; then
-      #       docker manifest create ${IMAGE}:latest                         ${SOURCE} && docker manifest push ${IMAGE}:latest
-      #     fi
-
       - name: Create manifests for GitHub Container Registry
         env:
           DOCKER_CLI_EXPERIMENTAL: enabled
@@ -120,5 +110,6 @@ jobs:
           SOURCE=${IMAGE}:${GITHUB_SHA}
           docker manifest create ${IMAGE}:${{ steps.vars.outputs.branch }}    --amend ${SOURCE} && docker manifest push ${IMAGE}:${{ steps.vars.outputs.branch }}
           if [[ ${GITHUB_REF//refs\/heads\//} == master ]]; then
+            docker manifest create ${IMAGE}:${{ steps.vars.outputs.bot_ver }} --amend ${SOURCE} && docker manifest push ${IMAGE}:${{ steps.vars.outputs.bot_ver }}
             docker manifest create ${IMAGE}:latest                            --amend ${SOURCE} && docker manifest push ${IMAGE}:latest
           fi
