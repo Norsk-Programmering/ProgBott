@@ -24,6 +24,7 @@ flags = {
 }
 
 region_names = {
+    "Deprecated": "Utfaset",
     "eu-central": "Sentral-Europa",
     "eu-west": "Vest-Europa",
     "europe": "Europa",
@@ -40,21 +41,31 @@ region_names = {
 }
 
 features = {
-    "VIP_REGIONS": "VIP",
-    "VANITY_URL": "Egen URL",
-    "INVITE_SPLASH": "Invitasjonsbilde",
-    "VERIFIED": "Verifisert",
-    "PARTNERED": "Discord Partner",
-    "MORE_EMOJI": "Ekstra emoji",
-    "DISCOVERABLE": "Fremhevet",
-    "FEATURABLE": "Kan fremheves",
-    "COMMUNITY": "Sammfunsguild",
-    "COMMERCE": "Butikkanaler",
-    "PUBLIC": "Offentlig guild",
-    "NEWS": "Nyhetskanaler",
-    "BANNER": "Banner",
+    "ANIMATED_BANNER": "Annimert banner",
     "ANIMATED_ICON": "Animert ikon",
+    "BANNER": "Banner",
+    "CHANNEL_BANNER": "Kannalbanner",
+    "COMMERCE": "Butikkanaler",
+    "COMMUNITY": "Sammfunsguild",
+    "DISCOVERABLE": "Fremhevet",
+    "ENABLED_DISCOVERABLE_BEFORE": False,
+    "FEATURABLE": "Kan fremheves",
+    "INVITE_SPLASH": "Invitasjonsbilde",
+    "MEMBER_PROFILES": "Medlemsprofiler",
+    "MORE_EMOJI": "Ekstra emoji",
+    "NEW_THREAD_PERMISSIONS": "Nye tråder",
+    "NEWS": "Nyhetskanaler",
+    "PARTNERED": "Discord Partner",
+    "PRIVATE_THREADS": "Private tråder",
     "PUBLIC_DISABLED": "Ikke offentlig",
+    "PUBLIC": "Offentlig guild",
+    "ROLE_ICONS": "Rolle ikoner",
+    "SEVEN_DAY_THREAD_ARCHIVE": "Ukeslang trådarkiv",
+    "THREADS_ENABLED": "Tåder",
+    "THREE_DAY_THREAD_ARCHIVE": "Tredagers trådarkiv",
+    "VANITY_URL": "Egen URL",
+    "VERIFIED": "Verifisert",
+    "VIP_REGIONS": "VIP",
     "WELCOME_SCREEN_ENABLED": "Velkomstvindu"
 }
 

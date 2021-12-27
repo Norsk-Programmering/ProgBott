@@ -265,7 +265,8 @@ class Misc(commands.Cog):
         features_string = ""
         if ctx.guild.features is not []:
             for feature in ctx.guild.features:
-                features_string += f"{features[feature]}\n"
+                if features[feature]:
+                    features_string += f"{features[feature]}\n"
 
         photos = {}
         if ctx.guild.splash_url:
