@@ -19,7 +19,7 @@ class Broder(commands.Cog):
             await self._filter(after)
 
     async def _filter(self, message, **kwarg):
-        word_ = [("bruh", "bruh")]
+        word_ = [("bruh", "bruh"), ("rox", "Du kalte?")]
         content_ = message.content.lower()
         for word, yeet in word_:
             if word in content_:
