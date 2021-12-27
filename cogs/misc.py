@@ -265,8 +265,12 @@ class Misc(commands.Cog):
         features_string = ""
         if ctx.guild.features is not []:
             for feature in ctx.guild.features:
-                if features[feature]:
-                    features_string += f"{features[feature]}\n"
+                try:
+                    if features[feature]:
+                        features_string += f"{features[feature]}\n"
+                except KeyError:
+                    self.bot.logger.debug("%s is not translated", feature)
+                    features_string += f"{feature}\n"
 
         photos = {}
         if ctx.guild.splash_url:
