@@ -22,7 +22,7 @@ class Broder(commands.Cog):
         word_ = [("bruh", "bruh"), ("rox", "Du kalte?")]
         content_ = message.content.lower()
         for word, yeet in word_:
-            if word in content_:
+            if word in content_.split(" "):
                 if int(randint(0, 100)) <= 15:
                     await message.reply(yeet, mention_author=True)
 
