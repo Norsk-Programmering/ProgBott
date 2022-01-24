@@ -4,7 +4,7 @@ from nextcord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
-from cogs.utils.defaults import booler, easy_embed, features, flags, intents, region_names, statuses, userflags
+from cogs.utils.defaults import easy_embed, features, flags, intents, region_names, statuses, userflags
 
 import operator
 import platform
@@ -107,7 +107,15 @@ class Misc(commands.Cog):
               f"[{nextcord.__version__}](https://github.com/nextcord/nextcord/releases/tag/v{nextcord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
-        intents_list = [intents[intent] for intent, val in ctx.bot.intents if intent]
+        intents_list = []
+
+        for intent, val in ctx.bot.intents:
+            try:
+                if intents[intent]:
+                    intents_list.append(intents[intent])
+            except KeyError:
+                intents_list.append(intent)
+                self.bot.logger.debug("feature %s is not translated", intent)
 
         guilds = len(self.bot.guilds)
         members = len(membercount)
@@ -268,7 +276,7 @@ class Misc(commands.Cog):
                     if features[feature]:
                         features_string += f"{features[feature]}\n"
                 except KeyError:
-                    self.bot.logger.debug("%s is not translated", feature)
+                    self.bot.logger.debug("feature %s is not translated", feature)
                     features_string += f"{feature}\n"
 
         photos = {}
