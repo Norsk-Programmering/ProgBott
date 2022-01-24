@@ -104,7 +104,7 @@ class Github(commands.Cog):
             return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
         embed = easy_embed(self, ctx)
-        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar_url)
+        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
         (_id, discord_id, auth_token, github_username) = gh_user
 
         gh_repos = self._get_repos(github_username, auth_token)
@@ -167,7 +167,7 @@ class Github(commands.Cog):
         embed.title = gh_user["login"]
         embed.description = gh_user["html_url"]
 
-        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar_url)
+        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
         embed.set_thumbnail(url=gh_user["avatar_url"])
 
         embed.add_field(name="Følgere / Følger",
