@@ -1,7 +1,6 @@
 # Discord Packages
-import discord
-from discord import RoleTags
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
@@ -104,8 +103,8 @@ class Misc(commands.Cog):
         how = "Med Python såklart!" \
               f"\n**Python-versjon:** " \
               f"[{py_ver}](https://python.org/downloads/release/python-{py_ver.replace('.', '')}/)" \
-              f"\n**Discord.py-versjon:** " \
-              f"[{discord.__version__}](https://github.com/Rapptz/discord.py/releases/tag/v{discord.__version__}/)" \
+              f"\n**Nextcord-versjon:** " \
+              f"[{nextcord.__version__}](https://github.com/nextcord/nextcord/releases/tag/v{nextcord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
         intents_list = [intents[intent] for intent, val in ctx.bot.intents if intent]
@@ -115,7 +114,7 @@ class Misc(commands.Cog):
         days, hours, minutes, seconds = self.get_uptime()
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
-        embed = discord.Embed(color=discord.Colour.from_rgb(244, 1, 110), description=desc)
+        embed = nextcord.Embed(color=nextcord.Colour.from_rgb(244, 1, 110), description=desc)
         embed.set_author(url=f"https://github.com/{dev.name}", name=dev.name, icon_url=dev.avatar_url)
         embed.set_thumbnail(url=self.ico)
 
@@ -137,7 +136,7 @@ class Misc(commands.Cog):
 
         url = "https://lmgtfy.com/?" + parse.urlencode({"q": søkeord})
 
-        embed = discord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
+        embed = nextcord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
         await ctx.reply(embed=embed)
 
@@ -294,10 +293,10 @@ class Misc(commands.Cog):
         }
         content = content_filter[str(ctx.guild.explicit_content_filter)]
 
-        embed = discord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
-                                                              f"**Innholdsfilter:** {content}\n" +
-                                                              f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
-                                                              f"**Emoji:** {len(ctx.guild.emojis)}")
+        embed = nextcord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
+                               f"**Innholdsfilter:** {content}\n" +
+                               f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
+                               f"**Emoji:** {len(ctx.guild.emojis)}")
         embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
         embed.set_thumbnail(url=ctx.guild.icon_url_as(static_format="png"))
         embed.add_field(name="ID", value=ctx.guild.id)
@@ -353,7 +352,7 @@ class Misc(commands.Cog):
         if len(roles) > 2048:
             file = StringIO(roles)
 
-            txt_file = discord.File(file, "roller.txt")
+            txt_file = nextcord.File(file, "roller.txt")
             await ctx.reply(file=txt_file)
 
             file.close()
@@ -363,7 +362,7 @@ class Misc(commands.Cog):
         if roles == "":
             roles = "**Ingen roller**"
 
-        embed = discord.Embed(color=ctx.me.color, description=roles)
+        embed = nextcord.Embed(color=ctx.me.color, description=roles)
         embed.set_author(name=f"Roller ({len(ctx.guild.roles) - 1})", icon_url=ctx.guild.icon_url)
         embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
         await ctx.reply(embed=embed)
