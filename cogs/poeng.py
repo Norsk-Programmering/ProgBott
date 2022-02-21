@@ -1,3 +1,7 @@
+"""
+Modul for tildeling av stjerner
+"""
+
 # Discord Packages
 import nextcord
 from nextcord.ext import commands
@@ -10,9 +14,14 @@ import codecs
 import json
 import os
 import time
+from pprint import pformat
 
 
 class Poeng(commands.Cog):
+    """
+    Klasse for tildeling av stjerner
+    """
+
     def __init__(self, bot):
         self.bot = bot
         self.teller_data = {}
@@ -25,11 +34,17 @@ class Poeng(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        """
+        Funksjon for å sette lytter for nye meldinger
+        """
         if not message.author.bot and message.mentions:
             await self._filter(message)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
+        """
+        Funksjon for å sette lytter for redigerte meldinger
+        """
         try:
             if not after.author.bot and after.mentions \
                     and (after.edited_at.timestamp() - before.created_at.timestamp()) < 60:
@@ -37,15 +52,14 @@ class Poeng(commands.Cog):
         except AttributeError:
             pass
 
-# TODO: halvstjerner?
-
-    async def _filter(self, message, before=None, **kwarg):
+    async def _filter(self, message, before=None):
         def check(message):
+            # pylint: disable=missing-function-docstring
             for word in self.settings_data['takk']:
-                word_ = word.lower()
-                content_ = message.content.lower()
+                word = word.lower()
+                content = message.content.lower()
                 if (
-                    word_ in content_ and
+                    word in content and
                         (
                             "hjelp" in
                             (
@@ -53,9 +67,9 @@ class Poeng(commands.Cog):
                                 message.channel.category.name).lower()
                         )
                     ) or (
-                        content_.startswith(word_) or
-                        content_.endswith(word_) or
-                        content_[:-1].endswith(word_)
+                        content.startswith(word) or
+                        content.endswith(word) or
+                        content[:-1].endswith(word)
                 ):
                     return True
         if not before:
@@ -67,9 +81,12 @@ class Poeng(commands.Cog):
             if check(message):
                 return await self.add_star(message)
 
-    async def add_star(self, message, **kwarg):
+    async def add_star(self, message):
+        """
+        Funksjon som gir stjerne
+        """
         emoji = self.bot.get_emoji(743471543706976256)
-        emoji_str = f'<:forkast:{emoji.id}>'
+        emojiStr = f'<:forkast:{emoji.id}>'
         dudes = {'id': [], 'mention': []}
         embed = easy_embed(self, message)
         for dude in message.mentions:
@@ -82,14 +99,14 @@ class Poeng(commands.Cog):
         if not dudes['id']:
             return
         await message.add_reaction(emoji)
-        msg_data = {
+        msgData = {
             'hjelper': dudes['id'],
             'giver': message.author.id,
             'link': message.jump_url
         }
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {", ".join(dudes["mention"])} en stjerne!'
-        reply = await message.reply(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
+        reply = await message.reply(f"Registrerer stjerne\nreager med {emojiStr} for å avbryte")
         await message.channel.trigger_typing()
 
         def check(reaction, user):
@@ -99,7 +116,7 @@ class Poeng(commands.Cog):
             if reaction.message.id != message.id:
                 return False
 
-            if reaction.emoji == emoji or (reaction.emoji == emoji and int(user.id) == 120970603556503552):
+            if reaction.emoji == emoji:
                 return True
 
             return False
@@ -109,12 +126,12 @@ class Poeng(commands.Cog):
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
-            except Exception:
+            except nextcord.Forbidden:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
             return await reply.delete()
 
         except asyncio.TimeoutError:
-            self.teller_data['meldinger'][str(message.id)] = msg_data
+            self.teller_data['meldinger'][str(message.id)] = msgData
             self.cacher()
             try:
                 await reply.edit(content=None, embed=embed)
@@ -123,12 +140,12 @@ class Poeng(commands.Cog):
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 return await message.remove_reaction(emoji, message.author)
-            except Exception:
+            except nextcord.Forbidden:
                 return self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
     @commands.guild_only()
     @commands.group(name="stjerne")
-    async def pGroup(self, ctx):
+    async def poeng_group(self, ctx):
         """
         Kategori for styring av poeng
         """
@@ -136,10 +153,10 @@ class Poeng(commands.Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @pGroup.command(name="sjekk")
+    @poeng_group.command(name="sjekk")
     async def check(self, ctx, user: nextcord.Member = None):
         """
-        Komanndo for å sjekke stjerner
+        Kommando for å sjekke stjerner
         """
         if not user:
             user = ctx.author
@@ -180,7 +197,7 @@ class Poeng(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.is_owner()
-    @pGroup.group()
+    @poeng_group.group()
     async def admin(self, ctx):
         """
         Kategori for instillinger
@@ -206,11 +223,17 @@ class Poeng(commands.Cog):
         self.load_json('settings')
 
     async def cache_loop(self):
+        """
+        Loop for å mellomlagre stjerner
+        """
         while True:
             self.cacher()
             await asyncio.sleep(60*60*5)
 
     def cacher(self):
+        """
+        Mellomlagrer stjerner
+        """
         if time.time() - 120 > float(self.cache_time):
             self.save_json('teller')
             self.load_json('teller')
@@ -218,6 +241,9 @@ class Poeng(commands.Cog):
             self.cache_time = time.time()
 
     def load_json(self, mode):
+        """
+        Lagrer stjerner
+        """
         if mode == 'teller':
             with codecs.open(self.teller_file, 'r', encoding='utf8') as json_file:
                 self.teller_data = json.load(json_file)
@@ -226,27 +252,33 @@ class Poeng(commands.Cog):
                 self.settings_data = json.load(json_file)
 
     def save_json(self, mode):
+        """
+        Laster stjerner
+        """
         if mode == 'teller':
             try:
                 with codecs.open(self.teller_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.teller_data, outfile, indent=4, sort_keys=True)
-            except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.teller_data))
+            except Exception as err:
+                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (err, self.teller_data))
         elif mode == 'settings':
             try:
                 with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.settings_data, outfile, indent=4, sort_keys=True)
-            except Exception as e:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (e, self.settings_data))
+            except Exception as err:
+                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (err,
+                                                                                                self.settings_data))
 
 
 def check_folder(data_dir):
+    # pylint: disable=missing-function-docstring
     f = f'{data_dir}/poeng'
     if not os.path.exists(f):
         os.makedirs(f)
 
 
 def check_files(data_dir):
+    # pylint: disable=missing-function-docstring
     files = [
         {f'{data_dir}/poeng/teller.json': {'meldinger': {}}},
         {f'{data_dir}/poeng/innstilinger.json': {'takk': []}}
@@ -262,6 +294,7 @@ def check_files(data_dir):
 
 
 def setup(bot):
+    # pylint: disable=missing-function-docstring
     check_folder(bot.data_dir)
     check_files(bot.data_dir)
     bot.add_cog(Poeng(bot))
