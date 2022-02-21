@@ -601,6 +601,21 @@ class Misc(commands.Cog):
         except commands.ExtensionNotLoaded:
             return await ctx.reply(f"{name_} was not loaded")
 
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.is_owner()
+    @commands.command(hidden=True)
+    async def smekk(self, ctx, member: nextcord.Member):
+        emote_dict = {511934458304397312: 773307285073428540, 386655733107785738: 472225917197090816}
+        try:
+            emote_str = self.bot.get_emoji(emote_dict[ctx.guild.id])
+        except KeyError:
+            emote_str = ":hand_splayed:"
+        try:
+            await ctx.message.delete()
+        except nextcord.Forbidden:
+            self.bot.logger.warn('Missing permission to remove message (manage_messages)')
+        await ctx.send(f"Smekk - ka farsken! {member.mention} {emote_str}{emote_str}{emote_str}")
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))
