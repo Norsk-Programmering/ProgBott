@@ -116,7 +116,10 @@ class Poeng(commands.Cog):
         except asyncio.TimeoutError:
             self.teller_data['meldinger'][str(message.id)] = msg_data
             self.cacher()
-            await reply.edit(content=None, embed=embed)
+            try:
+                await reply.edit(content=None, embed=embed)
+            except nextcord.HTTPException:
+                self.bot.logger.error('Edit failed. @@%s@@' % pformat(embed.to_dict()))
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 return await message.remove_reaction(emoji, message.author)
