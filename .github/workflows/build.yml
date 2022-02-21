@@ -47,10 +47,8 @@ jobs:
         if: failure()
         uses: peter-evans/create-pull-request@v3.8.2
         with:
-          token: ${{ secrets.GH_TOKEN }}
           branch: actions/auto
           commit-message: Changes done by tests
-          committer: Roxedus <bot@roxedus.dev>
           title: Linter changed files
 
   build-and-push-container:

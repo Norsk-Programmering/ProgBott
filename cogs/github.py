@@ -1,6 +1,6 @@
 # Discord Packages
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 # Bot Utilities
 from cogs.utils.db import DB
@@ -66,7 +66,7 @@ class Github(commands.Cog):
             await ctx.reply(ctx.author.mention + " sender ny registreringslenke på DM!")
             await asyncio.sleep(120)  # Assume the user uses less than two minutes to auth
             self._get_users()
-        except discord.Forbidden:
+        except nextcord.Forbidden:
             raise NoDM
         except Exception as E:
             self.bot.logger.warn('Error when verifying Github user:\n%s', E)
@@ -87,7 +87,7 @@ class Github(commands.Cog):
         return await ctx.reply(ctx.author.mention + "fjernet Githuben din.")
 
     @ghGroup.command(name="repos", aliases=["stars", "stjerner"])
-    async def show_repos(self, ctx, user: discord.Member = None):
+    async def show_repos(self, ctx, user: nextcord.Member = None):
         """
         Viser mest stjernede repoene til brukeren. maks  5 repoer
         """
@@ -104,7 +104,7 @@ class Github(commands.Cog):
             return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
         embed = easy_embed(self, ctx)
-        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar_url)
+        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
         (_id, discord_id, auth_token, github_username) = gh_user
 
         gh_repos = self._get_repos(github_username, auth_token)
@@ -139,7 +139,7 @@ class Github(commands.Cog):
         await ctx.reply(embed=embed)
 
     @ ghGroup.command(name="user", aliases=["meg", "bruker"])
-    async def show_user(self, ctx, user: discord.Member = None):
+    async def show_user(self, ctx, user: nextcord.Member = None):
         """
         Kommando som viser et sammendrag fra github brukeren
         """
@@ -167,7 +167,7 @@ class Github(commands.Cog):
         embed.title = gh_user["login"]
         embed.description = gh_user["html_url"]
 
-        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.avatar_url)
+        embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
         embed.set_thumbnail(url=gh_user["avatar_url"])
 
         embed.add_field(name="Følgere / Følger",

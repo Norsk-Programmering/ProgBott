@@ -1,7 +1,7 @@
 # pylint: disable=W0201
 # Discord Packages
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 # Bot Utilities
 from cogs.utils.logging import Logger
@@ -11,7 +11,7 @@ import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-intents = discord.Intents.none()
+intents = nextcord.Intents.none()
 intents.guilds = True
 intents.members = True
 intents.emojis = True
@@ -20,7 +20,7 @@ intents.messages = True
 intents.guild_reactions = True
 intents.guild_typing = True
 
-mentions = discord.AllowedMentions(
+mentions = nextcord.AllowedMentions(
     everyone=False,
     replied_user=False
 )
@@ -53,7 +53,7 @@ class Bot(commands.Bot):
             self.appinfo = await self.application_info()
 
         self.logger.info("Logged in as: %s in %s servers.", self.user.name, len(self.guilds))
-        self.logger.info("DiscordPY: %s", discord.__version__)
+        self.logger.info("Nextcord: %s", nextcord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
         extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.broder"]

@@ -1,6 +1,6 @@
 # Discord Packages
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
@@ -134,7 +134,7 @@ class Poeng(commands.Cog):
             await ctx.send_help(ctx.command)
 
     @pGroup.command(name="sjekk")
-    async def check(self, ctx, user: discord.Member = None):
+    async def check(self, ctx, user: nextcord.Member = None):
         """
         Komanndo for å sjekke stjerner
         """

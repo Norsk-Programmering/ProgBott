@@ -1,11 +1,10 @@
 # Discord Packages
-import discord
-from discord import RoleTags
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
-from cogs.utils.defaults import booler, easy_embed, features, flags, intents, region_names, statuses, userflags
+from cogs.utils.defaults import easy_embed, features, flags, intents, region_names, statuses, userflags
 
 import operator
 import platform
@@ -41,7 +40,7 @@ class Misc(commands.Cog):
         end = time.perf_counter()
         duration = int((end - start) * 1000)
         embed.description = f"Pong!\nPing: {duration}ms | websocket: {int(self.bot.latency * 1000)}ms"
-        await message.edit(embed=embed, mention_author=False)
+        await message.edit(embed=embed)
 
     @commands.command(name="oppetid", aliases=["uptime"], hidden=True)
     async def _uptime(self, ctx):
@@ -104,19 +103,27 @@ class Misc(commands.Cog):
         how = "Med Python såklart!" \
               f"\n**Python-versjon:** " \
               f"[{py_ver}](https://python.org/downloads/release/python-{py_ver.replace('.', '')}/)" \
-              f"\n**Discord.py-versjon:** " \
-              f"[{discord.__version__}](https://github.com/Rapptz/discord.py/releases/tag/v{discord.__version__}/)" \
+              f"\n**Nextcord-versjon:** " \
+              f"[{nextcord.__version__}](https://github.com/nextcord/nextcord/releases/tag/v{nextcord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
-        intents_list = [intents[intent] for intent, val in ctx.bot.intents if intent]
+        intents_list = []
+
+        for intent, val in ctx.bot.intents:
+            try:
+                if intents[intent]:
+                    intents_list.append(intents[intent])
+            except KeyError:
+                intents_list.append(intent)
+                self.bot.logger.debug("feature %s is not translated", intent)
 
         guilds = len(self.bot.guilds)
         members = len(membercount)
         days, hours, minutes, seconds = self.get_uptime()
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
-        embed = discord.Embed(color=discord.Colour.from_rgb(244, 1, 110), description=desc)
-        embed.set_author(url=f"https://github.com/{dev.name}", name=dev.name, icon_url=dev.avatar_url)
+        embed = nextcord.Embed(color=nextcord.Colour.from_rgb(244, 1, 110), description=desc)
+        embed.set_author(url=f"https://github.com/{dev.name}", name=dev.name, icon_url=dev.display_avatar.url)
         embed.set_thumbnail(url=self.ico)
 
         embed.add_field(name="Tjenere", value=str(guilds))
@@ -137,7 +144,7 @@ class Misc(commands.Cog):
 
         url = "https://lmgtfy.com/?" + parse.urlencode({"q": søkeord})
 
-        embed = discord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
+        embed = nextcord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
         await ctx.reply(embed=embed)
 
@@ -269,14 +276,14 @@ class Misc(commands.Cog):
                     if features[feature]:
                         features_string += f"{features[feature]}\n"
                 except KeyError:
-                    self.bot.logger.debug("%s is not translated", feature)
+                    self.bot.logger.debug("feature %s is not translated", feature)
                     features_string += f"{feature}\n"
 
         photos = {}
-        if ctx.guild.splash_url:
-            photos["Invitasjonsbilde"] = ctx.guild.splash_url_as(format="png")
-        if ctx.guild.banner_url:
-            photos["Banner"] = ctx.guild.banner_url_as(format="png")
+        if ctx.guild.splash:
+            photos["Invitasjonsbilde"] = ctx.guild.splash.replace(static_format="png").url
+        if ctx.guild.banner:
+            photos["Banner"] = ctx.guild.banner.replace(static_format="png").url
 
         verification_level = {
             "none": "ingen",
@@ -294,12 +301,14 @@ class Misc(commands.Cog):
         }
         content = content_filter[str(ctx.guild.explicit_content_filter)]
 
-        embed = discord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
-                                                              f"**Innholdsfilter:** {content}\n" +
-                                                              f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
-                                                              f"**Emoji:** {len(ctx.guild.emojis)}")
-        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon_url)
-        embed.set_thumbnail(url=ctx.guild.icon_url_as(static_format="png"))
+        embed = nextcord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
+                               f"**Innholdsfilter:** {content}\n" +
+                               f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
+                               f"**Emoji:** {len(ctx.guild.emojis)}")
+        embed.set_author(name=ctx.guild.name)
+        if ctx.guild.icon is not None:
+            embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url if ctx.guild.icon else None)
+            embed.set_thumbnail(url=ctx.guild.icon.replace(static_format="png").url)
         embed.add_field(name="ID", value=ctx.guild.id)
         embed.add_field(name="Eier", value=ctx.guild.owner.mention)
         embed.add_field(name="Region", value=f"{flag} {region_name}")
@@ -353,7 +362,7 @@ class Misc(commands.Cog):
         if len(roles) > 2048:
             file = StringIO(roles)
 
-            txt_file = discord.File(file, "roller.txt")
+            txt_file = nextcord.File(file, "roller.txt")
             await ctx.reply(file=txt_file)
 
             file.close()
@@ -363,13 +372,16 @@ class Misc(commands.Cog):
         if roles == "":
             roles = "**Ingen roller**"
 
-        embed = discord.Embed(color=ctx.me.color, description=roles)
-        embed.set_author(name=f"Roller ({len(ctx.guild.roles) - 1})", icon_url=ctx.guild.icon_url)
-        embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon_url)
+        embed = nextcord.Embed(color=ctx.me.color, description=roles)
+        embed.set_author(name=f"Roller ({len(ctx.guild.roles) - 1})")
+        embed.set_footer(text=ctx.guild.name)
+        if ctx.guild.icon is not None:
+            embed.set_author(name=f"Roller ({len(ctx.guild.roles) - 1})", icon_url=ctx.guild.icon.url)
+            embed.set_footer(text=ctx.guild.name, icon_url=ctx.guild.icon.url)
         await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userinfo", "ui", "brukerinfo", "user"])
-    async def bruker(self, ctx, *, bruker: discord.Member = None):
+    async def bruker(self, ctx, *, bruker: nextcord.Member = None):
         """
         Viser info om en bruker
         """
@@ -426,22 +438,22 @@ class Misc(commands.Cog):
         if str(bruker.color) != "#000000":
             color = bruker.color
         else:
-            color = discord.Colour(0x99AAB5)
+            color = nextcord.Colour(0x99AAB5)
 
         status = statuses[str(bruker.status)]
 
-        embed = discord.Embed(color=color)
+        embed = nextcord.Embed(color=color)
         if bruker.public_flags.all():
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app} \
                 {' '.join(userflags[m] for m, v in bruker.public_flags.all() if m in userflags)}"
         else:
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}"
         if bruker.display_name == bruker.name:
-            embed.set_author(name=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.avatar_url)
+            embed.set_author(name=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.display_avatar.url)
         else:
             embed.set_author(name=f"{bruker.name}#{bruker.discriminator} | {bruker.display_name}",
-                             icon_url=bruker.avatar_url)
-        embed.set_thumbnail(url=bruker.avatar_url_as(static_format="png"))
+                             icon_url=bruker.display_avatar.url)
+        embed.set_thumbnail(url=bruker.display_avatar.replace(static_format="png").url)
         embed.add_field(name="Opprettet", value=f"{bruker_created_date}\n{since_created_days} " +
                                                 f"{since_created_days_string} siden")
         embed.add_field(name="Ble med i serveren", value=f"{bruker_joined_date}\n{since_joined_days} " +
@@ -464,7 +476,7 @@ class Misc(commands.Cog):
         await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userroles"])
-    async def brukerroller(self, ctx, bruker: discord.Member = None):
+    async def brukerroller(self, ctx, bruker: nextcord.Member = None):
         """
         Viser rollene til en bruker
         """
@@ -485,7 +497,7 @@ class Misc(commands.Cog):
         if len(roles) > 2048:
             file = StringIO(roles)
 
-            txt_file = discord.File(file, "roller.txt")
+            txt_file = nextcord.File(file, "roller.txt")
             await ctx.send(file=txt_file)
 
             file.close()
@@ -498,15 +510,18 @@ class Misc(commands.Cog):
         if str(bruker.color) != "#000000":
             color = bruker.color
         else:
-            color = discord.Colour(0x99AAB5)
+            color = nextcord.Colour(0x99AAB5)
 
-        embed = discord.Embed(color=color, description=roles)
-        embed.set_author(name=f"Roller ({len(bruker.roles) - 1})", icon_url=bruker.avatar_url)
-        embed.set_footer(text=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.avatar_url)
+        embed = nextcord.Embed(color=color, description=roles)
+        embed.set_author(name=f"Roller ({len(bruker.roles) - 1})")
+        embed.set_footer(text=f"{bruker.name}#{bruker.discriminator}")
+        if ctx.guild.icon is not None:
+            embed.set_author(name=f"Roller ({len(bruker.roles) - 1})", icon_url=bruker.display_avatar.url)
+            embed.set_footer(text=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.display_avatar.url)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["roleinfo", "rolleinfo"])
-    async def rolle(self, ctx, *, rolle: discord.Role):
+    async def rolle(self, ctx, *, rolle: nextcord.Role):
         """
         Viser info om en rolle
         """
@@ -517,7 +532,7 @@ class Misc(commands.Cog):
         if str(rolle.color) != "#000000":
             color = rolle.color
         else:
-            color = discord.Colour(0x99AAB5)
+            color = nextcord.Colour(0x99AAB5)
 
         hoisted = "Nei"
         mentionable = "Nei"
@@ -547,8 +562,10 @@ class Misc(commands.Cog):
 
         permissions = ", ".join([permission for permission, value in iter(rolle.permissions) if value is True])
 
-        embed = discord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
-        embed.set_author(name=rolle.guild.name, icon_url=rolle.guild.icon_url)
+        embed = nextcord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
+        embed.set_author(name=rolle.guild.name)
+        if ctx.guild.icon is not None:
+            embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url)
         embed.add_field(name="Fargekode", value=str(rolle.color))
         embed.add_field(name="Opprettet", value=f"{rolle_created_date}\n{since_created_days} " +
                                                 f"{since_created_days_string} siden")

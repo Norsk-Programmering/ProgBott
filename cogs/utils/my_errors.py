@@ -1,5 +1,5 @@
 # Discord Packages
-from discord.ext.commands.errors import CommandError
+from nextcord.ext.commands.errors import CommandError
 
 
 class NoDM(CommandError):
