@@ -583,7 +583,7 @@ class Misc(commands.Cog):
         embed.add_field(name=f"Brukere med rollen ({len(rolle.members)})", value=members, inline=False)
         await ctx.reply(embed=embed)
 
-    @commands.bot_has_permissions(embed_links=True)
+    @commands.has_permissions(embed_links=True)
     @commands.is_owner()
     @commands.command(hidden=True)
     async def reload(self, ctx, cog):
@@ -601,7 +601,7 @@ class Misc(commands.Cog):
         except commands.ExtensionNotLoaded:
             return await ctx.reply(f"{name_} was not loaded")
 
-    @commands.bot_has_permissions(embed_links=True)
+    @commands.has_permissions(embed_links=True)
     @commands.is_owner()
     @commands.command(hidden=True)
     async def smekk(self, ctx, member: nextcord.Member):

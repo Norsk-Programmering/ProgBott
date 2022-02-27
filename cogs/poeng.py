@@ -135,8 +135,8 @@ class Poeng(commands.Cog):
             self.cacher()
             try:
                 await reply.edit(content=None, embed=embed)
-            except nextcord.HTTPException:
-                self.bot.logger.error('Edit failed. @@%s@@' % pformat(embed.to_dict()))
+            except nextcord.HTTPException as HTTPEx:
+                self.bot.logger.error('Edit failed. $$%s$$ @@%s@@' % (HTTPEx, pformat(embed.to_dict())))
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 return await message.remove_reaction(emoji, message.author)
