@@ -1,4 +1,5 @@
 # pylint: disable=W0201
+# pylint: disable=missing-function-docstring
 # Discord Packages
 import nextcord
 from nextcord.ext import commands
@@ -56,7 +57,7 @@ class Bot(commands.Bot):
         self.logger.info("Nextcord: %s", nextcord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
-        extensions = ["cogs.misc", "cogs.poeng", "cogs.errors", "cogs.github", "cogs.broder"]
+        extensions = ["cogs.misc", "cogs.poeng", "cogs.bokmerker", "cogs.errors", "cogs.github", "cogs.broder"]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)
