@@ -6,7 +6,7 @@ on:
       - ".devcontainer/**"
   pull_request:
     branches-ignore:
-      - "dependabot/**"
+      - "renovate/**"
 
 jobs:
   tests:
@@ -19,10 +19,10 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v3.1.0
         with:
-          python-version: 3.9
+          python-version: 3.10
 
       - name: Install dependencies
         run: |
