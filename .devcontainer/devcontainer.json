@@ -4,14 +4,7 @@
     "name": "Python 3",
     "build": {
         "dockerfile": "Dockerfile",
-        "context": "..",
-        "args": {
-            // Update 'VARIANT' to pick a Python version: 3, 3.6, 3.7, 3.8, 3.9
-            "VARIANT": "3.9",
-            // Options
-            "INSTALL_NODE": "false",
-            "NODE_VERSION": "lts/*"
-        }
+        "context": ".."
     },
     // Set *default* container specific settings.json values on container create.
     "settings": {
@@ -31,8 +24,7 @@
     "extensions": [
         "ms-azuretools.vscode-docker",
         "ms-python.python",
-        "ms-python.vscode-pylance",
-        "oderwat.indent-rainbow"
+        "ms-python.vscode-pylance"
     ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],

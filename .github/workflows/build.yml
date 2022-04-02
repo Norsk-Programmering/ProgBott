@@ -3,6 +3,7 @@ on:
   push:
     paths-ignore:
       - ".github/**"
+      - ".devcontainer/**"
   pull_request:
     branches-ignore:
       - "dependabot/**"
