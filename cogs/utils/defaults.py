@@ -64,6 +64,7 @@ features = {
     "THREADS_ENABLED": "Tåder",
     "THREE_DAY_THREAD_ARCHIVE": "Tredagers trådarkiv",
     "VANITY_URL": "Egen URL",
+    "PREVIEW_ENABLED": "Forhåndstesting",
     "VERIFIED": "Verifisert",
     "VIP_REGIONS": "VIP",
     "WELCOME_SCREEN_ENABLED": "Velkomstvindu"
@@ -92,28 +93,33 @@ userflags = {
 }
 
 intents = {
-    "guilds": "guilds",
-    "members": "medlemmer",
     "bans": "bans",
-    "emojis": "emojis",
-    "integrations": "integrasjoner",
-    "webhooks": "internettkroker",
-    "invites": "invitasjoner",
-    "voice_states": "stemme-tilstander",
-    "presences": "tilstedeværelse",
-    "messages": "meldinger",
-    "guild_messages": "guild-meldinger",
     "dm_messages": "dm-meldinger",
-    "reactions": "reaksjoner",
-    "guild_reactions": "guild-reaksjoner",
     "dm_reactions": "dm-reaksjoner",
-    "typing": "skrivestatus",
+    "dm_typing": "dm-skrivestatus",
+    "emojis": "emojis",
+    "guild_messages": "guild-meldinger",
+    "guild_reactions": "guild-reaksjoner",
     "guild_typing": "guild-skrivestatus",
-    "dm_typing": "dm-skrivestatus"
+    "guilds": "guilds",
+    "integrations": "integrasjoner",
+    "invites": "invitasjoner",
+    "members": "medlemmer",
+    "messages": "meldinger",
+    "presences": "tilstedeværelse",
+    "reactions": "reaksjoner",
+    "scheduled_events": "planlagte-hendelser",
+    "typing": "skrivestatus",
+    "voice_states": "stemme-tilstander",
+    "webhooks": "internettkroker"
 }
 
 
 def easy_embed(self, ctx, big_embed: bool = False):
+    """
+    Hjelpefunksjon for universiell embed
+    """
+
     avatar = self.bot.user.display_avatar.replace(static_format="png", size=1024).url
     embed = nextcord.Embed(colour=ctx.author.colour)
     embed.set_footer(text=f"{ctx.author}", icon_url=ctx.author.display_avatar.url)

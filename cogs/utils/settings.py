@@ -1,3 +1,7 @@
+"""
+Modul for konfigurering av instillinger
+"""
+
 # Bot Utilities
 from cogs.utils.my_errors import NoToken
 
@@ -10,6 +14,9 @@ from marshmallow.validate import URL
 
 
 class Settings:
+    """
+    Klasse for instillinger
+    """
     def __init__(self, data_dir, log_level, log_to_file):
 
         env = Env()

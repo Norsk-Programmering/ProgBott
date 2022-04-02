@@ -1,3 +1,7 @@
+"""
+Cog for githbhub komandoer
+"""
+
 # Discord Packages
 import nextcord
 from nextcord.ext import commands
@@ -20,6 +24,9 @@ import requests
 
 
 class Github(commands.Cog):
+    """
+    Diverse github kommandoer
+    """
 
     def __init__(self, bot):
         self.bot = bot
@@ -28,27 +35,27 @@ class Github(commands.Cog):
         database = DB(data_dir=self.bot.data_dir)
         database.populate_tables()
 
-    def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
+    def _id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return "".join(random.choice(chars) for _ in range(size))
 
     @commands.guild_only()
     @commands.group(name="github", aliases=["gh"])
-    async def ghGroup(self, ctx):
+    async def gh_group(self, ctx):
         """
         Gruppe for Github kommandoer
         """
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @ghGroup.command(name="auth", aliases=["add", "verify", "verifiser", "koble"])
+    @gh_group.command(name="auth", aliases=["add", "verify", "verifiser", "koble"])
     async def auth(self, ctx):
         """
         Kommando for å koble din Github- til din Discord-bruker
         """
-        random_string = self.id_generator()
-        is_user_registered = self.is_user_registered(ctx.author.id, random_string)
+        random_string = self._id_generator()
+        _is_user_registered = self._is_user_registered(ctx.author.id, random_string)
 
-        if is_user_registered:
+        if _is_user_registered:
             return await ctx.reply(ctx.author.mention + " du er allerede registrert!")
 
         try:
@@ -71,7 +78,7 @@ class Github(commands.Cog):
         except Exception as E:
             self.bot.logger.warn('Error when verifying Github user:\n%s', E)
 
-    @ghGroup.command(name="remove", aliases=["fjern"])
+    @gh_group.command(name="remove", aliases=["fjern"])
     async def remove(self, ctx):
         """
         Kommando for å fjerne kobling mellom Github- og Discord-bruker
@@ -86,7 +93,7 @@ class Github(commands.Cog):
 
         return await ctx.reply(ctx.author.mention + "fjernet Githuben din.")
 
-    @ghGroup.command(name="repos", aliases=["stars", "stjerner"])
+    @gh_group.command(name="repos", aliases=["stars", "stjerner"])
     async def show_repos(self, ctx, user: nextcord.Member = None):
         """
         Viser mest stjernede repoene til brukeren. maks  5 repoer
@@ -105,7 +112,7 @@ class Github(commands.Cog):
 
         embed = easy_embed(self, ctx)
         embed.set_author(name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
-        (_id, discord_id, auth_token, github_username) = gh_user
+        (_id, _discord_id, auth_token, github_username) = gh_user
 
         gh_repos = self._get_repos(github_username, auth_token)
 
@@ -126,8 +133,8 @@ class Github(commands.Cog):
         idrr = list(stars.items())
         embed.title = f"{stop} mest stjernede repoer"
 
-        for n in range(0, stop):
-            repo_id, *overflow = idrr[n]
+        for i in range(0, stop):
+            repo_id, *_overflow = idrr[i]
             repo = new_obj[repo_id]
             title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
             desc = repo["description"]
@@ -138,7 +145,7 @@ class Github(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @ ghGroup.command(name="user", aliases=["meg", "bruker"])
+    @gh_group.command(name="user", aliases=["meg", "bruker"])
     async def show_user(self, ctx, user: nextcord.Member = None):
         """
         Kommando som viser et sammendrag fra github brukeren
@@ -155,7 +162,7 @@ class Github(commands.Cog):
                 usr = "Du"
             return await ctx.reply(f"{usr} har ikke registrert en bruker enda.")
 
-        (_id, discord_id, auth_token, github_username) = gh_user
+        (_id, _discord_id, auth_token, _github_username) = gh_user
 
         gh_user = requests.get("https://api.github.com/user", headers={
             "Authorization": "token " + auth_token,
@@ -177,7 +184,7 @@ class Github(commands.Cog):
 
         return await ctx.reply(embed=embed)
 
-    @ ghGroup.command(name="discord", aliases=["discordbruker"])
+    @gh_group.command(name="discord", aliases=["discordbruker"])
     async def show_discord_user(self, ctx, username):
         """
         Kommando som viser hvilken Discord-bruker som eier en GitHub-konto
@@ -186,7 +193,7 @@ class Github(commands.Cog):
         if discord_user is None:
             return await ctx.reply("GitHub-brukeren har ikke knyttet en konto til sin Discord-bruker")
 
-        (_id, discord_id, auth_token, github_username) = discord_user
+        (_id, discord_id, _auth_token, github_username) = discord_user
 
         user = self.bot.get_user(discord_id)
 
@@ -194,7 +201,7 @@ class Github(commands.Cog):
         embed.description = f"Discord-brukeren til `{github_username}` er {user.mention}"
         return await ctx.reply(embed=embed)
 
-    @ ghGroup.command(name="combined", aliases=["kombinert"])
+    @gh_group.command(name="combined", aliases=["kombinert"])
     async def combined_stars(self, ctx):
         """
         Kommando som viser de 15 brukerene med mest stjerner totalt
@@ -216,15 +223,15 @@ class Github(commands.Cog):
         idrr = list(tot_stars.items())
         embed.title = f"{stop} mest stjernede brukere"
 
-        for n in range(0, stop):
-            discord_user, stars = idrr[n]
+        for i in range(0, stop):
+            discord_user, stars = idrr[i]
             title = f"⭐:{stars}"
             desc = f"{self.bot.get_user(int(discord_user)).mention}"
             embed.add_field(name=title, value=desc, inline=False)
 
         return await ctx.reply(embed=embed)
 
-    @ ghGroup.command(name="users", aliases=["brukere", "total"])
+    @gh_group.command(name="users", aliases=["brukere", "total"])
     async def show_users(self, ctx):
         """
         Kommando som viser top 10 stjernede repoer samlet mellom alle registrerte brukere
@@ -235,8 +242,8 @@ class Github(commands.Cog):
         idrr = list(self.all_stars.items())
         embed.title = f"{stop} mest stjernede repoer"
 
-        for n in range(0, stop):
-            repo_id, *overflow = idrr[n]
+        for i in range(0, stop):
+            repo_id, *_overflow = idrr[i]
             repo = self.all_repos[repo_id]
             title = f"{repo['name']} - ⭐:{repo['stargazers_count']}"
             desc = repo["description"]
@@ -247,7 +254,7 @@ class Github(commands.Cog):
 
         return await ctx.reply(embed=embed)
 
-    def is_user_registered(self, discord_id, random_string):
+    def _is_user_registered(self, discord_id, random_string):
         conn = DB(data_dir=self.bot.data_dir).connection
 
         if conn is None:
@@ -328,40 +335,46 @@ class Github(commands.Cog):
                 self.all_repos[gh_repo["id"]] = {"discord_user": discord_id, **gh_repo}
         self.all_stars = dict(sorted(stars.items(), key=operator.itemgetter(1), reverse=True))
 
-    async def remover(self, member):
+    async def _remover(self, member):
         try:
             conn = DB(data_dir=self.bot.data_dir).connection
             cursor = conn.cursor()
             cursor.execute(f"DELETE FROM github_users WHERE discord_id={member.id}")
             conn.commit()
             self.bot.logger.info("%s left, purged from database", member.name)
-        except:
+        except Exception:
             pass
 
     class Cacher():
+        """
+        Klasse for mellomlagring
+        """
+
         def __init__(self, bot):
             self.bot = bot
 
         async def loop(self):
+            # pylint: disable=missing-function-docstring
             while True:
                 self.bot._get_users()
                 await asyncio.sleep(int(60*60*12))
 
 
-def check_folder(data_dir):
-    f = f"{data_dir}/db"
-    if not os.path.exists(f):
-        os.makedirs(f)
+def _check_folder(data_dir):
+    _f = f"{data_dir}/db"
+    if not os.path.exists(_f):
+        os.makedirs(_f)
 
 
-def start_server(bot):
+def _start_server(bot):
     server = threading.Thread(target=Server, kwargs={"data_dir": bot.data_dir, "settings": bot.settings.github})
     server.start()
 
 
 def setup(bot):
-    check_folder(bot.data_dir)
-    start_server(bot)
-    n = Github(bot)
-    bot.add_listener(n.remover, "on_member_remove")
-    bot.add_cog(n)
+    # pylint: disable=missing-function-docstring
+    _check_folder(bot.data_dir)
+    _start_server(bot)
+    _n = Github(bot)
+    bot.add_listener(_n._remover, "on_member_remove")
+    bot.add_cog(_n)

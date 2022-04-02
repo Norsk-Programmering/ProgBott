@@ -1,3 +1,8 @@
+"""
+Hjelpeklasse for databaseoperasjoner
+"""
+# pylint: disable=missing-function-docstring
+
 # Bot Utilities
 from cogs.utils.db import DB
 

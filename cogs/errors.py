@@ -1,3 +1,7 @@
+"""
+Cog for håndtering av feil
+"""
+
 # Discord Packages
 from nextcord.ext import commands
 
@@ -8,11 +12,13 @@ import traceback
 
 
 class Errors(commands.Cog):
+    # pylint: disable=missing-class-docstring
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        # pylint: disable=missing-function-docstring
 
         try:
             self.bot.get_command(f"{ctx.command}").reset_cooldown(ctx)
@@ -62,4 +68,5 @@ class Errors(commands.Cog):
 
 
 def setup(bot):
+    # pylint: disable=missing-function-docstring
     bot.add_cog(Errors(bot))

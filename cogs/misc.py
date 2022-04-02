@@ -15,12 +15,16 @@ from urllib import parse
 
 
 class Misc(commands.Cog):
+    """
+    Klasse for diverse komandoer
+    """
+
     def __init__(self, bot):
         self.bot = bot
         self.repo = "https://github.com/Norsk-Programmering/ProgBott"
         self.ico = "https://github.com/Norsk-Programmering/Profilering/raw/master/BotAvatar.gif"
 
-    def get_uptime(self):
+    def _get_uptime(self):
         now = time.time()
         diff = int(now - self.bot.uptime)
         days, remainder = divmod(diff, 24 * 60 * 60)
@@ -47,7 +51,7 @@ class Misc(commands.Cog):
         """
         Komando for oppetid
         """
-        days, hours, minutes, seconds = self.get_uptime()
+        days, hours, minutes, seconds = self._get_uptime()
         await ctx.reply(f"{days}d {hours}h {minutes}m {seconds}s")
 
     @commands.command(aliases=["farge"])
@@ -109,17 +113,17 @@ class Misc(commands.Cog):
 
         intents_list = []
 
-        for intent, val in ctx.bot.intents:
+        for intent, _val in ctx.bot.intents:
             try:
                 if intents[intent]:
                     intents_list.append(intents[intent])
             except KeyError:
                 intents_list.append(intent)
-                self.bot.logger.debug("feature %s is not translated", intent)
+                self.bot.logger.debug("intent %s is not translated", intent)
 
         guilds = len(self.bot.guilds)
         members = len(membercount)
-        days, hours, minutes, seconds = self.get_uptime()
+        days, hours, minutes, seconds = self._get_uptime()
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
         embed = nextcord.Embed(color=nextcord.Colour.from_rgb(244, 1, 110), description=desc)
@@ -148,8 +152,8 @@ class Misc(commands.Cog):
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
         await ctx.reply(embed=embed)
 
-    @commands.command(aliases=["pullrequest", "draforespørsel"], hidden=True)
-    async def pr(self, ctx):
+    @commands.command(aliases=["pullrequest", "draforespørsel", "pr"], hidden=True)
+    async def pull_request(self, ctx):
         """
         Pwease appwove my puww wequest senpai ^_^ uwu
         """
@@ -158,6 +162,9 @@ class Misc(commands.Cog):
 
     @commands.command(aliases=["topproller"])
     async def toproller(self, ctx, antall: int = None):
+        """
+        Kommando for å vise rollene med flest medlemmer
+        """
 
         guild_roles = ctx.guild.roles  # Avoids fetching roles multiple times.
 
@@ -331,7 +338,7 @@ class Misc(commands.Cog):
         if features_string != "":
             embed.add_field(name="Tillegsfunksjoner", value=features_string)
 
-        if photos != {}:
+        if photos:
             photos_string = ""
             for key, value in photos.items():
                 photos_string += f"[{key}]({value})\n"
@@ -534,21 +541,13 @@ class Misc(commands.Cog):
         else:
             color = nextcord.Colour(0x99AAB5)
 
-        hoisted = "Nei"
-        mentionable = "Nei"
-
-        if rolle.hoist:
-            hoisted = "Ja"
-        if rolle.mentionable:
-            mentionable = "Ja"
+        hoisted = "Ja" if rolle.hoist else "Nei"
+        mentionable = "Ja" if rolle.mentionable else "Nei"
 
         rolle_created_date = rolle.created_at.strftime("%d. %b. %Y - %H:%M")
         since_created_days = (ctx.message.created_at - rolle.created_at).days
 
-        if since_created_days == 1:
-            since_created_days_string = "dag"
-        else:
-            since_created_days_string = "dager"
+        since_created_days_string = "dag" if since_created_days == 1 else"dager"
 
         members = []
         for member in rolle.members:
@@ -583,7 +582,6 @@ class Misc(commands.Cog):
         embed.add_field(name=f"Brukere med rollen ({len(rolle.members)})", value=members, inline=False)
         await ctx.reply(embed=embed)
 
-    @commands.has_permissions(embed_links=True)
     @commands.is_owner()
     @commands.command(hidden=True)
     async def reload(self, ctx, cog):
@@ -601,10 +599,12 @@ class Misc(commands.Cog):
         except commands.ExtensionNotLoaded:
             return await ctx.reply(f"{name_} was not loaded")
 
-    @commands.has_permissions(embed_links=True)
-    @commands.is_owner()
+    @commands.check_any(commands.is_owner(), commands.has_permissions(manage_emojis=True))
     @commands.command(hidden=True)
     async def smekk(self, ctx, member: nextcord.Member):
+        """
+        Drar fram fluesmekkeren
+        """
         emote_dict = {511934458304397312: 773307285073428540, 386655733107785738: 472225917197090816}
         try:
             emote_str = self.bot.get_emoji(emote_dict[ctx.guild.id])
@@ -618,4 +618,5 @@ class Misc(commands.Cog):
 
 
 def setup(bot):
+    # pylint: disable=missing-function-docstring
     bot.add_cog(Misc(bot))

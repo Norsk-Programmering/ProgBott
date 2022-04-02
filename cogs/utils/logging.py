@@ -1,3 +1,8 @@
+"""
+Modul for oppsett av logging
+"""
+# pylint: disable=missing-function-docstring,missing-class-docstring
+
 import os
 from logging import Formatter, StreamHandler, getLogger
 from logging.handlers import RotatingFileHandler

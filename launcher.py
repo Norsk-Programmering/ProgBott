@@ -1,5 +1,9 @@
+"""
+Hovedmodul for botten
+"""
 # pylint: disable=W0201
 # pylint: disable=missing-function-docstring
+
 # Discord Packages
 import nextcord
 from nextcord.ext import commands
@@ -12,14 +16,14 @@ import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-intents = nextcord.Intents.none()
-intents.guilds = True
-intents.members = True
-intents.emojis = True
-intents.presences = True
-intents.messages = True
-intents.guild_reactions = True
-intents.guild_typing = True
+Intents = nextcord.Intents().none()
+Intents.guilds = True
+Intents.members = True
+Intents.emojis = True
+Intents.presences = True
+Intents.messages = True
+Intents.guild_reactions = True
+Intents.guild_typing = True
 
 mentions = nextcord.AllowedMentions(
     everyone=False,
@@ -36,8 +40,12 @@ def _get_prefix(bot, message):
 
 
 class Bot(commands.Bot):
+    """
+    Hovedklasse for botten
+    """
+
     def __init__(self):
-        super().__init__(command_prefix=_get_prefix, intents=intents, allowed_mentions=mentions)
+        super().__init__(command_prefix=_get_prefix, intents=Intents, allowed_mentions=mentions)
         self.logger = logger
         self.data_dir = data_dir
         self.settings = settings.extra
@@ -62,16 +70,17 @@ class Bot(commands.Bot):
             try:
                 self.logger.debug("Loading extension %s", extension)
                 self.load_extension(extension)
-            except Exception as e:
-                self.logger.exception("Loading of extension %s failed: %s", extension, e)
+            except Exception as _e:
+                self.logger.exception("Loading of extension %s failed: %s", extension, _e)
 
     def run(self):
+        # pylint: disable=arguments-differ
         try:
             super().run(settings.token)
-        except Exception as e:
-            tb = e.__traceback__
-            self.logger.error(traceback.extract_tb(tb))
-            print(e)
+        except Exception as _e:
+            _tb = _e.__traceback__
+            self.logger.error(traceback.extract_tb(_tb))
+            print(_e)
 
 
 if __name__ == "__main__":
@@ -88,13 +97,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    level = args.level
+    LEVEL = args.level
     data_dir = args.data_directory
 
     if args.debug:
-        level = "DEBUG"
+        LEVEL = "DEBUG"
 
-    settings = Settings(data_dir=data_dir, log_level=level, log_to_file=args.log_to_file)
+    settings = Settings(data_dir=data_dir, log_level=LEVEL, log_to_file=args.log_to_file)
 
     logger = Logger(location=settings.data_dir, level=settings.log_level, to_file=settings.log_to_file).logger
     logger.debug("Data folder: %s", settings.data_dir)

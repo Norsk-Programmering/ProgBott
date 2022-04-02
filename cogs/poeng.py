@@ -86,7 +86,7 @@ class Poeng(commands.Cog):
         Funksjon som gir stjerne
         """
         emoji = self.bot.get_emoji(743471543706976256)
-        emojiStr = f'<:forkast:{emoji.id}>'
+        emoji_str = f'<:forkast:{emoji.id}>'
         dudes = {'id': [], 'mention': []}
         embed = easy_embed(self, message)
         for dude in message.mentions:
@@ -99,14 +99,14 @@ class Poeng(commands.Cog):
         if not dudes['id']:
             return
         await message.add_reaction(emoji)
-        msgData = {
+        msg_data = {
             'hjelper': dudes['id'],
             'giver': message.author.id,
             'link': message.jump_url
         }
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {", ".join(dudes["mention"])} en stjerne!'
-        reply = await message.reply(f"Registrerer stjerne\nreager med {emojiStr} for å avbryte")
+        reply = await message.reply(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
         await message.channel.trigger_typing()
 
         def check(reaction, user):
@@ -131,7 +131,7 @@ class Poeng(commands.Cog):
             return await reply.delete()
 
         except asyncio.TimeoutError:
-            self.teller_data['meldinger'][str(message.id)] = msgData
+            self.teller_data['meldinger'][str(message.id)] = msg_data
             self.cacher()
             try:
                 await reply.edit(content=None, embed=embed)
@@ -272,9 +272,9 @@ class Poeng(commands.Cog):
 
 def check_folder(data_dir):
     # pylint: disable=missing-function-docstring
-    f = f'{data_dir}/poeng'
-    if not os.path.exists(f):
-        os.makedirs(f)
+    _f = f'{data_dir}/poeng'
+    if not os.path.exists(_f):
+        os.makedirs(_f)
 
 
 def check_files(data_dir):

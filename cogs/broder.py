@@ -1,3 +1,7 @@
+"""
+Cog for utløsere på ord
+"""
+
 # Discord Packages
 from nextcord.ext import commands
 
@@ -5,20 +9,23 @@ from random import randint
 
 
 class Broder(commands.Cog):
+    # pylint: disable=missing-class-docstring
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        # pylint: disable=missing-function-docstring
         if not message.author.bot:
             await self._filter(message)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
+    async def on_message_edit(self, _before, after):
+        # pylint: disable=missing-function-docstring
         if not after.author.bot:
             await self._filter(after)
 
-    async def _filter(self, message, **kwarg):
+    async def _filter(self, message):
         word_ = [("bruh", "bruh"), ("rox", "Du kalte?")]
         content_ = message.content.lower()
         for word, yeet in word_:
@@ -28,4 +35,5 @@ class Broder(commands.Cog):
 
 
 def setup(bot):
+    # pylint: disable=missing-function-docstring
     bot.add_cog(Broder(bot))

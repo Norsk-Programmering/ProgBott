@@ -1,3 +1,8 @@
+"""
+Hjelpeklasse for databaseoperasjoner
+"""
+# pylint: disable=missing-function-docstring,missing-class-docstring
+
 import sqlite3
 
 

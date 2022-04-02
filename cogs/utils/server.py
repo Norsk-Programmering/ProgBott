@@ -1,3 +1,7 @@
+"""
+Modul for den innebyde webserveren
+"""
+
 # Bot Utilities
 from cogs.utils.db import DB
 
@@ -8,6 +12,10 @@ app = Flask(__name__, static_folder="../../static", template_folder="../../templ
 
 
 class Server:
+    """
+    Klasse for initalisering av Flask
+    """
+
     def __init__(self, debug=False, **kwargs):
         for key, value in kwargs.items():
             app.config[key] = value
@@ -15,27 +23,31 @@ class Server:
 
 
 @app.route("/")
-def index():
+def _index():
     return render_template("index.html")
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def _page_not_found(e):
     return render_template("error.html", error=e, code=404), 404
 
 
 @app.errorhandler(500)
-def internal_server_error(e):
+def _internal_server_error(e):
     return render_template("error.html", error=e, code=500), 500
 
 
 @app.route("/github/oauth/callback")
 def callback():
+    """
+    Rute som håndterer callback fra Github Oauth
+    """
+
     query_code = request.args.get("code")
 
     [discord_id, key] = request.args.get("params").split(":")
 
-    is_pending = get_is_pending(discord_id, key)
+    is_pending = _get_is_pending(discord_id, key)
 
     settings = app.config["settings"]
 
@@ -63,21 +75,21 @@ def callback():
         "Accept": "application/json"
     }).json()
 
-    inserted_user = insert_user(discord_id, access_token, user["login"])
+    inserted_user = _insert_user(discord_id, access_token, user["login"])
 
     if inserted_user:
-        delete_pending(discord_id)
+        _delete_pending(discord_id)
         return redirect(f"/github/oauth/complete/{user['login']}")
     else:
         return "NOT_OK"
 
 
 @app.route("/github/oauth/complete/<name>")
-def oauth_complete(name):
+def _oauth_complete(name):
     return render_template("oauth_complete.html", name=name)
 
 
-def insert_user(discord_id, auth_token, github_username):
+def _insert_user(discord_id, auth_token, github_username):
     conn = DB(data_dir=app.config["data_dir"]).connection
 
     if conn is None:
@@ -95,7 +107,7 @@ def insert_user(discord_id, auth_token, github_username):
     return True
 
 
-def get_is_pending(discord_id, random_string):
+def _get_is_pending(discord_id, random_string):
     conn = DB(data_dir=app.config["data_dir"]).connection
 
     cursor = conn.cursor()
@@ -107,7 +119,7 @@ def get_is_pending(discord_id, random_string):
     return row is not None
 
 
-def delete_pending(discord_id):
+def _delete_pending(discord_id):
     conn = DB(data_dir=app.config["data_dir"]).connection
 
     cursor = conn.cursor()

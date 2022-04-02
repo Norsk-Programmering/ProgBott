@@ -1,5 +1,5 @@
 """
-Modul for opprettelse av bokmerker
+Cog for opprettelse av bokmerker
 """
 
 # Discord Packages
@@ -32,6 +32,7 @@ class Bokmerker(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        # pylint: disable=missing-function-docstring
         channel = await self.bot.fetch_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         user = await self.bot.fetch_user(payload.user_id)
@@ -42,6 +43,7 @@ class Bokmerker(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
+        # pylint: disable=missing-function-docstring
         channel = await self.bot.fetch_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         user = await self.bot.fetch_user(payload.user_id)
@@ -52,6 +54,7 @@ class Bokmerker(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
+        # pylint: disable=missing-function-docstring
         await self.remove_all_bookmarks(payload.message_id)
 
     async def add_bookmark(self, message, user):
@@ -65,7 +68,7 @@ class Bokmerker(commands.Cog):
         elif message.attachments:
             title = "Vedlegg"
 
-        bokmerkeData = {
+        bokmerke_data = {
             'tittel': title,
             'link': message.jump_url,
         }
@@ -75,7 +78,7 @@ class Bokmerker(commands.Cog):
         elif str(message.id) in self.bookmarks_data['bokmerker'][str(user.id)]:
             return
 
-        self.bookmarks_data['bokmerker'][str(user.id)][str(message.id)] = bokmerkeData
+        self.bookmarks_data['bokmerker'][str(user.id)][str(message.id)] = bokmerke_data
         self.save_json('bokmerker')
         self.load_json('bokmerker')
 
@@ -107,12 +110,15 @@ class Bokmerker(commands.Cog):
         """
 
         # Dette er nok en treg og dårlig approach, men men
-        for userId in self.bookmarks_data['bokmerker']:
-            if self.bookmarks_data['bokmerker'][userId][str(message_id)]:
-                del self.bookmarks_data['bokmerker'][userId][str(message_id)]
+        try:
+            for user_id in self.bookmarks_data['bokmerker']:
+                if self.bookmarks_data['bokmerker'][user_id][str(message_id)]:
+                    del self.bookmarks_data['bokmerker'][user_id][str(message_id)]
 
-        self.save_json('bokmerker')
-        self.load_json('bokmerker')
+            self.save_json('bokmerker')
+            self.load_json('bokmerker')
+        except KeyError:
+            pass
 
     @commands.guild_only()
     @commands.group(name="bokmerker")
@@ -153,41 +159,41 @@ class Bokmerker(commands.Cog):
 
             return False
 
-        antallBokmerker = len(self.bookmarks_data['bokmerker'][str(user.id)])
+        antall_bokmerker = len(self.bookmarks_data['bokmerker'][str(user.id)])
         page = 0
-        maxPage = ceil(antallBokmerker / 5) - 1
-        indexedBookmarks = list(self.bookmarks_data['bokmerker'][str(user.id)].values())
+        max_page = ceil(antall_bokmerker / 5) - 1
+        indexed_bookmarks = list(self.bookmarks_data['bokmerker'][str(user.id)].values())
 
         while True:
             embed = easy_embed(self, ctx)
-            for i in range(page*5, min(page*5 + 5, antallBokmerker)):
-                bokmerke = indexedBookmarks[i]
+            for i in range(page*5, min(page*5 + 5, antall_bokmerker)):
+                bokmerke = indexed_bookmarks[i]
 
                 embed.add_field(
                     name=f"{bokmerke['tittel']}",
                     value=f"[Link]({bokmerke['link']})",
                     inline=False
-                    )
+                )
 
             embed.title = "Bokmerker"
-            if antallBokmerker == 1:
-                embed.description = f"{user.mention} har {antallBokmerker} bokmerke!"
+            if antall_bokmerker == 1:
+                embed.description = f"{user.mention} har {antall_bokmerker} bokmerke!"
             else:
-                embed.description = f"{user.mention} har {antallBokmerker} bokmerker!"
+                embed.description = f"{user.mention} har {antall_bokmerker} bokmerker!"
 
-            embed.description += f"\nSide {page + 1}/{maxPage + 1}"
+            embed.description += f"\nSide {page + 1}/{max_page + 1}"
 
             await message.edit(content=None, embed=embed)
 
             try:
-                reaction, reactionUser = await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
+                reaction, reaction_user = await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
                 try:
-                    await message.remove_reaction(reaction.emoji, reactionUser)
+                    await message.remove_reaction(reaction.emoji, reaction_user)
 
                     if reaction.emoji == '⏮️':
                         page = max(page - 1, 0)
                     elif reaction.emoji == '⏭️':
-                        page = min(page + 1, maxPage)
+                        page = min(page + 1, max_page)
 
                 except nextcord.Forbidden:
                     self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
@@ -200,6 +206,7 @@ class Bokmerker(commands.Cog):
         """
         Loop for å mellomlagre bokmerker
         """
+
         while True:
             self.cacher()
             await asyncio.sleep(60*60*5)
@@ -208,6 +215,7 @@ class Bokmerker(commands.Cog):
         """
         Mellomlagrer bokmerker
         """
+
         if time.time() - 120 > float(self.cache_time):
             self.save_json('bokmerker')
             self.load_json('bokmerker')
@@ -218,6 +226,7 @@ class Bokmerker(commands.Cog):
         """
         Lagrer bokmerker
         """
+
         if mode == 'bokmerker':
             with codecs.open(self.bookmarks_file, 'r', encoding='utf8') as json_file:
                 self.bookmarks_data = json.load(json_file)
@@ -231,14 +240,15 @@ class Bokmerker(commands.Cog):
                 with codecs.open(self.bookmarks_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.bookmarks_data, outfile, indent=4, sort_keys=True)
             except Exception as err:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (err, self.bookmarks_data))
+                return self.bot.logger.warn(
+                    'Failed to validate JSON before saving:\n%s\n%s' % (err, self.bookmarks_data))
 
 
 def check_folder(data_dir):
     # pylint: disable=missing-function-docstring
-    f = f'{data_dir}/bokmerker'
-    if not os.path.exists(f):
-        os.makedirs(f)
+    _f = f'{data_dir}/bokmerker'
+    if not os.path.exists(_f):
+        os.makedirs(_f)
 
 
 def check_files(data_dir):
