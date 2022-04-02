@@ -79,6 +79,10 @@ class Bokmerker(commands.Cog):
         self.save_json('bokmerker')
         self.load_json('bokmerker')
 
+        await message.add_reaction('👀')
+        await asyncio.sleep(5)
+        await message.remove_reaction('👀', self.bot.user)
+
     async def remove_bookmark(self, message, user):
         """
         Funksjon som fjerner bokmerker
