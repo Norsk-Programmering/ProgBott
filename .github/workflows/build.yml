@@ -4,6 +4,8 @@ on:
     paths-ignore:
       - ".github/**"
       - ".devcontainer/**"
+    branches-ignore:
+      - "renovate/**"
   pull_request:
     branches-ignore:
       - "renovate/**"
