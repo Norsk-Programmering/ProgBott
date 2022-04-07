@@ -601,10 +601,13 @@ class Misc(commands.Cog):
 
     @commands.check_any(commands.is_owner(), commands.has_permissions(manage_emojis=True))
     @commands.command(hidden=True)
-    async def smekk(self, ctx, member: nextcord.Member):
+    async def smekk(self, ctx, member: nextcord.Member = None):
         """
         Drar fram fluesmekkeren
         """
+        if not member:
+            await ctx.message.delete()
+            return
         emote_dict = {511934458304397312: 773307285073428540, 386655733107785738: 472225917197090816}
         try:
             emote_str = self.bot.get_emoji(emote_dict[ctx.guild.id])
