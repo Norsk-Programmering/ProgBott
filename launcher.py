@@ -16,20 +16,6 @@ import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-Intents = discord.Intents().none()
-Intents.guilds = True
-Intents.members = True
-Intents.emojis = True
-Intents.presences = True
-Intents.messages = True
-Intents.guild_reactions = True
-Intents.guild_typing = True
-
-mentions = discord.AllowedMentions(
-    everyone=False,
-    replied_user=False
-)
-
 
 def _get_prefix(bot, message):
     if not message.guild:
@@ -45,7 +31,21 @@ class Bot(commands.Bot):
     """
 
     def __init__(self):
-        super().__init__(command_prefix=_get_prefix, intents=Intents, allowed_mentions=mentions)
+        intents = discord.Intents(
+            emojis=True,
+            guild_reactions=True,
+            guild_typing=True,
+            guilds=True,
+            members=True,
+            messages=True,
+            message_content=True,
+            presences=True
+        )
+        mentions = discord.AllowedMentions(
+            everyone=False,
+            replied_user=False
+        )
+        super().__init__(command_prefix=_get_prefix, intents=intents, allowed_mentions=mentions)
         self.logger = logger
         self.data_dir = data_dir
         self.settings = settings.extra
@@ -65,22 +65,14 @@ class Bot(commands.Bot):
         self.logger.info("DiscordPY: %s", discord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
+    async def setup_hook(self):
         extensions = ["cogs.misc", "cogs.poeng", "cogs.bokmerker", "cogs.errors", "cogs.github", "cogs.broder"]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)
-                self.load_extension(extension)
+                await self.load_extension(extension)
             except Exception as _e:
                 self.logger.exception("Loading of extension %s failed: %s", extension, _e)
-
-    def run(self):
-        # pylint: disable=arguments-differ
-        try:
-            super().run(settings.token)
-        except Exception as _e:
-            _tb = _e.__traceback__
-            self.logger.error(traceback.extract_tb(_tb))
-            print(_e)
 
 
 if __name__ == "__main__":
@@ -108,4 +100,10 @@ if __name__ == "__main__":
     logger = Logger(location=settings.data_dir, level=settings.log_level, to_file=settings.log_to_file).logger
     logger.debug("Data folder: %s", settings.data_dir)
 
-    Bot().run()
+    # pylint: disable=arguments-differ
+    try:
+        Bot().run(settings.token)
+    except Exception as _e:
+        _tb = _e.__traceback__
+        logger.error(traceback.extract_tb(_tb))
+        print(_e)

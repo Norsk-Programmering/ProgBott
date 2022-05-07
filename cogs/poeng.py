@@ -4,7 +4,7 @@ Modul for tildeling av stjerner
 
 # Discord Packages
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
@@ -13,7 +13,6 @@ import asyncio
 import codecs
 import json
 import os
-import time
 from pprint import pformat
 
 
@@ -25,12 +24,11 @@ class Poeng(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.teller_data = {}
-        self.cache_time = time.time()
         self.settings_file = bot.data_dir + '/poeng/innstilinger.json'
         self.teller_file = bot.data_dir + '/poeng/teller.json'
         self.load_json('settings')
         self.load_json('teller')
-        self.bot.loop.create_task(self.cache_loop())
+        self.cacher.start()
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -222,23 +220,14 @@ class Poeng(commands.Cog):
         self.save_json('settings')
         self.load_json('settings')
 
-    async def cache_loop(self):
-        """
-        Loop for å mellomlagre stjerner
-        """
-        while True:
-            self.cacher()
-            await asyncio.sleep(60*60*5)
-
-    def cacher(self):
+    @tasks.loop(seconds=5)
+    async def cacher(self):
         """
         Mellomlagrer stjerner
         """
-        if time.time() - 120 > float(self.cache_time):
-            self.save_json('teller')
-            self.load_json('teller')
-            self.bot.logger.debug('Reloaded data cache')
-            self.cache_time = time.time()
+        self.save_json('teller')
+        self.load_json('teller')
+        self.bot.logger.debug('Reloaded star data cache')
 
     def load_json(self, mode):
         """
@@ -269,32 +258,35 @@ class Poeng(commands.Cog):
                 return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (err,
                                                                                                 self.settings_data))
 
+    def check_folder(self):
+        # pylint: disable=missing-function-docstring
+        _f = f'{self.bot.data_dir}/poeng'
+        if not os.path.exists(_f):
+            os.makedirs(_f)
 
-def check_folder(data_dir):
+    def check_files(self):
+        # pylint: disable=missing-function-docstring
+        files = [
+            {f'{self.bot.data_dir}/poeng/teller.json': {'meldinger': {}}},
+            {f'{self.bot.data_dir}/poeng/innstilinger.json': {'takk': []}}
+        ]
+        for i in files:
+            for file, default in i.items():
+                try:
+                    with codecs.open(file, 'r', encoding='utf8') as json_file:
+                        json.load(json_file)
+                except FileNotFoundError:
+                    with codecs.open(file, 'w', encoding='utf8') as outfile:
+                        json.dump(default, outfile)
+
+    async def cog_load(self):
+        self.check_folder()
+        self.check_files()
+
+    async def cog_unload(self):
+        self.cacher.cancel()
+
+
+async def setup(bot):
     # pylint: disable=missing-function-docstring
-    _f = f'{data_dir}/poeng'
-    if not os.path.exists(_f):
-        os.makedirs(_f)
-
-
-def check_files(data_dir):
-    # pylint: disable=missing-function-docstring
-    files = [
-        {f'{data_dir}/poeng/teller.json': {'meldinger': {}}},
-        {f'{data_dir}/poeng/innstilinger.json': {'takk': []}}
-    ]
-    for i in files:
-        for file, default in i.items():
-            try:
-                with codecs.open(file, 'r', encoding='utf8') as json_file:
-                    json.load(json_file)
-            except FileNotFoundError:
-                with codecs.open(file, 'w', encoding='utf8') as outfile:
-                    json.dump(default, outfile)
-
-
-def setup(bot):
-    # pylint: disable=missing-function-docstring
-    check_folder(bot.data_dir)
-    check_files(bot.data_dir)
-    bot.add_cog(Poeng(bot))
+    await bot.add_cog(Poeng(bot))

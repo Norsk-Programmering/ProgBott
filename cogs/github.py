@@ -371,10 +371,10 @@ def _start_server(bot):
     server.start()
 
 
-def setup(bot):
+async def setup(bot):
     # pylint: disable=missing-function-docstring
     _check_folder(bot.data_dir)
     _start_server(bot)
     _n = Github(bot)
     bot.add_listener(_n._remover, "on_member_remove")
-    bot.add_cog(_n)
+    await bot.add_cog(_n)

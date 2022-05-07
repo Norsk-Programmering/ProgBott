@@ -4,7 +4,7 @@ Cog for opprettelse av bokmerker
 
 # Discord Packages
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
@@ -13,7 +13,6 @@ import asyncio
 import codecs
 import json
 import os
-import time
 from math import ceil
 
 
@@ -25,10 +24,9 @@ class Bokmerker(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bookmarks_data = {}
-        self.cache_time = time.time()
         self.bookmarks_file = bot.data_dir + '/bokmerker/bokmerker.json'
         self.load_json('bokmerker')
-        self.bot.loop.create_task(self.cache_loop())
+        self.cacher.start()
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -202,25 +200,14 @@ class Bokmerker(commands.Cog):
                 await message.remove_reaction('⏮️', self.bot.user)
                 await message.remove_reaction('⏭️', self.bot.user)
 
-    async def cache_loop(self):
-        """
-        Loop for å mellomlagre bokmerker
-        """
-
-        while True:
-            self.cacher()
-            await asyncio.sleep(60*60*5)
-
-    def cacher(self):
+    @tasks.loop(hours=5)
+    async def cacher(self):
         """
         Mellomlagrer bokmerker
         """
-
-        if time.time() - 120 > float(self.cache_time):
-            self.save_json('bokmerker')
-            self.load_json('bokmerker')
-            self.bot.logger.debug('Reloaded data cache')
-            self.cache_time = time.time()
+        self.save_json('bokmerker')
+        self.load_json('bokmerker')
+        self.bot.logger.debug('Reloaded bookmark data cache')
 
     def load_json(self, mode):
         """
@@ -243,31 +230,34 @@ class Bokmerker(commands.Cog):
                 return self.bot.logger.warn(
                     'Failed to validate JSON before saving:\n%s\n%s' % (err, self.bookmarks_data))
 
+    def check_folder(self):
+        # pylint: disable=missing-function-docstring
+        _f = f'{self.bot.data_dir}/bokmerker'
+        if not os.path.exists(_f):
+            os.makedirs(_f)
 
-def check_folder(data_dir):
+    def check_files(self):
+        # pylint: disable=missing-function-docstring
+        files = [
+            {f'{self.bot.data_dir}/bokmerker/bokmerker.json': {'bokmerker': {}}},
+        ]
+        for i in files:
+            for file, default in i.items():
+                try:
+                    with codecs.open(file, 'r', encoding='utf8') as json_file:
+                        json.load(json_file)
+                except FileNotFoundError:
+                    with codecs.open(file, 'w', encoding='utf8') as outfile:
+                        json.dump(default, outfile)
+
+    async def cog_load(self):
+        self.check_folder()
+        self.check_files()
+
+    async def cog_unload(self):
+        self.cacher.cancel()
+
+
+async def setup(bot):
     # pylint: disable=missing-function-docstring
-    _f = f'{data_dir}/bokmerker'
-    if not os.path.exists(_f):
-        os.makedirs(_f)
-
-
-def check_files(data_dir):
-    # pylint: disable=missing-function-docstring
-    files = [
-        {f'{data_dir}/bokmerker/bokmerker.json': {'bokmerker': {}}},
-    ]
-    for i in files:
-        for file, default in i.items():
-            try:
-                with codecs.open(file, 'r', encoding='utf8') as json_file:
-                    json.load(json_file)
-            except FileNotFoundError:
-                with codecs.open(file, 'w', encoding='utf8') as outfile:
-                    json.dump(default, outfile)
-
-
-def setup(bot):
-    # pylint: disable=missing-function-docstring
-    check_folder(bot.data_dir)
-    check_files(bot.data_dir)
-    bot.add_cog(Bokmerker(bot))
+    await bot.add_cog(Bokmerker(bot))

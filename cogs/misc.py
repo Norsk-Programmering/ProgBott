@@ -593,7 +593,7 @@ class Misc(commands.Cog):
             return await ctx.reply(f"{cog} was not found")
 
         try:
-            self.bot.reload_extension(f'cogs.{name_}')
+            await self.bot.reload_extension(f'cogs.{name_}')
             await ctx.reply(f"{name_} was reloaded")
             self.bot.logger.debug("%s was reloaded", name_)
         except commands.ExtensionNotLoaded:
@@ -620,6 +620,6 @@ class Misc(commands.Cog):
         await ctx.send(f"Smekk - ka farsken! {member.mention} {emote_str}{emote_str}{emote_str}")
 
 
-def setup(bot):
+async def setup(bot):
     # pylint: disable=missing-function-docstring
-    bot.add_cog(Misc(bot))
+    await bot.add_cog(Misc(bot))

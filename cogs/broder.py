@@ -34,6 +34,6 @@ class Broder(commands.Cog):
                     await message.reply(yeet, mention_author=True)
 
 
-def setup(bot):
+async def setup(bot):
     # pylint: disable=missing-function-docstring
-    bot.add_cog(Broder(bot))
+    await bot.add_cog(Broder(bot))

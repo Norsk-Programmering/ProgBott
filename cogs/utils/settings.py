@@ -17,6 +17,7 @@ class Settings:
     """
     Klasse for instillinger
     """
+
     def __init__(self, data_dir, log_level, log_to_file):
 
         env = Env()
@@ -65,7 +66,7 @@ class Settings:
         except EnvError:
             pass
 
-        if not self.prefix:
+        if not hasattr(self, "prefix"):
             self.prefix = "^"
 
         try:

@@ -67,6 +67,6 @@ class Errors(commands.Cog):
                                       (ctx.command, error, traceback_lines.__str__()))
 
 
-def setup(bot):
+async def setup(bot):
     # pylint: disable=missing-function-docstring
-    bot.add_cog(Errors(bot))
+    await bot.add_cog(Errors(bot))
