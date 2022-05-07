@@ -3,8 +3,8 @@ Modul for tildeling av stjerner
 """
 
 # Discord Packages
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
@@ -126,7 +126,7 @@ class Poeng(commands.Cog):
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 await message.remove_reaction(emoji, message.author)
-            except nextcord.Forbidden:
+            except discord.Forbidden:
                 self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
             return await reply.delete()
 
@@ -135,12 +135,12 @@ class Poeng(commands.Cog):
             self.cacher()
             try:
                 await reply.edit(content=None, embed=embed)
-            except nextcord.HTTPException as HTTPEx:
+            except discord.HTTPException as HTTPEx:
                 self.bot.logger.error('Edit failed. $$%s$$ @@%s@@' % (HTTPEx, pformat(embed.to_dict())))
             await message.remove_reaction(emoji, self.bot.user)
             try:
                 return await message.remove_reaction(emoji, message.author)
-            except nextcord.Forbidden:
+            except discord.Forbidden:
                 return self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
     @commands.guild_only()
@@ -154,7 +154,7 @@ class Poeng(commands.Cog):
             await ctx.send_help(ctx.command)
 
     @poeng_group.command(name="sjekk")
-    async def check(self, ctx, user: nextcord.Member = None):
+    async def check(self, ctx, user: discord.Member = None):
         """
         Kommando for å sjekke stjerner
         """

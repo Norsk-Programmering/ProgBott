@@ -3,8 +3,8 @@ Cog for opprettelse av bokmerker
 """
 
 # Discord Packages
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
@@ -131,7 +131,7 @@ class Bokmerker(commands.Cog):
             await ctx.send_help(ctx.command)
 
     @bokmerker_group.command(name="vis")
-    async def check(self, ctx, user: nextcord.Member = None):
+    async def check(self, ctx, user: discord.Member = None):
         """
         Kommando for å vise bokmerker
         """
@@ -195,7 +195,7 @@ class Bokmerker(commands.Cog):
                     elif reaction.emoji == '⏭️':
                         page = min(page + 1, max_page)
 
-                except nextcord.Forbidden:
+                except discord.Forbidden:
                     self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
             except asyncio.TimeoutError:

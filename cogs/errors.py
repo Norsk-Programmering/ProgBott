@@ -3,7 +3,7 @@ Cog for håndtering av feil
 """
 
 # Discord Packages
-from nextcord.ext import commands
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.my_errors import NoDM

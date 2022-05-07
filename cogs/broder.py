@@ -3,7 +3,7 @@ Cog for utløsere på ord
 """
 
 # Discord Packages
-from nextcord.ext import commands
+from discord.ext import commands
 
 from random import randint
 

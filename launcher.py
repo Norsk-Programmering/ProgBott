@@ -5,8 +5,8 @@ Hovedmodul for botten
 # pylint: disable=missing-function-docstring
 
 # Discord Packages
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.logging import Logger
@@ -16,7 +16,7 @@ import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-Intents = nextcord.Intents().none()
+Intents = discord.Intents().none()
 Intents.guilds = True
 Intents.members = True
 Intents.emojis = True
@@ -25,7 +25,7 @@ Intents.messages = True
 Intents.guild_reactions = True
 Intents.guild_typing = True
 
-mentions = nextcord.AllowedMentions(
+mentions = discord.AllowedMentions(
     everyone=False,
     replied_user=False
 )
@@ -62,7 +62,7 @@ class Bot(commands.Bot):
             self.appinfo = await self.application_info()
 
         self.logger.info("Logged in as: %s in %s servers.", self.user.name, len(self.guilds))
-        self.logger.info("Nextcord: %s", nextcord.__version__)
+        self.logger.info("Discord: %s", discord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
         extensions = ["cogs.misc", "cogs.poeng", "cogs.bokmerker", "cogs.errors", "cogs.github", "cogs.broder"]

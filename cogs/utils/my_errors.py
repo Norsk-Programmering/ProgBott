@@ -1,6 +1,6 @@
 # pylint: disable=missing-class-docstring,missing-module-docstring
 # Discord Packages
-from nextcord.ext.commands.errors import CommandError
+from discord.ext.commands.errors import CommandError
 
 
 class NoDM(CommandError):

@@ -1,6 +1,6 @@
 # Discord Packages
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
@@ -107,8 +107,8 @@ class Misc(commands.Cog):
         how = "Med Python såklart!" \
               f"\n**Python-versjon:** " \
               f"[{py_ver}](https://python.org/downloads/release/python-{py_ver.replace('.', '')}/)" \
-              f"\n**Nextcord-versjon:** " \
-              f"[{nextcord.__version__}](https://github.com/nextcord/nextcord/releases/tag/v{nextcord.__version__}/)" \
+              f"\n**Discord-versjon:** " \
+              f"[{discord.__version__}](https://github.com/discord/discord/releases/tag/v{discord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
         intents_list = []
@@ -126,7 +126,7 @@ class Misc(commands.Cog):
         days, hours, minutes, seconds = self._get_uptime()
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
-        embed = nextcord.Embed(color=nextcord.Colour.from_rgb(244, 1, 110), description=desc)
+        embed = discord.Embed(color=discord.Colour.from_rgb(244, 1, 110), description=desc)
         embed.set_author(url=f"https://github.com/{dev.name}", name=dev.name, icon_url=dev.display_avatar.url)
         embed.set_thumbnail(url=self.ico)
 
@@ -148,7 +148,7 @@ class Misc(commands.Cog):
 
         url = "https://lmgtfy.com/?" + parse.urlencode({"q": søkeord})
 
-        embed = nextcord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
+        embed = discord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
         await ctx.reply(embed=embed)
 
@@ -308,10 +308,10 @@ class Misc(commands.Cog):
         }
         content = content_filter[str(ctx.guild.explicit_content_filter)]
 
-        embed = nextcord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
-                               f"**Innholdsfilter:** {content}\n" +
-                               f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
-                               f"**Emoji:** {len(ctx.guild.emojis)}")
+        embed = discord.Embed(color=ctx.me.color, description=f"**Verifiseringskrav:** {verification}\n" +
+                              f"**Innholdsfilter:** {content}\n" +
+                              f"**Boost Tier:** {ctx.guild.premium_tier}\n" +
+                              f"**Emoji:** {len(ctx.guild.emojis)}")
         embed.set_author(name=ctx.guild.name)
         if ctx.guild.icon is not None:
             embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url if ctx.guild.icon else None)
@@ -369,7 +369,7 @@ class Misc(commands.Cog):
         if len(roles) > 2048:
             file = StringIO(roles)
 
-            txt_file = nextcord.File(file, "roller.txt")
+            txt_file = discord.File(file, "roller.txt")
             await ctx.reply(file=txt_file)
 
             file.close()
@@ -379,7 +379,7 @@ class Misc(commands.Cog):
         if roles == "":
             roles = "**Ingen roller**"
 
-        embed = nextcord.Embed(color=ctx.me.color, description=roles)
+        embed = discord.Embed(color=ctx.me.color, description=roles)
         embed.set_author(name=f"Roller ({len(ctx.guild.roles) - 1})")
         embed.set_footer(text=ctx.guild.name)
         if ctx.guild.icon is not None:
@@ -388,7 +388,7 @@ class Misc(commands.Cog):
         await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userinfo", "ui", "brukerinfo", "user"])
-    async def bruker(self, ctx, *, bruker: nextcord.Member = None):
+    async def bruker(self, ctx, *, bruker: discord.Member = None):
         """
         Viser info om en bruker
         """
@@ -445,11 +445,11 @@ class Misc(commands.Cog):
         if str(bruker.color) != "#000000":
             color = bruker.color
         else:
-            color = nextcord.Colour(0x99AAB5)
+            color = discord.Colour(0x99AAB5)
 
         status = statuses[str(bruker.status)]
 
-        embed = nextcord.Embed(color=color)
+        embed = discord.Embed(color=color)
         if bruker.public_flags.all():
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app} \
                 {' '.join(userflags[m] for m, v in bruker.public_flags.all() if m in userflags)}"
@@ -483,7 +483,7 @@ class Misc(commands.Cog):
         await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userroles"])
-    async def brukerroller(self, ctx, bruker: nextcord.Member = None):
+    async def brukerroller(self, ctx, bruker: discord.Member = None):
         """
         Viser rollene til en bruker
         """
@@ -504,7 +504,7 @@ class Misc(commands.Cog):
         if len(roles) > 2048:
             file = StringIO(roles)
 
-            txt_file = nextcord.File(file, "roller.txt")
+            txt_file = discord.File(file, "roller.txt")
             await ctx.send(file=txt_file)
 
             file.close()
@@ -517,9 +517,9 @@ class Misc(commands.Cog):
         if str(bruker.color) != "#000000":
             color = bruker.color
         else:
-            color = nextcord.Colour(0x99AAB5)
+            color = discord.Colour(0x99AAB5)
 
-        embed = nextcord.Embed(color=color, description=roles)
+        embed = discord.Embed(color=color, description=roles)
         embed.set_author(name=f"Roller ({len(bruker.roles) - 1})")
         embed.set_footer(text=f"{bruker.name}#{bruker.discriminator}")
         if ctx.guild.icon is not None:
@@ -528,7 +528,7 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["roleinfo", "rolleinfo"])
-    async def rolle(self, ctx, *, rolle: nextcord.Role):
+    async def rolle(self, ctx, *, rolle: discord.Role):
         """
         Viser info om en rolle
         """
@@ -539,7 +539,7 @@ class Misc(commands.Cog):
         if str(rolle.color) != "#000000":
             color = rolle.color
         else:
-            color = nextcord.Colour(0x99AAB5)
+            color = discord.Colour(0x99AAB5)
 
         hoisted = "Ja" if rolle.hoist else "Nei"
         mentionable = "Ja" if rolle.mentionable else "Nei"
@@ -561,7 +561,7 @@ class Misc(commands.Cog):
 
         permissions = ", ".join([permission for permission, value in iter(rolle.permissions) if value is True])
 
-        embed = nextcord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
+        embed = discord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
         embed.set_author(name=rolle.guild.name)
         if ctx.guild.icon is not None:
             embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url)
@@ -601,7 +601,7 @@ class Misc(commands.Cog):
 
     @commands.check_any(commands.is_owner(), commands.has_permissions(manage_emojis=True))
     @commands.command(hidden=True)
-    async def smekk(self, ctx, member: nextcord.Member = None):
+    async def smekk(self, ctx, member: discord.Member = None):
         """
         Drar fram fluesmekkeren
         """
@@ -615,7 +615,7 @@ class Misc(commands.Cog):
             emote_str = ":hand_splayed:"
         try:
             await ctx.message.delete()
-        except nextcord.Forbidden:
+        except discord.Forbidden:
             self.bot.logger.warn('Missing permission to remove message (manage_messages)')
         await ctx.send(f"Smekk - ka farsken! {member.mention} {emote_str}{emote_str}{emote_str}")
 
