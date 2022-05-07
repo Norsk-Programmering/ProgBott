@@ -220,7 +220,7 @@ class Poeng(commands.Cog):
         self.save_json('settings')
         self.load_json('settings')
 
-    @tasks.loop(seconds=5)
+    @tasks.loop(hours=5)
     async def cacher(self):
         """
         Mellomlagrer stjerner
