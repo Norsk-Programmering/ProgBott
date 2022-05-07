@@ -141,12 +141,12 @@ class Misc(commands.Cog):
         await ctx.reply(embed=embed)
 
     @commands.command(aliases=["regel3"])
-    async def lmgtfy(self, ctx, *, søkeord: str):
+    async def lmgtfy(self, ctx, *, sokeord: str):
         """
         Fordi noen trenger en internett 101 leksjon
         """
 
-        url = "https://lmgtfy.com/?" + parse.urlencode({"q": søkeord})
+        url = "https://lmgtfy.com/?" + parse.urlencode({"q": sokeord})
 
         embed = discord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
         embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
@@ -157,8 +157,8 @@ class Misc(commands.Cog):
         """
         Pwease appwove my puww wequest senpai ^_^ uwu
         """
-
-        await ctx.reply("https://youtu.be/5xooMXyleXM")
+        await ctx.message.delete()
+        await ctx.send(f"<@{self.bot.appinfo.owner.id}>\nhttps://youtu.be/5xooMXyleXM")
 
     @commands.command(aliases=["topproller"])
     async def toproller(self, ctx, antall: int = None):
