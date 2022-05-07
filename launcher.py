@@ -62,7 +62,7 @@ class Bot(commands.Bot):
             self.appinfo = await self.application_info()
 
         self.logger.info("Logged in as: %s in %s servers.", self.user.name, len(self.guilds))
-        self.logger.info("Discord: %s", discord.__version__)
+        self.logger.info("DiscordPY: %s", discord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
         extensions = ["cogs.misc", "cogs.poeng", "cogs.bokmerker", "cogs.errors", "cogs.github", "cogs.broder"]

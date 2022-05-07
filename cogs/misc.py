@@ -107,8 +107,8 @@ class Misc(commands.Cog):
         how = "Med Python såklart!" \
               f"\n**Python-versjon:** " \
               f"[{py_ver}](https://python.org/downloads/release/python-{py_ver.replace('.', '')}/)" \
-              f"\n**Discord-versjon:** " \
-              f"[{discord.__version__}](https://github.com/discord/discord/releases/tag/v{discord.__version__}/)" \
+              f"\n**Discord.py-versjon:** " \
+              f"[{discord.__version__}](https://github.com/Rapptz/discord.py/releases/tag/v{discord.__version__}/)" \
               f"\n**ProgBott-versjon:** {bot_version}"
 
         intents_list = []
