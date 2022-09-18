@@ -1,4 +1,4 @@
-git+https://github.com/Rapptz/discord.py@902aa24#egg=discord.py
+discord.py==2.0.1
 environs==9.5.0
 flask==2.2.2
 marshmallow==3.18.0
