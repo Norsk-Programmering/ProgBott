@@ -259,23 +259,6 @@ class Misc(commands.Cog):
         categories = len(ctx.guild.categories)
         total_channels = text_channels + voice_channels
 
-        region = str(ctx.guild.region)
-        if region.startswith("us"):
-            region = "us"
-        elif region.startswith("eu"):
-            region = "eu"
-        elif region.startswith("amsterdam"):
-            region = "amsterdam"
-        try:
-            flag = flags[region]
-        except KeyError:
-            flag = ":question:"
-
-        try:
-            region_name = region_names[str(ctx.guild.region)]
-        except KeyError:
-            region_name = str(ctx.guild.region).title()
-
         features_string = ""
         if ctx.guild.features is not []:
             for feature in ctx.guild.features:
@@ -318,7 +301,6 @@ class Misc(commands.Cog):
             embed.set_thumbnail(url=ctx.guild.icon.replace(static_format="png").url)
         embed.add_field(name="ID", value=ctx.guild.id)
         embed.add_field(name="Eier", value=ctx.guild.owner.mention)
-        embed.add_field(name="Region", value=f"{flag} {region_name}")
         embed.add_field(name="Opprettet", value=f"{guild_created_date}\n{since_created_days} " +
                                                 f"{since_created_days_string} siden")
         embed.add_field(name=f"Kanaler ({total_channels})", value=f"💬 Tekst: **{text_channels}**\n" +
@@ -547,7 +529,7 @@ class Misc(commands.Cog):
         rolle_created_date = rolle.created_at.strftime("%d. %b. %Y - %H:%M")
         since_created_days = (ctx.message.created_at - rolle.created_at).days
 
-        since_created_days_string = "dag" if since_created_days == 1 else"dager"
+        since_created_days_string = "dag" if since_created_days == 1 else "dager"
 
         members = []
         for member in rolle.members:
