@@ -203,14 +203,6 @@ class Misc(commands.Cog):
         Viser info om guilden
         """
 
-        guild_created_date = ctx.guild.created_at.strftime("%d. %b. %Y - %H:%M")
-        since_created_days = (ctx.message.created_at - ctx.guild.created_at).days
-
-        if since_created_days == 1:
-            since_created_days_string = "dag"
-        else:
-            since_created_days_string = "dager"
-
         total_members = ctx.guild.member_count
         bot_members = 0
         online_members = 0
@@ -301,8 +293,8 @@ class Misc(commands.Cog):
             embed.set_thumbnail(url=ctx.guild.icon.replace(static_format="png").url)
         embed.add_field(name="ID", value=ctx.guild.id)
         embed.add_field(name="Eier", value=ctx.guild.owner.mention)
-        embed.add_field(name="Opprettet", value=f"{guild_created_date}\n{since_created_days} " +
-                                                f"{since_created_days_string} siden")
+        embed.add_field(name="Opprettet", value=f"{discord.utils.format_dt(ctx.guild.created_at)}\n" +
+                        f"{discord.utils.format_dt(ctx.guild.created_at, style='R')}", inline=False)
         embed.add_field(name=f"Kanaler ({total_channels})", value=f"💬 Tekst: **{text_channels}**\n" +
                                                                   f"🔊 Tale: **{voice_channels}**\n" +
                                                                   f"🗃️ Kategorier: **{categories}**")
@@ -391,26 +383,8 @@ class Misc(commands.Cog):
         if bruker.premium_since:
             premium_index = sorted(ctx.guild.premium_subscribers, key=lambda m: m.premium_since).index(bruker) + 1
 
-        bruker_joined_date = bruker.joined_at.strftime("%d. %b. %Y - %H:%M")
-        bruker_created_date = bruker.created_at.strftime("%d. %b. %Y - %H:%M")
-        since_joined_days = (ctx.message.created_at - bruker.joined_at).days
-        since_created_days = (ctx.message.created_at - bruker.created_at).days
-        if since_created_days == 1:
-            since_created_days_string = "dag"
-        else:
-            since_created_days_string = "dager"
-        if since_joined_days == 1:
-            since_joined_days_string = "dag"
-        else:
-            since_joined_days_string = "dager"
-
-        if bruker.premium_since:
-            premium_since = bruker.premium_since.strftime("%d. %b. %Y - %H:%M")
-            premium_since_days = (ctx.message.created_at - bruker.premium_since).days
-            if since_joined_days == 1:
-                premium_since_days_string = "dag"
-            else:
-                premium_since_days_string = "dager"
+        bruker_joined_date = discord.utils.format_dt(bruker.joined_at, style="R")
+        bruker_created_date = discord.utils.format_dt(bruker.created_at, style="R")
 
         roles = []
         for role in bruker.roles:
@@ -443,13 +417,11 @@ class Misc(commands.Cog):
             embed.set_author(name=f"{bruker.name}#{bruker.discriminator} | {bruker.display_name}",
                              icon_url=bruker.display_avatar.url)
         embed.set_thumbnail(url=bruker.display_avatar.replace(static_format="png").url)
-        embed.add_field(name="Opprettet", value=f"{bruker_created_date}\n{since_created_days} " +
-                                                f"{since_created_days_string} siden")
-        embed.add_field(name="Ble med i serveren", value=f"{bruker_joined_date}\n{since_joined_days} " +
-                                                         f"{since_joined_days_string} siden")
+        embed.add_field(name="Opprettet", value=bruker_created_date)
+        embed.add_field(name="Ble med i serveren", value=bruker_joined_date)
         if bruker.premium_since:
-            embed.add_field(name="Boost", value=f"{premium_since}\n{premium_since_days} " +
-                                                f"{premium_since_days_string} siden\n" +
+            premium_since = discord.utils.format_dt(bruker.premium_since, style="R")
+            embed.add_field(name="Boost", value=f"{premium_since}\n" +
                                                 f"Booster #{premium_index} av serveren", inline=False)
         embed.add_field(name=f"Roller ({len(bruker.roles) - 1})", value=roles, inline=False)
         embed.set_footer(text=f"#{join_index} Medlem av serveren | #{creation_index} Eldste brukeren på serveren")
@@ -526,11 +498,6 @@ class Misc(commands.Cog):
         hoisted = "Ja" if rolle.hoist else "Nei"
         mentionable = "Ja" if rolle.mentionable else "Nei"
 
-        rolle_created_date = rolle.created_at.strftime("%d. %b. %Y - %H:%M")
-        since_created_days = (ctx.message.created_at - rolle.created_at).days
-
-        since_created_days_string = "dag" if since_created_days == 1 else "dager"
-
         members = []
         for member in rolle.members:
             members.append(f"{member.name}#{member.discriminator}")
@@ -548,8 +515,7 @@ class Misc(commands.Cog):
         if ctx.guild.icon is not None:
             embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url)
         embed.add_field(name="Fargekode", value=str(rolle.color))
-        embed.add_field(name="Opprettet", value=f"{rolle_created_date}\n{since_created_days} " +
-                                                f"{since_created_days_string} siden")
+        embed.add_field(name="Opprettet", value=discord.utils.format_dt(rolle.created_at, style="R"))
         embed.add_field(name="Posisjon", value=rolle.position)
         embed.add_field(name="Nevnbar", value=mentionable)
         if rolle.is_bot_managed():
