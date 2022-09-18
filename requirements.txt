@@ -1,5 +1,5 @@
 git+https://github.com/Rapptz/discord.py@902aa24#egg=discord.py
 environs==9.5.0
-flask==2.1.2
+flask==2.2.2
 marshmallow==3.15.0
 requests==2.28.1
