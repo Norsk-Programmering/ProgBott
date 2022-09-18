@@ -94,6 +94,9 @@ userflags = {
 }
 
 intents = {
+    "auto_moderation_configuration": "automatisk-moderasjon-konfigurasjon",
+    "auto_moderation_execution": "automatisk-moderasjon-utførelse",
+    "auto_moderation": "automatisk-moderasjon",
     "bans": "bans",
     "dm_messages": "dm-meldinger",
     "dm_reactions": "dm-reaksjoner",
@@ -101,11 +104,13 @@ intents = {
     "emojis": "emojis",
     "guild_messages": "guild-meldinger",
     "guild_reactions": "guild-reaksjoner",
+    "guild_scheduled_events": "planlagte-server-hendelser",
     "guild_typing": "guild-skrivestatus",
     "guilds": "guilds",
     "integrations": "integrasjoner",
     "invites": "invitasjoner",
     "members": "medlemmer",
+    "message_content": "meldingsinnhold",
     "messages": "meldinger",
     "presences": "tilstedeværelse",
     "reactions": "reaksjoner",
