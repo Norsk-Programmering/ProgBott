@@ -75,8 +75,8 @@ class Github(commands.Cog):
             self._get_users()
         except discord.Forbidden:
             raise NoDM
-        except Exception as E:
-            self.bot.logger.warn('Error when verifying Github user:\n%s', E)
+        except Exception as err:
+            self.bot.logger.warn(f'Error when verifying Github user:\n{err}')
 
     @gh_group.command(name="remove", aliases=["fjern"])
     async def remove(self, ctx):
@@ -164,7 +164,7 @@ class Github(commands.Cog):
 
         (_id, _discord_id, auth_token, _github_username) = gh_user
 
-        gh_user = requests.get("https://api.github.com/user", headers={
+        gh_user = requests.get("https://api.github.com/user", timeout=10, headers={
             "Authorization": "token " + auth_token,
             "Accept": "application/json"
         }).json()
@@ -290,13 +290,13 @@ class Github(commands.Cog):
         }
 
         url = f"https://api.github.com/users/{user}/repos"
-        res = requests.get(url, headers=headers, params={"per_page": 100, "page": 1})
+        res = requests.get(url, timeout=10, headers=headers, params={"per_page": 100, "page": 1})
 
         gh_repos = res.json()
         if isinstance(gh_repos, dict):
             return []
         while "next" in res.links.keys():
-            res = requests.get(res.links["next"]["url"], headers=headers)
+            res = requests.get(res.links["next"]["url"], timeout=10, headers=headers)
             gh_repos.extend(res.json())
 
         return gh_repos

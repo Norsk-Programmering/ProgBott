@@ -227,8 +227,7 @@ class Bokmerker(commands.Cog):
                 with codecs.open(self.bookmarks_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.bookmarks_data, outfile, indent=4, sort_keys=True)
             except Exception as err:
-                return self.bot.logger.warn(
-                    'Failed to validate JSON before saving:\n%s\n%s' % (err, self.bookmarks_data))
+                return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{err}\n{self.bookmarks_data}')
 
     def check_folder(self):
         # pylint: disable=missing-function-docstring

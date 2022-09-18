@@ -132,8 +132,8 @@ class Poeng(commands.Cog):
                 self.teller_data['meldinger'][str(message.id)] = msg_data
                 try:
                     await reply.edit(content=None, embed=embed)
-                except discord.HTTPException as HTTPEx:
-                    self.bot.logger.error('Edit failed. $$%s$$ @@%s@@' % (HTTPEx, pformat(embed.to_dict())))
+                except discord.HTTPException as err:
+                    self.bot.logger.error(f'Edit failed. $${err}$$ @@{pformat(embed.to_dict())}@@')
                 await message.remove_reaction(emoji, self.bot.user)
                 try:
                     return await message.remove_reaction(emoji, message.author)
@@ -215,7 +215,7 @@ class Poeng(commands.Cog):
             self.settings_data['takk'] = []
             self.settings_data['takk'].append(thanks_phrase)
         except Exception:
-            return self.bot.logger.error("Failed to set thanks_phrase: %s" % thanks_phrase)
+            return self.bot.logger.error("Failed to set thanks_phrase: {thanks_phrase}")
         self.save_json('settings')
         self.load_json('settings')
 
@@ -248,14 +248,13 @@ class Poeng(commands.Cog):
                 with codecs.open(self.teller_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.teller_data, outfile, indent=4, sort_keys=True)
             except Exception as err:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (err, self.teller_data))
+                return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{err}\n{self.teller_data}')
         elif mode == 'settings':
             try:
                 with codecs.open(self.settings_file, 'w', encoding='utf8') as outfile:
                     json.dump(self.settings_data, outfile, indent=4, sort_keys=True)
             except Exception as err:
-                return self.bot.logger.warn('Failed to validate JSON before saving:\n%s\n%s' % (err,
-                                                                                                self.settings_data))
+                return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{err}\n{self.settings_data}')
 
     def check_folder(self):
         # pylint: disable=missing-function-docstring
