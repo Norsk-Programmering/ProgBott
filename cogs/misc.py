@@ -386,9 +386,12 @@ class Misc(commands.Cog):
         bruker_joined_date = discord.utils.format_dt(bruker.joined_at, style="R")
         bruker_created_date = discord.utils.format_dt(bruker.created_at, style="R")
 
+        ansatt = None
         roles = []
         for role in bruker.roles:
             if role.name != "@everyone":
+                if role.name.endswith("-ansatt"):
+                    ansatt = role.name
                 roles.append(role.name)
         roles.reverse()
         roles = ", ".join(roles)
@@ -425,6 +428,9 @@ class Misc(commands.Cog):
                                                 f"Booster #{premium_index} av serveren", inline=False)
         embed.add_field(name=f"Roller ({len(bruker.roles) - 1})", value=roles, inline=False)
         embed.set_footer(text=f"#{join_index} Medlem av serveren | #{creation_index} Eldste brukeren på serveren")
+
+        if ansatt:
+            embed.add_field(name="Arbeidsplass", value=ansatt.replace("-ansatt", ""), inline=False)
 
         if bruker.activities:
             games = ""
