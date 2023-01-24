@@ -89,7 +89,7 @@ jobs:
         with:
           install: true
           version: latest
-          driver-opts: image=moby/buildkit:v0.10.5
+          driver-opts: image=moby/buildkit:master
 
       - name: Build and push
         uses: docker/build-push-action@v3.3.0
