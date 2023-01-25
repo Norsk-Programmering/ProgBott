@@ -1,6 +1,9 @@
 # Discord Packages
 import discord
 
+# Bot Utilities
+from cogs.utils.my_errors import MultipleWorplaces, NoWorplace
+
 booler = {
     True: ":white_check_mark:",
     False: ":x:"
@@ -132,3 +135,25 @@ def easy_embed(self, ctx, big_embed: bool = False):
     if big_embed:
         embed.set_thumbnail(url=avatar)
     return embed
+
+
+async def list_workplaces(guild: discord.Guild) -> list:
+    """
+    Hjelpefunkjson for å liste alle registrerte bedrifter
+    """
+    return {int(x.id): x.name for x in guild.roles if x.name.endswith("-ansatt")}
+
+
+async def get_workplace(user: discord.Member) -> int:
+    """
+    Hjelpefunkson for henting av brukers arbeidsplass
+    """
+    roles = [int(x.id) for x in user.roles if x.name.endswith("-ansatt")]
+    if len(roles) == 1:
+        return int(roles[0])
+    elif len(roles) > 1:
+        raise MultipleWorplaces("Multiple workplaces was found")
+    elif len(roles) == 0:
+        raise NoWorplace("No workplace was found")
+    else:
+        raise Exception("Unknown error while determining workplace")

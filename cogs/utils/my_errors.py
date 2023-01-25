@@ -9,3 +9,11 @@ class NoDM(CommandError):
 
 class NoToken(Exception):
     pass
+
+
+class NoWorplace(Exception):
+    pass
+
+
+class MultipleWorplaces(Exception):
+    pass

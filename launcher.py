@@ -66,7 +66,8 @@ class Bot(commands.Bot):
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
     async def setup_hook(self):
-        extensions = ["cogs.misc", "cogs.poeng", "cogs.bokmerker", "cogs.errors", "cogs.github", "cogs.broder"]
+        extensions = ["cogs.misc", "cogs.poeng", "cogs.bokmerker",
+                      "cogs.errors", "cogs.github", "cogs.broder", "cogs.workplace"]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)

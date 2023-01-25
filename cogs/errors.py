@@ -6,7 +6,7 @@ Cog for håndtering av feil
 from discord.ext import commands
 
 # Bot Utilities
-from cogs.utils.my_errors import NoDM
+from cogs.utils.my_errors import MultipleWorplaces, NoDM, NoWorplace
 
 import traceback
 
@@ -50,6 +50,14 @@ class Errors(commands.Cog):
 
         elif isinstance(error, NoDM):
             return await ctx.reply(f"Hei! {ctx.message.author.mention} jeg kan ikke sende deg DMs")
+
+        elif isinstance(error, NoWorplace):
+            return await ctx.reply(f"Hei! {ctx.message.author.mention} jeg fant ingen arbeidsplasser, "
+                                   "og <@120970603556503552> har ikke fortalt meg hva jeg skal gjøre")
+
+        elif isinstance(error, MultipleWorplaces):
+            return await ctx.reply(f"Hei! {ctx.message.author.mention} en mod har gitt flere arbeidplasser, "
+                                   "jeg er allergisk mot dette")
 
         elif isinstance(error, commands.CheckFailure):
             return
