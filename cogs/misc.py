@@ -140,18 +140,6 @@ class Misc(commands.Cog):
 
         await ctx.reply(embed=embed)
 
-    @commands.command(aliases=["regel3"])
-    async def lmgtfy(self, ctx, *, sokeord: str):
-        """
-        Fordi noen trenger en internett 101 leksjon
-        """
-
-        url = "https://lmgtfy.com/?" + parse.urlencode({"q": sokeord})
-
-        embed = discord.Embed(color=ctx.me.color, description=f"[Trykk her for løsningen på problemet ditt]({url})")
-        embed.set_image(url="http://ecx.images-amazon.com/images/I/51IESUsBdbL._SX258_BO1,204,203,200_.jpg")
-        await ctx.reply(embed=embed)
-
     @commands.command(aliases=["pullrequest", "draforespørsel", "pr"], hidden=True)
     async def pull_request(self, ctx):
         """
