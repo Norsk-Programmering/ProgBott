@@ -50,6 +50,7 @@ class Workplace(commands.Cog):
             except discord.Forbidden:
                 await ctx.reply(f"{bruker.mention} er nå registrert som {workplaces[cwk]}",
                                 allowed_mentions=discord.AllowedMentions(users=True))
+        return await ctx.message.delete(delay=5)
 
     @workplace_group.command(name="fjern", aliases=["remove", "oppsigelse", "slutt"])
     async def remove(self, ctx: discord.Message):
@@ -63,7 +64,7 @@ class Workplace(commands.Cog):
             await ctx.reply(f"Du ikke en {workplaces[cwk]} lengere", delete_after=5)
         except NoWorplace:
             await ctx.reply("Du er ikke tilknyttet en arbeidsplass", delete_after=5)
-            return await ctx.message.delete(delay=5)
+        return await ctx.message.delete(delay=5)
 
 
 async def setup(bot):
