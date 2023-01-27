@@ -43,13 +43,12 @@ class Workplace(commands.Cog):
             return await ctx.reply(f"{bruker.display_name} er allerede en {workplaces[uwk]}", delete_after=5)
         except NoWorplace:
             await bruker.add_roles(discord.Object(cwk, type=discord.Role), reason="Bound new workplace")
-            await ctx.reply(f"{bruker.display_name} er nå {workplaces[cwk]}")
             try:
                 await bruker.send(f"Du er nå registrert som {workplaces[cwk]} i {ctx.guild.name} "
                                   f"av {ctx.author.display_name}")
             except discord.Forbidden:
                 await ctx.reply(f"{bruker.mention} er nå registrert som {workplaces[cwk]}",
-                                allowed_mentions=discord.AllowedMentions(users=True))
+                                allowed_mentions=discord.AllowedMentions(users=True), delete_after=5)
         return await ctx.message.delete(delay=5)
 
     @workplace_group.command(name="fjern", aliases=["remove", "oppsigelse", "slutt"])
