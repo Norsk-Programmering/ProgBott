@@ -124,7 +124,7 @@ intents = {
 }
 
 
-def easy_embed(self, ctx, big_embed: bool = False):
+def easy_embed(self, ctx, big_embed: bool = False) -> discord.Embed:
     """
     Hjelpefunksjon for universiell embed
     """
@@ -137,7 +137,7 @@ def easy_embed(self, ctx, big_embed: bool = False):
     return embed
 
 
-async def list_workplaces(guild: discord.Guild) -> list:
+async def list_workplaces(guild: discord.Guild) -> dict:
     """
     Hjelpefunkjson for å liste alle registrerte bedrifter
     """

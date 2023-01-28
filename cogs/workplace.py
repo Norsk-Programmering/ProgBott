@@ -1,9 +1,10 @@
 # Discord Packages
+from typing import Union
 import discord
 from discord.ext import commands
 
 # Bot Utilities
-from cogs.utils.defaults import get_workplace, list_workplaces
+from cogs.utils.defaults import get_workplace, list_workplaces, easy_embed
 from cogs.utils.my_errors import NoWorplace
 
 
@@ -28,7 +29,7 @@ class Workplace(commands.Cog):
     @workplace_group.command(name="leggtil", aliases=["add", "kollega"])
     async def add(self, ctx: discord.Message, bruker: discord.Member):
         """
-        Komando for å legge til kollegaer
+        Kommando for å legge til kollegaer
         """
         try:
             cwk = await get_workplace(ctx.author)
@@ -54,7 +55,7 @@ class Workplace(commands.Cog):
     @workplace_group.command(name="fjern", aliases=["remove", "oppsigelse", "slutt"])
     async def remove(self, ctx: discord.Message):
         """
-        Komando for å avslutte et arbeidsforhold
+        Kommando for å avslutte et arbeidsforhold
         """
         workplaces = await list_workplaces(ctx.guild)
         try:
@@ -64,6 +65,39 @@ class Workplace(commands.Cog):
         except NoWorplace:
             await ctx.reply("Du er ikke tilknyttet en arbeidsplass", delete_after=5)
         return await ctx.message.delete(delay=5)
+
+    @workplace_group.command(name="liste", aliases=["alle"])
+    async def get_list(self, ctx: discord.Message):
+        """
+        Lister alle arbiedsplassene som er registrert
+        """
+
+        workplaces = await list_workplaces(ctx.guild)
+        workplace_list = sorted([y for x, y in workplaces.items()], key=str.lower)
+        workplace_text = ", ".join(workplace_list)
+        desc = workplace_text + "\n\nSer du ikke arbeidsplassen din? " + \
+            "Send logo og firma-navn til en moderator, så ordner de det!"
+
+        embed = easy_embed(self, ctx)
+        embed.title = "Disse arbeidsplassene er registrert på serveren"
+        embed.description = desc
+        return await ctx.reply(embed=embed)
+
+    @workplace_group.command(name="firma", aliases=["arbeidsplass", "se"])
+    async def show_workplace(self, ctx: discord.Message, arbeidsplass: Union[discord.Role, str]):
+        """
+        Viser enkel informasjon om en arbeidsplass
+        """
+        if isinstance(arbeidsplass, str):
+            for _role in ctx.guild.roles:
+                if _role.name.lower() == f"{arbeidsplass.lower()}-ansatt":
+                    arbeidsplass = _role
+                    break
+
+        if not isinstance(arbeidsplass, discord.Role):
+            return await ctx.reply("Fant ingen arbeidsplass med dette navnet")
+
+        await ctx.invoke(self.bot.get_command("rolle"), rolle=arbeidsplass)
 
 
 async def setup(bot):

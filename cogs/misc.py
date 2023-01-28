@@ -512,6 +512,8 @@ class Misc(commands.Cog):
         embed.add_field(name="Opprettet", value=discord.utils.format_dt(rolle.created_at, style="R"))
         embed.add_field(name="Posisjon", value=rolle.position)
         embed.add_field(name="Nevnbar", value=mentionable)
+        if rolle.display_icon:
+            embed.set_image(url=rolle.display_icon.url)
         if rolle.is_bot_managed():
             embed.add_field(name="Bot-håndert", value="Ja")
         if rolle.is_integration():
