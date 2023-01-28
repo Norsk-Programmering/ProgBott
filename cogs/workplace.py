@@ -74,7 +74,7 @@ class Workplace(commands.Cog):
         """
 
         workplaces = await list_workplaces(ctx.guild)
-        workplace_list = sorted([y for x, y in workplaces.items()], key=str.lower)
+        workplace_list = sorted([y.replace("-ansatt", "") for x, y in workplaces.items()], key=str.lower)
         workplace_text = "\n".join(workplace_list)
         desc = workplace_text + "\n\nSer du ikke arbeidsplassen din? " + \
             "Send logo og firma-navn til en moderator, så ordner de det!"
