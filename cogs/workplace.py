@@ -1,11 +1,12 @@
 # Discord Packages
-from typing import Union
 import discord
 from discord.ext import commands
 
 # Bot Utilities
-from cogs.utils.defaults import get_workplace, list_workplaces, easy_embed
+from cogs.utils.defaults import easy_embed, get_workplace, list_workplaces
 from cogs.utils.my_errors import NoWorplace
+
+from typing import Union
 
 
 class Workplace(commands.Cog):
