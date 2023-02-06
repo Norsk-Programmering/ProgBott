@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    LEVEL = args.level
+    LEVEL = args.level.upper()
     data_dir = args.data_directory
 
     if args.debug:
