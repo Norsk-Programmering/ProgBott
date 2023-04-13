@@ -563,6 +563,16 @@ class Misc(commands.Cog):
             self.bot.logger.warn('Missing permission to remove message (manage_messages)')
         await ctx.send(f"Smekk - ka farsken! {member.mention} {emote_str}{emote_str}{emote_str}")
 
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True)
+    async def fysj(self, ctx):
+        await ctx.send("https://imgur.com/BoNcn2Y")
+
+
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True)
+    async def lei(self, ctx):
+        await ctx.send("https://imgur.com/LDf6oLB")
 
 async def setup(bot):
     # pylint: disable=missing-function-docstring
