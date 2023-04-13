@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 
 # Bot Utilities
 from cogs.utils.defaults import easy_embed
+from cogs.utils.mermaid import mermaid
 
 import asyncio
 import codecs
@@ -26,6 +27,7 @@ class Poeng(commands.Cog):
         self.teller_data = {}
         self.settings_file = bot.data_dir + '/poeng/innstilinger.json'
         self.teller_file = bot.data_dir + '/poeng/teller.json'
+        self.chart = open("flowchart.mermaid", "r").read()
         self.load_json('settings')
         self.load_json('teller')
         self.cacher.start()
@@ -149,6 +151,19 @@ class Poeng(commands.Cog):
 
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
+
+    @poeng_group.command(name="diagram", aliases=["flow", "logikk", "hvordan"])
+    async def chart(self, ctx):
+        """
+        Kommando for å se logikk for stjerner
+        """
+        takkeord = ", ".join(self.settings_data['takk'])
+        chart = self.chart.replace("$takkord$", takkeord)
+        chart_link = await mermaid(chart)
+        embed = easy_embed(self, ctx)
+        embed.set_image(url=chart_link)
+        embed.title = "Logikken bak stjernene"
+        await ctx.reply(embed=embed)
 
     @poeng_group.command(name="sjekk")
     async def check(self, ctx, user: discord.Member = None):

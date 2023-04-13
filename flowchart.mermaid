@@ -1,0 +1,33 @@
+flowchart TD
+    A[Melding] --> B{Mention?}
+    B --> |Nei| C[Ikke stjerne]
+    B --> |Ja| D(For takk-ord)
+    D ---|"$takkord$"| iterator
+
+    subgraph iterator
+        E[Sjekk for takk-ord]
+        E --> |Ja| F{Hjelp i kategori eller kanal-navn?}
+        F --> Nei
+        subgraph Nei
+            direction RL
+            BA[Ikke stjerne]
+            BB[Stjerne]
+            BC(Melding starter med takk-ord?)
+            BD(Melding slutter med takk-ord?)
+            BE(Melding slutter med takk-ord og har følgetegn?)
+            BA ---|Nei| BC ---|Ja| BB
+            BA ---|Nei| BD ---|Ja| BB
+            BA ---|Nei| BE ---|Ja| BB
+
+        end
+        F --> Ja
+        subgraph Ja
+            direction LR
+            AA[Ikke stjerne]
+            AB[Stjerne]
+            AC(Takk-ord i melding?)
+            AA ---|Nei| AC ---|Ja| AB
+        end
+    end
+classDef iterator fill:#f96
+class iterator iterator;
