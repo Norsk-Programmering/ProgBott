@@ -9,7 +9,7 @@ import discord
 from discord.ext import commands
 
 # Bot Utilities
-from cogs.utils.logging import Logger
+from cogs.utils.logger import Logger
 from cogs.utils.settings import Settings
 
 import time
