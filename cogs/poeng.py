@@ -256,35 +256,35 @@ class Poeng(commands.Cog):
             except Exception as err:
                 return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{err}\n{self.settings_data}')
 
-    def check_folder(self):
-        # pylint: disable=missing-function-docstring
-        _f = f'{self.bot.data_dir}/poeng'
-        if not os.path.exists(_f):
-            os.makedirs(_f)
-
-    def check_files(self):
-        # pylint: disable=missing-function-docstring
-        files = [
-            {f'{self.bot.data_dir}/poeng/teller.json': {'meldinger': {}}},
-            {f'{self.bot.data_dir}/poeng/innstilinger.json': {'takk': []}}
-        ]
-        for i in files:
-            for file, default in i.items():
-                try:
-                    with codecs.open(file, 'r', encoding='utf8') as json_file:
-                        json.load(json_file)
-                except FileNotFoundError:
-                    with codecs.open(file, 'w', encoding='utf8') as outfile:
-                        json.dump(default, outfile)
-
-    async def cog_load(self):
-        self.check_folder()
-        self.check_files()
 
     async def cog_unload(self):
         self.cacher.cancel()
 
 
+def check_folder(bot):
+    # pylint: disable=missing-function-docstring
+    _f = f'{bot.data_dir}/poeng'
+    if not os.path.exists(_f):
+        os.makedirs(_f)
+
+def check_files(bot):
+    # pylint: disable=missing-function-docstring
+    files = [
+        {f'{bot.data_dir}/poeng/teller.json': {'meldinger': {}}},
+        {f'{bot.data_dir}/poeng/innstilinger.json': {'takk': []}}
+    ]
+    for i in files:
+        for file, default in i.items():
+            try:
+                with codecs.open(file, 'r', encoding='utf8') as json_file:
+                    json.load(json_file)
+            except FileNotFoundError:
+                with codecs.open(file, 'w', encoding='utf8') as outfile:
+                    json.dump(default, outfile)
+
+
 async def setup(bot):
     # pylint: disable=missing-function-docstring
+    check_folder(bot)
+    check_files(bot)
     await bot.add_cog(Poeng(bot))
