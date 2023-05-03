@@ -1,5 +1,5 @@
 discord.py==2.2.3
 environs==9.5.0
-flask==2.2.5
+flask==2.3.2
 marshmallow==3.19.0
 requests==2.29.0
