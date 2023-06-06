@@ -48,11 +48,13 @@ features = {
     "ANIMATED_ICON": "Animert ikon",
     "BANNER": "Banner",
     "CHANNEL_BANNER": "Kannalbanner",
+    "CHANNEL_ICON_EMOJIS_GENERATED": "Autogenererte kanal-emojis",
     "COMMERCE": "Butikkanaler",
     "COMMUNITY": "Sammfunsguild",
     "DISCOVERABLE": "Fremhevet",
     "ENABLED_DISCOVERABLE_BEFORE": False,
     "FEATURABLE": "Kan fremheves",
+    "GUILD_WEB_PAGE_VANITY_URL": "Egen URL til nettsted",
     "INVITE_SPLASH": "Invitasjonsbilde",
     "MEMBER_PROFILES": "Medlemsprofiler",
     "MORE_EMOJI": "Ekstra emoji",
@@ -82,6 +84,7 @@ statuses = {
 }
 
 userflags = {
+    "active_developer": "<:active_developer:1115589805741457428>",
     "boost": "<:boost:791038860825198672>",
     "bug_hunter_level_2": "<:bug_hunter_level_2:791038860887851038>",
     "bug_hunter": "<:bug_hunter:791038860984713317>",

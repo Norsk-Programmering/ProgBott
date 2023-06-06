@@ -399,7 +399,7 @@ class Misc(commands.Cog):
         embed = discord.Embed(color=color)
         if bruker.public_flags.all():
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app} \
-                {' '.join(userflags[m] for m, v in bruker.public_flags.all() if m in userflags)}"
+                {' '.join(userflags[m] if m in userflags else f':{m}:' for m, v in bruker.public_flags.all())}"
         else:
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}"
         if bruker.display_name == bruker.name:
@@ -568,11 +568,11 @@ class Misc(commands.Cog):
     async def fysj(self, ctx):
         await ctx.send("https://imgur.com/BoNcn2Y")
 
-
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
     @commands.command(hidden=True)
     async def lei(self, ctx):
         await ctx.send("https://imgur.com/LDf6oLB")
+
 
 async def setup(bot):
     # pylint: disable=missing-function-docstring
