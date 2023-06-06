@@ -32,6 +32,12 @@ class Misc(commands.Cog):
         minutes, seconds = divmod(remainder, 60)
         return days, hours, minutes, seconds
 
+    def _get_username(self, bruker:  discord.Member):
+        username = f"{bruker.name}#{bruker.discriminator}"
+        if int(bruker.discriminator) == 0:
+            username = f"@{bruker.name}"
+        return username
+
     @commands.command(name="ping", hidden=True)
     async def _ping(self, ctx):
         """
@@ -227,7 +233,7 @@ class Misc(commands.Cog):
         premium_subscribers = sorted(
             ctx.guild.premium_subscribers, key=lambda m: m.premium_since)
         for booster in premium_subscribers:
-            boosters.append(f"{booster.name}#{booster.discriminator}")
+            boosters.append(self._get_username(booster))
         boosters = ", ".join(boosters)
         if len(boosters) > 1024:
             boosters = "For mange boosters for å vise her"
@@ -402,10 +408,11 @@ class Misc(commands.Cog):
                 {' '.join(userflags[m] if m in userflags else f':{m}:' for m, v in bruker.public_flags.all())}"
         else:
             embed.description = f"{bruker.mention}\nID: {bruker.id}\n{status}\n{app}"
+        username = self._get_username(bruker)
         if bruker.display_name == bruker.name:
-            embed.set_author(name=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.display_avatar.url)
+            embed.set_author(name=f"{username}", icon_url=bruker.display_avatar.url)
         else:
-            embed.set_author(name=f"{bruker.name}#{bruker.discriminator} | {bruker.display_name}",
+            embed.set_author(name=f"{username} | {bruker.display_name}",
                              icon_url=bruker.display_avatar.url)
         embed.set_thumbnail(url=bruker.display_avatar.replace(static_format="png").url)
         embed.add_field(name="Opprettet", value=bruker_created_date)
@@ -469,10 +476,10 @@ class Misc(commands.Cog):
 
         embed = discord.Embed(color=color, description=roles)
         embed.set_author(name=f"Roller ({len(bruker.roles) - 1})")
-        embed.set_footer(text=f"{bruker.name}#{bruker.discriminator}")
+        embed.set_footer(text=self._get_username(bruker))
         if ctx.guild.icon is not None:
             embed.set_author(name=f"Roller ({len(bruker.roles) - 1})", icon_url=bruker.display_avatar.url)
-            embed.set_footer(text=f"{bruker.name}#{bruker.discriminator}", icon_url=bruker.display_avatar.url)
+            embed.set_footer(text=self._get_username(bruker), icon_url=bruker.display_avatar.url)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["roleinfo", "rolleinfo"])
@@ -494,7 +501,7 @@ class Misc(commands.Cog):
 
         members = []
         for member in rolle.members:
-            members.append(f"{member.name}#{member.discriminator}")
+            members.append(self._get_username(member))
         members = ", ".join(members)
 
         if len(members) > 1024:
