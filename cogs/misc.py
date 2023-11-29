@@ -11,6 +11,7 @@ import platform
 import time
 from io import StringIO
 from os import listdir, name
+from re import sub
 from urllib import parse
 
 
@@ -571,6 +572,37 @@ class Misc(commands.Cog):
         await ctx.send(f"Smekk - ka farsken! {member.mention} {emote_str}{emote_str}{emote_str}")
 
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(aliases=['owoify', 'uwu'])
+    async def owo(self, ctx, *, tekst: str = None): # https://github.com/LBlend/MornBot/blob/master/cogs/Misc.py#L149-L170
+        """Oversetter tekst til owo"""
+
+        context = ctx.message
+        content = tekst
+
+        if ctx.message.reference:
+            context = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+            content = context.content
+            await ctx.message.delete(delay=3)
+
+        owo_rules = {
+            'r': 'w',
+            'l': 'w',
+            'R': 'W',
+            'L': 'W',
+            'n': 'ny',
+            'N': 'Ny',
+            'ove': 'uv'
+        }
+        for key, value in owo_rules.items():
+            content = sub(key, value, content)
+
+        if not content or len(content) >= 1000:
+            return
+
+        embed = discord.Embed(color=ctx.me.color, description=content, title="UwUet")
+        await context.reply(embed=embed)
+
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
     @commands.command(hidden=True)
     async def fysj(self, ctx):
         await ctx.send("https://imgur.com/BoNcn2Y")
@@ -578,6 +610,21 @@ class Misc(commands.Cog):
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
     @commands.command(hidden=True)
     async def lei(self, ctx):
+        await ctx.send("https://imgur.com/LDf6oLB")
+
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True)
+    async def edb(self, ctx):
+        await ctx.send("https://imgur.com/4QulGQs")
+
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True)
+    async def morson(self, ctx):
+        await ctx.send("https://imgur.com/PayXhjj")
+
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True, aliases=["slåned"])
+    async def jada(self, ctx):
         await ctx.send("https://imgur.com/LDf6oLB")
 
 
