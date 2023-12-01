@@ -627,6 +627,11 @@ class Misc(commands.Cog):
     async def jada(self, ctx):
         await ctx.send("https://imgur.com/LDf6oLB")
 
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True, aliases=["sjalottlauk"])
+    async def lom(self, ctx):
+        await ctx.send("https://imgur.com/RN3a1AX")
+
 
 async def setup(bot):
     # pylint: disable=missing-function-docstring
