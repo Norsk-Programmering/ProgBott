@@ -9,11 +9,24 @@ from cogs.utils.defaults import easy_embed, features, intents, statuses, userfla
 import operator
 import platform
 import time
+from datetime import datetime, timezone
 from io import StringIO
 from os import listdir, name
+from re import IGNORECASE
+from re import compile as re_compile
+from re import search as re_search
 from re import sub
-from urllib import parse
 
+from dateutil.relativedelta import relativedelta
+
+TIMEDELTA_REGEX = (
+    r'((?P<years>-?\d+)y)?'
+    r'((?P<months>-?\d+)m)?'
+    r'((?P<weeks>-?\d+)w)?'
+    r'((?P<days>-?\d+)d)?'
+    r'((?P<hours>-?\d+)h)?'
+)
+TIMEDELTA_PATTERN = re_compile(TIMEDELTA_REGEX, IGNORECASE)
 
 class Misc(commands.Cog):
     """
@@ -33,6 +46,21 @@ class Misc(commands.Cog):
         minutes, seconds = divmod(remainder, 60)
         return days, hours, minutes, seconds
 
+    async def parse_delta(self, human: str) -> str:  # gist.github.com/santiagobasulto/698f0ff660968200f873a2f9d1c4113c
+        """ Parses a human readable timedelta (3d5h) into a datetime.timedelta.
+        Delta includes:
+        * Xy years
+        * Xm months
+        * Xw weeks
+        * Xd days
+        * Xh hours
+        Values can be negative following timedelta's rules. Eg: -2w-5h
+        """
+        match = TIMEDELTA_PATTERN.match(human)
+        if match:
+            parts = {k: int(v) for k, v in match.groupdict().items() if v}
+            return relativedelta(**parts)
+        return None
 
     @commands.command(name="ping", hidden=True)
     async def _ping(self, ctx):
@@ -595,6 +623,51 @@ class Misc(commands.Cog):
 
         embed = discord.Embed(color=ctx.me.color, description=content, title="UwUet")
         await context.reply(embed=embed)
+
+    @commands.command(alises=["brukeresiden"])
+    async def brukere_siden(self, ctx, *, tid: str):
+        """
+        Viser medlemmer som har blitt med i løpet av en spesifisert tidsperiode
+        Relativ (1d, 2w, 3m, 4y) eller absolutt (2020-01-01)
+        """
+
+        if not ctx.guild.chunked:
+            await ctx.guild.chunk(cache=True)
+
+        if tid.endswith(("d", "w", "m", "y")):
+            try:
+                delta = await self.parse_delta(tid)
+            except ValueError:
+                return await ctx.reply("Ugyldig tidsperiode")
+
+            if delta is None:
+                return await ctx.reply("Ugyldig tidsperiode")
+
+            stamp = discord.utils.utcnow() - delta
+        elif re_search(r"^\d{4}-\d{2}-\d{2}$", tid):
+            try:
+                stamp = datetime.strptime(tid, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            except ValueError:
+                return await ctx.reply("Ugyldig tidsperiode")
+
+        if stamp is None:
+            return await ctx.reply("Ugyldig tidsperiode")
+
+        joined = []
+        for member in ctx.guild.members:
+            if member.joined_at > stamp:
+                joined.append(member)
+
+        discord_since = discord.utils.format_dt(stamp, style="f")
+
+        if len(joined) == 0:
+            return await ctx.reply(f"Ingen medlemmer har blitt med i siden {discord_since}")
+
+        joined_string = f"Det har blitt med {len(joined)} medlemmer siden {discord_since}"
+
+        embed = discord.Embed(color=ctx.me.color, description=joined_string)
+        embed.set_author(name=f"Medlemmer som har blitt med siden {tid}")
+        await ctx.reply(embed=embed)
 
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
     @commands.command(hidden=True)
