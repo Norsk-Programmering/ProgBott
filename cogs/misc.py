@@ -634,7 +634,9 @@ class Misc(commands.Cog):
         if not ctx.guild.chunked:
             await ctx.guild.chunk(cache=True)
 
-        if tid.endswith(("d", "w", "m", "y")):
+        stamp = None
+
+        if tid.endswith(("h","d", "w", "m", "y")):
             try:
                 delta = await self.parse_delta(tid)
             except ValueError:
