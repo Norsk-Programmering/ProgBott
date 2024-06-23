@@ -49,6 +49,7 @@ class Bot(commands.Bot):
         self.logger = logger
         self.data_dir = data_dir
         self.settings = settings.extra
+        self.cache_overview = {"stars": 0}
 
     async def on_message(self, message):
         if message.author.bot:
@@ -74,6 +75,10 @@ class Bot(commands.Bot):
                 await self.load_extension(extension)
             except Exception as _e:
                 self.logger.exception("Loading of extension %s failed: %s", extension, _e)
+
+    async def close(self):
+        self.logger.info("Logging out")
+        await super().close()
 
 
 if __name__ == "__main__":
