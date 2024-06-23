@@ -2,8 +2,6 @@
 import discord
 from discord.ext import commands, tasks
 
-from random import choice
-
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
 from cogs.utils.defaults import easy_embed, features, intents, statuses, userflags
@@ -14,6 +12,7 @@ import time
 from datetime import datetime, timezone
 from io import StringIO
 from os import listdir, name
+from random import choice
 from re import IGNORECASE
 from re import compile as re_compile
 from re import search as re_search
