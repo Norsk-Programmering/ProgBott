@@ -274,6 +274,7 @@ class Poeng(commands.Cog):
 
     async def cog_unload(self):
         self.cacher.cancel()
+        self.save_json('teller')
 
 
 def check_folder(bot):

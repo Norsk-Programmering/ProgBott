@@ -75,6 +75,10 @@ class Bot(commands.Bot):
             except Exception as _e:
                 self.logger.exception("Loading of extension %s failed: %s", extension, _e)
 
+    async def close(self):
+        self.logger.info("Logging out")
+        await super().close()
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(prog="Roxedus' ProgBott",
