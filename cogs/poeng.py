@@ -85,8 +85,12 @@ class Poeng(commands.Cog):
         """
         Funksjon som gir stjerne
         """
-        emoji = self.bot.get_emoji(743471543706976256)
-        emoji_str = f'<:forkast:{emoji.id}>'
+        try:
+            emoji = self.bot.get_emoji(743471543706976256)
+            emoji_str = f'<:forkast:{emoji.id}>'
+        except AttributeError:
+            emoji = '❌'
+            emoji_str = emoji
         dudes = {'id': [], 'mention': []}
         embed = easy_embed(self, message)
         for dude in message.mentions:
@@ -107,40 +111,40 @@ class Poeng(commands.Cog):
         embed.title = "Ny stjerne tildelt!"
         embed.description = f'{message.author.mention} ga {", ".join(dudes["mention"])} en stjerne!'
         reply = await message.reply(f"Registrerer stjerne\nreager med {emoji_str} for å avbryte")
-        async with message.channel.typing():
+        await message.channel.typing()
 
-            def check(reaction, user):
-                if user is None or user.id != message.author.id:
-                    return False
-
-                if reaction.message.id != message.id:
-                    return False
-
-                if reaction.emoji == emoji:
-                    return True
-
+        def check(reaction, user):
+            if user is None or user.id != message.author.id:
                 return False
 
-            try:
-                await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
-                await message.remove_reaction(emoji, self.bot.user)
-                try:
-                    await message.remove_reaction(emoji, message.author)
-                except discord.Forbidden:
-                    self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
-                return await reply.delete()
+            if reaction.message.id != message.id:
+                return False
 
-            except asyncio.TimeoutError:
-                self.teller_data['meldinger'][str(message.id)] = msg_data
-                try:
-                    await reply.edit(content=None, embed=embed)
-                except discord.HTTPException as err:
-                    self.bot.logger.error(f'Edit failed. $${err}$$ @@{pformat(embed.to_dict())}@@')
-                await message.remove_reaction(emoji, self.bot.user)
-                try:
-                    return await message.remove_reaction(emoji, message.author)
-                except discord.Forbidden:
-                    return self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
+            if reaction.emoji == emoji:
+                return True
+
+            return False
+
+        try:
+            await self.bot.wait_for('reaction_add', timeout=10.0, check=check)
+            await message.remove_reaction(emoji, self.bot.user)
+            try:
+                await message.remove_reaction(emoji, message.author)
+            except discord.Forbidden:
+                self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
+            return await reply.delete()
+
+        except asyncio.TimeoutError:
+            self.teller_data['meldinger'][str(message.id)] = msg_data
+            try:
+                await reply.edit(content=None, embed=embed)
+            except discord.HTTPException as err:
+                self.bot.logger.error(f'Edit failed. $${err}$$ @@{pformat(embed.to_dict())}@@')
+            await message.remove_reaction(emoji, self.bot.user)
+            try:
+                return await message.remove_reaction(emoji, message.author)
+            except discord.Forbidden:
+                return self.bot.logger.warn('Missing permission to remove reaction (manage_messages)')
 
     @commands.guild_only()
     @commands.group(name="stjerne")
@@ -250,6 +254,7 @@ class Poeng(commands.Cog):
         if mode == 'teller':
             with codecs.open(self.teller_file, 'r', encoding='utf8') as json_file:
                 self.teller_data = json.load(json_file)
+                self.bot.cache_overview['stars'] = len(self.teller_data.get('meldinger'))
         elif mode == 'settings':
             with codecs.open(self.settings_file, 'r', encoding='utf8') as json_file:
                 self.settings_data = json.load(json_file)
@@ -271,7 +276,6 @@ class Poeng(commands.Cog):
             except Exception as err:
                 return self.bot.logger.warn(f'Failed to validate JSON before saving:\n{err}\n{self.settings_data}')
 
-
     async def cog_unload(self):
         self.cacher.cancel()
         self.save_json('teller')
@@ -282,6 +286,7 @@ def check_folder(bot):
     _f = f'{bot.data_dir}/poeng'
     if not os.path.exists(_f):
         os.makedirs(_f)
+
 
 def check_files(bot):
     # pylint: disable=missing-function-docstring

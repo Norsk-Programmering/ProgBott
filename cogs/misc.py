@@ -1,6 +1,8 @@
 # Discord Packages
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
+
+from random import choice
 
 # Bot Utilities
 from cogs.utils.Bot_version import bot_version
@@ -28,6 +30,18 @@ TIMEDELTA_REGEX = (
 )
 TIMEDELTA_PATTERN = re_compile(TIMEDELTA_REGEX, IGNORECASE)
 
+presencePool = [
+    {
+        "name": "Ser etter stjerner",
+        "emoji": "🤖"
+    },
+    {
+        "name": "Vokter {stars} stjerner",
+        "emoji": "⭐"
+    },
+]
+
+
 class Misc(commands.Cog):
     """
     Klasse for diverse komandoer
@@ -37,6 +51,12 @@ class Misc(commands.Cog):
         self.bot = bot
         self.repo = "https://github.com/Norsk-Programmering/ProgBott"
         self.ico = "https://github.com/Norsk-Programmering/Profilering/raw/master/BotAvatar.gif"
+
+    async def cog_load(self):
+        self.presence.start()
+
+    async def cog_unload(self):
+        self.presence.cancel()
 
     def _get_uptime(self):
         now = time.time()
@@ -91,7 +111,7 @@ class Misc(commands.Cog):
         """
         embed = easy_embed(self, ctx)
         embed.title = "Hvordan få vakre meldinger når man poster kode"
-        embed.description = """
+        embed.description = r"""
         Hei, du kan gjøre koden din mer leselig med å sende koden i kodeblokker.\n\n
         For vanlig kodeblokk skriv:\n\`\`\`\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
         Den kommer til å se ut som dette:\n```\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```\n
@@ -131,7 +151,7 @@ class Misc(commands.Cog):
         dev = await self.bot.fetch_user(self.bot.appinfo.owner.id)
 
         desc = f"Discord-programvareagent for Norsk programmering" \
-               f"\nForbedringforslag mottas på [GitHub]({self.repo})"
+            f"\nForbedringforslag mottas på [GitHub]({self.repo})"
 
         py_ver = platform.python_version()
         how = "Med Python såklart!" \
@@ -314,15 +334,15 @@ class Misc(commands.Cog):
         embed.add_field(name="Opprettet", value=f"{discord.utils.format_dt(ctx.guild.created_at)}\n" +
                         f"{discord.utils.format_dt(ctx.guild.created_at, style='R')}", inline=False)
         embed.add_field(name=f"Kanaler ({total_channels})", value=f"💬 Tekst: **{text_channels}**\n" +
-                                                                  f"🔊 Tale: **{voice_channels}**\n" +
-                                                                  f"🗃️ Kategorier: **{categories}**")
+                        f"🔊 Tale: **{voice_channels}**\n" +
+                        f"🗃️ Kategorier: **{categories}**")
         embed.add_field(name=f"Medlemmer ({total_members})",
                         value=f"👤 Mennesker: **{int(total_members) - int(bot_members)}**\n" +
-                              f"🤖 Båtter: **{bot_members}**\n" +
-                              f"<:online:743471541169291335>{online_members} " +
-                              f"<:idle:743471541127348255>{idle_members} " +
-                              f"<:dnd:743471541093662840>{dnd_members} " +
-                              f"<:offline:743471543543136266>{offline_members}")
+                        f"🤖 Båtter: **{bot_members}**\n" +
+                        f"<:online:743471541169291335>{online_members} " +
+                        f"<:idle:743471541127348255>{idle_members} " +
+                        f"<:dnd:743471541093662840>{dnd_members} " +
+                        f"<:offline:743471543543136266>{offline_members}")
         embed.add_field(name=f"Roller ({len(ctx.guild.roles) - 1})", value=roles, inline=False)
         if ctx.guild.premium_tier != 0:
             embed.add_field(name=f"Boosts ({ctx.guild.premium_subscription_count})", value=boosters, inline=False)
@@ -443,7 +463,7 @@ class Misc(commands.Cog):
         if bruker.premium_since:
             premium_since = discord.utils.format_dt(bruker.premium_since, style="R")
             embed.add_field(name="Boost", value=f"{premium_since}\n" +
-                                                f"Booster #{premium_index} av serveren", inline=False)
+                            f"Booster #{premium_index} av serveren", inline=False)
         embed.add_field(name=f"Roller ({len(bruker.roles) - 1})", value=roles, inline=False)
         embed.set_footer(text=f"#{join_index} Medlem av serveren | #{creation_index} Eldste brukeren på serveren")
 
@@ -595,7 +615,7 @@ class Misc(commands.Cog):
 
     @commands.cooldown(1, 5, type=commands.BucketType.guild)
     @commands.command(aliases=['owoify', 'uwu'])
-    async def owo(self, ctx, *, tekst: str = None): # https://github.com/LBlend/MornBot/blob/master/cogs/Misc.py#L149-L170
+    async def owo(self, ctx, *, tekst: str = None):  # https://github.com/LBlend/MornBot/blob/master/cogs/Misc.py#L149-L170
         """Oversetter tekst til owo"""
 
         context = ctx.message
@@ -636,7 +656,7 @@ class Misc(commands.Cog):
 
         stamp = None
 
-        if tid.endswith(("h","d", "w", "m", "y")):
+        if tid.endswith(("h", "d", "w", "m", "y")):
             try:
                 delta = await self.parse_delta(tid)
             except ValueError:
@@ -700,6 +720,26 @@ class Misc(commands.Cog):
     @commands.command(hidden=True, aliases=["sjalottlauk"])
     async def lom(self, ctx):
         await ctx.send("https://imgur.com/RN3a1AX")
+
+    @tasks.loop(minutes=30)
+    async def presence(self):
+        """
+        Endrer statusen til botten
+        """
+
+        if not self.bot.is_ready():
+            return
+
+        activity = choice(presencePool)
+        self.bot.logger.debug(f"Changing presence {activity.get("name")}")
+
+        await self.bot.change_presence(
+            activity=discord.CustomActivity(
+                name=activity.get("name").format(stars=self.bot.cache_overview["stars"]),
+                emoji=activity.get("emoji", None)
+            ),
+            status=discord.Status.online
+        )
 
 
 async def setup(bot):

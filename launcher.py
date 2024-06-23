@@ -49,6 +49,7 @@ class Bot(commands.Bot):
         self.logger = logger
         self.data_dir = data_dir
         self.settings = settings.extra
+        self.cache_overview = {"stars": 0}
 
     async def on_message(self, message):
         if message.author.bot:
