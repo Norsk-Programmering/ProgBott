@@ -2,7 +2,7 @@
 import discord
 
 # Bot Utilities
-from cogs.utils.my_errors import MultipleWorplaces, NoWorplace
+from cogs.utils.my_errors import MultipleWorplaces, NoWorplace, MultipleUnions, NoUnion
 
 booler = {
     True: ":white_check_mark:",
@@ -173,8 +173,29 @@ async def get_workplace(user: discord.Member) -> int:
     if len(roles) == 1:
         return int(roles[0])
     elif len(roles) > 1:
-        raise MultipleWorplaces("Multiple workplaces was found")
+        raise MultipleWorplaces("Multiple workplaces were found")
     elif len(roles) == 0:
         raise NoWorplace("No workplace was found")
     else:
         raise Exception("Unknown error while determining workplace")
+
+async def list_unions(guild: discord.Guild) -> dict:
+    """
+    Hjelpefunkjson for å liste alle registrerte fagforeninger
+    """
+    return {int(x.id): x.name for x in guild.roles if x.name.endswith("-medlem")}
+
+
+async def get_union(user: discord.Member) -> int:
+    """
+    Hjelpefunkson for henting av brukers fagforeninger
+    """
+    roles = [int(x.id) for x in user.roles if x.name.endswith("-medlem")]
+    if len(roles) == 1:
+        return int(roles[0])
+    elif len(roles) > 1:
+        raise MultipleUnions("Multiple unions were found")
+    elif len(roles) == 0:
+        raise NoUnion("No union was found")
+    else:
+        raise Exception("Unknown error while determining union")
