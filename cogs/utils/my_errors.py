@@ -17,3 +17,10 @@ class NoWorplace(Exception):
 
 class MultipleWorplaces(Exception):
     pass
+
+class NoUnion(Exception):
+    pass
+
+
+class MultipleUnions(Exception):
+    pass
