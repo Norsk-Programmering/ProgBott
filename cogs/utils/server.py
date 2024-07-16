@@ -7,6 +7,7 @@ from cogs.utils.db import DB
 
 import requests
 from flask import Flask, redirect, render_template, request
+from markupsafe import Markup
 
 app = Flask(__name__, static_folder="../../static", template_folder="../../templates")
 
@@ -25,6 +26,25 @@ class Server:
 @app.route("/")
 def _index():
     return render_template("index.html")
+
+
+@app.route("/tos")
+@app.route("/terms-of-service")
+@app.route("/terms")
+def _tos():
+    with open("terms-of-service.md") as f:
+        file_content = f.read()
+
+    return render_template("markdown.html", markdown=Markup(file_content))
+
+
+@app.route("/privacy")
+@app.route("/privacy-policy")
+def _privacy():
+    with open("privacy-policy.md") as f:
+        file_content = f.read()
+
+    return render_template("markdown.html", markdown=Markup(file_content))
 
 
 @app.errorhandler(404)
