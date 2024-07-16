@@ -38,6 +38,15 @@ def _tos():
     return render_template("markdown.html", markdown=Markup(file_content))
 
 
+@app.route("/privacy")
+@app.route("/privacy-policy")
+def _privacy():
+    with open("privacy-policy.md") as f:
+        file_content = f.read()
+
+    return render_template("markdown.html", markdown=Markup(file_content))
+
+
 @app.errorhandler(404)
 def _page_not_found(e):
     return render_template("error.html", error=e, code=404), 404
