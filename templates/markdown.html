@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Terms of Service</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favico.ico') }}" />
+</head>
+
+<body>
+    <div id="content"></div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.getElementById('content').innerHTML =
+            marked.parse({{ markdown | tojson }});
+    </script>
+</body>
+
+</html>
