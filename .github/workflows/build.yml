@@ -92,7 +92,7 @@ jobs:
           driver-opts: image=moby/buildkit:master
 
       - name: Build and push
-        uses: docker/build-push-action@v6.1.0
+        uses: docker/build-push-action@v6.4.0
         with:
           push: true
           attests: type=sbom,generator=docker/buildkit-syft-scanner
