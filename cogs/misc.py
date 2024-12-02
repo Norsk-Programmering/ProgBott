@@ -38,6 +38,18 @@ presencePool = [
         "name": "Vokter {stars} stjerner",
         "emoji": "⭐"
     },
+    {
+        "name": "EDBer",
+        "emoji": "🖥️"
+    },
+    {
+        "name": "Skriver kode",
+        "emoji": "✍️"
+    },
+    {
+        "name": "Knuser bugs",
+        "emoji": "🐛"
+    },
 ]
 
 
