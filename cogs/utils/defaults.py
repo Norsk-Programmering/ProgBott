@@ -45,6 +45,7 @@ region_names = {
 
 # https://discord.com/developers/docs/resources/guild#guild-object-guild-features
 features = {
+    "ACTIVITY_FEED_DISABLED_BY_USER": "Aktivitetsfeed deaktivert",
     "ANIMATED_BANNER": "Annimert banner",
     "ANIMATED_ICON": "Animert ikon",
     "APPLICATION_COMMAND_PERMISSIONS_V2": "Moderne kommandopermisjoner",
