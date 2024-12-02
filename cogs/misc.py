@@ -38,6 +38,18 @@ presencePool = [
         "name": "Vokter {stars} stjerner",
         "emoji": "⭐"
     },
+    {
+        "name": "EDBer",
+        "emoji": "🖥️"
+    },
+    {
+        "name": "Skriver kode",
+        "emoji": "✍️"
+    },
+    {
+        "name": "Knuser bugs",
+        "emoji": "🐛"
+    },
 ]
 
 
@@ -288,15 +300,17 @@ class Misc(commands.Cog):
         categories = len(ctx.guild.categories)
         total_channels = text_channels + voice_channels
 
-        features_string = ""
+        features_list = []
         if ctx.guild.features is not []:
             for feature in ctx.guild.features:
                 try:
                     if features[feature]:
-                        features_string += f"{features[feature]}\n"
+                        features_list.append(features[feature])
                 except KeyError:
                     self.bot.logger.debug("feature %s is not translated", feature)
-                    features_string += f"{feature}\n"
+                    features_list.append(feature)
+        features_list.sort()
+        features_string = "\n".join(features_list)
 
         photos = {}
         if ctx.guild.splash:
@@ -470,13 +484,32 @@ class Misc(commands.Cog):
             embed.add_field(name="Arbeidsplass", value=ansatt.replace("-ansatt", ""), inline=False)
 
         if bruker.activities:
-            games = ""
+            games = []
             for activity in bruker.activities:
-                if not activity.name:
+                if not activity.name or activity.name == "Custom Status":
                     continue
-                games += f"{activity.name}\n"
+
+                if type(activity) is discord.Spotify:
+                    games.append(f"Viber til {activity.title} av {activity.artist} på Spotify")
+                if type(activity) is discord.Game:
+                    if activity.platform:
+                        games.append(f"Spiller {activity.name} på {activity.platform}")
+                    else:
+                        games.append(f"Spiller {activity.name}")
+                if type(activity) is discord.Streaming:
+                    baseText = f"Stømmer {activity.game}"
+                    if activity.platform:
+                        baseText += (f" på {activity.platform}")
+                    if activity.url:
+                        baseText += (f"[{activity.name}]({activity.url})")
+                    games.append(baseText)
+                else:
+                    games.append(activity.name)
+
             if games:
-                embed.add_field(name="Spiller", value=games, inline=False)
+                games.sort()
+                games = "\n".join(games)
+                embed.add_field(name="Aktivitet", value=games, inline=False)
         await ctx.reply(embed=embed)
 
     @commands.command(aliases=["userroles"])
