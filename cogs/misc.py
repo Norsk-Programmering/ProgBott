@@ -288,15 +288,17 @@ class Misc(commands.Cog):
         categories = len(ctx.guild.categories)
         total_channels = text_channels + voice_channels
 
-        features_string = ""
+        features_list = []
         if ctx.guild.features is not []:
             for feature in ctx.guild.features:
                 try:
                     if features[feature]:
-                        features_string += f"{features[feature]}\n"
+                        features_list.append(features[feature])
                 except KeyError:
                     self.bot.logger.debug("feature %s is not translated", feature)
-                    features_string += f"{feature}\n"
+                    features_list.append(feature)
+        features_list.sort()
+        features_string = "\n".join(features_list)
 
         photos = {}
         if ctx.guild.splash:
