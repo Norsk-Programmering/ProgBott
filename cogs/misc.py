@@ -753,6 +753,11 @@ class Misc(commands.Cog):
     async def lom(self, ctx):
         await ctx.send("https://imgur.com/RN3a1AX")
 
+    @commands.cooldown(1, 5, type=commands.BucketType.guild)
+    @commands.command(hidden=True, aliases=["roar"])
+    async def sprengstoff(self, ctx):
+        await ctx.send("https://imgur.com/KbkkrIi")
+
     @tasks.loop(minutes=30)
     async def presence(self):
         """
