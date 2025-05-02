@@ -1,6 +1,6 @@
 discord.py==2.4.0
 environs==11.2.1
 flask==2.3.3
-marshmallow==3.23.1
+marshmallow==4.0.0
 python-dateutil==2.9.0.post0
 requests==2.32.3
