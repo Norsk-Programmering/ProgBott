@@ -22,9 +22,9 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v5.6.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install dependencies
         run: |
@@ -48,7 +48,7 @@ jobs:
 
       - name: Create Pull Request
         if: failure()
-        uses: peter-evans/create-pull-request@v7.0.5
+        uses: peter-evans/create-pull-request@v7.0.8
         with:
           branch: actions/auto
           commit-message: Changes done by tests
@@ -92,7 +92,7 @@ jobs:
           driver-opts: image=moby/buildkit:master
 
       - name: Build and push
-        uses: docker/build-push-action@v6.10.0
+        uses: docker/build-push-action@v6.16.0
         with:
           push: true
           attests: type=sbom,generator=docker/buildkit-syft-scanner

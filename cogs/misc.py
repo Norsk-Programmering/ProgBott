@@ -159,7 +159,13 @@ class Misc(commands.Cog):
                 else:
                     membercount.append(member.id)
 
-        dev = await self.bot.fetch_user(self.bot.appinfo.owner.id)
+        if self.bot.appinfo.team:
+            class DevTeam(object):
+                name = self.bot.appinfo.team.name
+                display_avatar = self.bot.appinfo.team.icon or self.bot.appinfo.icon
+            dev = DevTeam()
+        else:
+            dev = await self.bot.fetch_user(self.bot.appinfo.owner.id)
 
         desc = f"Discord-programvareagent for Norsk programmering" \
             f"\nForbedringforslag mottas på [GitHub]({self.repo})"
