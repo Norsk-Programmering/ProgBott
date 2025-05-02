@@ -42,7 +42,7 @@ class Settings:
 
         setting_path = self.data_dir + "/settings.json"
 
-        extra = {"github": {}}
+        extra = {"github": {}, "joiner": {}}
         try:
             with codecs.open(setting_path, "r", encoding="utf8") as f:
                 fil = json.load(f)
