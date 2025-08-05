@@ -12,6 +12,7 @@ from discord.ext import commands
 from cogs.utils.logger import Logger
 from cogs.utils.settings import Settings
 
+import asyncio
 import time
 import traceback
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -81,6 +82,13 @@ class Bot(commands.Bot):
         await super().close()
 
 
+async def main(token):
+
+    discord.utils.setup_logging(root=False)
+
+    async with Bot() as bot:
+        await bot.start(token)
+
 if __name__ == "__main__":
     parser = ArgumentParser(prog="Roxedus' ProgBott",
                             description="Programmeringsbot for Norsk programmering",
@@ -108,7 +116,7 @@ if __name__ == "__main__":
 
     # pylint: disable=arguments-differ
     try:
-        Bot().run(settings.token)
+        asyncio.run(main(settings.token))
     except Exception as _e:
         _tb = _e.__traceback__
         logger.error(traceback.extract_tb(_tb))
