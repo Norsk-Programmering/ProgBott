@@ -39,7 +39,7 @@ class RetryDNSConnector(TCPConnector):
             try:
                 return await super()._create_direct_connection(*args, **kwargs)
             except ClientConnectorDNSError as e:
-                sleep_delay = (self.retry_delay + self.retry)**self.retry_exponent
+                sleep_delay = (self.retry_delay + retry)**self.retry_exponent
                 logger.warning("DNS error occurred: %s. Retrying in %.2f seconds (attempt %d/%d)",
                                e, sleep_delay, retry + 1, self.retry_count)
                 await asyncio.sleep(sleep_delay)
