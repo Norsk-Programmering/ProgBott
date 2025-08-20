@@ -479,6 +479,9 @@ class Misc(commands.Cog):
         embed.set_thumbnail(url=bruker.display_avatar.replace(static_format="png").url)
         embed.add_field(name="Opprettet", value=bruker_created_date)
         embed.add_field(name="Ble med i serveren", value=bruker_joined_date)
+        if hasattr(bruker.primary_guild, 'tag') and bruker.primary_guild.identity_enabled:
+            is_star = " :star:" if bruker.primary_guild.id == ctx.guild.id else ""
+            embed.add_field(name=f"Guild Tag{is_star}", value=f"`{bruker.primary_guild.tag}`")
         if bruker.premium_since:
             premium_since = discord.utils.format_dt(bruker.premium_since, style="R")
             embed.add_field(name="Boost", value=f"{premium_since}\n" +
@@ -590,13 +593,20 @@ class Misc(commands.Cog):
         if len(members) == 0:
             members = "**Ingen**"
 
+        def colorhexa(color):
+            return f"[{str(color)}](<https://www.colorhexa.com/{str(color).replace('#', '')}.png>)"
+
         permissions = ", ".join([permission for permission, value in iter(rolle.permissions) if value is True])
 
         embed = discord.Embed(title=rolle.name, description=f"{rolle.mention}\n**ID:** {rolle.id}", color=color)
         embed.set_author(name=rolle.guild.name)
         if ctx.guild.icon is not None:
             embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url)
-        embed.add_field(name="Fargekode", value=str(rolle.color))
+        embed.add_field(name="Fargekode", value=colorhexa(rolle.color))
+        if rolle.tertiary_color:
+            embed.add_field(name="Fargeeffekt", value="Holografisk")
+        elif rolle.secondary_color:
+            embed.add_field(name="Tillegsfarge", value=colorhexa(rolle.secondary_color))
         embed.add_field(name="Opprettet", value=discord.utils.format_dt(rolle.created_at, style="R"))
         embed.add_field(name="Posisjon", value=rolle.position)
         embed.add_field(name="Nevnbar", value=mentionable)
