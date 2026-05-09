@@ -39,9 +39,14 @@ class RetryDNSConnector(TCPConnector):
             try:
                 return await super()._create_direct_connection(*args, **kwargs)
             except ClientConnectorDNSError as e:
-                sleep_delay = (self.retry_delay + retry)**self.retry_exponent
-                logger.warning("DNS error occurred: %s. Retrying in %.2f seconds (attempt %d/%d)",
-                               e, sleep_delay, retry + 1, self.retry_count)
+                sleep_delay = (self.retry_delay + retry) ** self.retry_exponent
+                logger.warning(
+                    "DNS error occurred: %s. Retrying in %.2f seconds (attempt %d/%d)",
+                    e,
+                    sleep_delay,
+                    retry + 1,
+                    self.retry_count,
+                )
                 await asyncio.sleep(sleep_delay)
                 continue
 
@@ -60,12 +65,9 @@ class Bot(commands.Bot):
             members=True,
             messages=True,
             message_content=True,
-            presences=True
+            presences=True,
         )
-        mentions = discord.AllowedMentions(
-            everyone=False,
-            replied_user=False
-        )
+        mentions = discord.AllowedMentions(everyone=False, replied_user=False)
         super().__init__(
             allowed_mentions=mentions,
             command_prefix=_get_prefix,
@@ -88,19 +90,34 @@ class Bot(commands.Bot):
         if not hasattr(self, "appinfo"):
             self.appinfo = await self.application_info()
 
-        self.logger.info("Logged in as: %s in %s servers.", self.user.name, len(self.guilds))
+        self.logger.info(
+            "Logged in as: %s in %s servers.", self.user.name, len(self.guilds)
+        )
         self.logger.info("DiscordPY: %s", discord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
     async def setup_hook(self):
-        extensions = ["cogs.norprog", "cogs.misc", "cogs.poeng", "cogs.bokmerker",
-                      "cogs.errors", "cogs.github", "cogs.broder", "cogs.workplace"]
+        extensions = [
+            "cogs.norprog",
+            "cogs.misc",
+            "cogs.poeng",
+            "cogs.bokmerker",
+            "cogs.errors",
+            "cogs.github",
+            "cogs.broder",
+            "cogs.workplace",
+            "cogs.birthday",
+        ]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)
                 await self.load_extension(extension)
             except Exception as _e:
-                self.logger.exception("Loading of extension %s failed: %s", extension, _e)
+                self.logger.exception(
+                    "Loading of extension %s failed: %s", extension, _e
+                )
+
+        await self.tree.sync()
 
     async def close(self):
         self.logger.info("Logging out")
@@ -114,17 +131,36 @@ async def main(token):
     async with Bot() as bot:
         await bot.start(token)
 
+
 if __name__ == "__main__":
-    parser = ArgumentParser(prog="Roxedus' ProgBott",
-                            description="Programmeringsbot for Norsk programmering",
-                            formatter_class=RawTextHelpFormatter)
+    parser = ArgumentParser(
+        prog="Roxedus' ProgBott",
+        description="Programmeringsbot for Norsk programmering",
+        formatter_class=RawTextHelpFormatter,
+    )
 
     parser.add_argument("-D", "--debug", action="store_true", help="Sets debug to true")
-    parser.add_argument("-l", "--level", help="Sets debug level",
-                        choices=["critical", "error", "warning", "info", "debug"], default="warning")
-    parser.add_argument("-d", "--data-directory",
-                        help="Define an alternate data directory location", default="data", type=str)
-    parser.add_argument("-f", "--log-to-file", action="store_true", help="Save log to file", default=True)
+    parser.add_argument(
+        "-l",
+        "--level",
+        help="Sets debug level",
+        choices=["critical", "error", "warning", "info", "debug"],
+        default="warning",
+    )
+    parser.add_argument(
+        "-d",
+        "--data-directory",
+        help="Define an alternate data directory location",
+        default="data",
+        type=str,
+    )
+    parser.add_argument(
+        "-f",
+        "--log-to-file",
+        action="store_true",
+        help="Save log to file",
+        default=True,
+    )
 
     args = parser.parse_args()
 
@@ -134,9 +170,15 @@ if __name__ == "__main__":
     if args.debug:
         LEVEL = "DEBUG"
 
-    settings = Settings(data_dir=data_dir, log_level=LEVEL, log_to_file=args.log_to_file)
+    settings = Settings(
+        data_dir=data_dir, log_level=LEVEL, log_to_file=args.log_to_file
+    )
 
-    logger = Logger(location=settings.data_dir, level=settings.log_level, to_file=settings.log_to_file).logger
+    logger = Logger(
+        location=settings.data_dir,
+        level=settings.log_level,
+        to_file=settings.log_to_file,
+    ).logger
     logger.debug("Data folder: %s", settings.data_dir)
 
     # pylint: disable=arguments-differ
