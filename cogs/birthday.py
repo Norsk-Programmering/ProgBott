@@ -10,7 +10,7 @@ from datetime import datetime, time
 from zoneinfo import ZoneInfo
 
 NORWEGIAN_TIME = ZoneInfo("Europe/Oslo")
-BIRTHDAY_CHECK_TIME = time(hour=17, minute=21, tzinfo=NORWEGIAN_TIME)
+BIRTHDAY_CHECK_TIME = time(hour=8, minute=0, tzinfo=NORWEGIAN_TIME)
 
 
 class Birthday(commands.Cog):
