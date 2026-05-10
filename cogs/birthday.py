@@ -52,7 +52,7 @@ class Birthday(commands.Cog):
         self.save_data(data)
 
         await interaction.response.send_message(
-            f"Lagret bursdag for {user.mention}: {date}"
+            f"Lagret bursdag for {user.mention}: {date} \nDette blir slettet når serveren forlates."
         )
 
     def load_existing_data(self):
@@ -106,6 +106,18 @@ class Birthday(commands.Cog):
             channel = self.bot.get_channel(self.channel_id)
             if channel:
                 await channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        """
+        Fjerner bursdagsdata når en bruker forlater serveren
+        """
+        user_id = str(member.id)
+
+        if user_id in self.data_cache:
+            del self.data_cache[user_id]
+            self.save_data(self.data_cache)
+            self.bot.logger.debug(f"Birthday from {member.name} deletred")
 
     @check_todays_birthday.before_loop
     async def before_check(self):
