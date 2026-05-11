@@ -117,7 +117,7 @@ class Birthday(commands.Cog):
         if user_id in self.data_cache:
             del self.data_cache[user_id]
             self.save_data(self.data_cache)
-            self.bot.logger.debug(f"Birthday from {member.name} deletred")
+            self.bot.logger.debug(f"Birthday from {member.name} deleted")
 
     @check_todays_birthday.before_loop
     async def before_check(self):
