@@ -10,7 +10,8 @@ from datetime import datetime, time
 from zoneinfo import ZoneInfo
 
 NORWEGIAN_TIME = ZoneInfo("Europe/Oslo")
-BIRTHDAY_CHECK_TIME = time(hour=8, minute=0, tzinfo=NORWEGIAN_TIME)
+BIRTHDAY_CHECK_TIME = time(hour=8, minute=00, tzinfo=NORWEGIAN_TIME)
+BIRTHDAY_ROLE_TIME = time(hour=0, minute=0, tzinfo=NORWEGIAN_TIME)
 
 
 class Birthday(commands.Cog):
@@ -21,9 +22,11 @@ class Birthday(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel_id = 1502653422682378242
+        self.birthday_role_name = "årsdag"
         self.birthdays_file = bot.data_dir + "/birthday/birthdays.json"
         self.data_cache = self.load_existing_data()
         self.check_todays_birthday.start()
+        self.remove_birthday_roles.start()
 
     @discord.app_commands.command(name="bursdag", description="Legg til bursdag")
     @discord.app_commands.describe(date="Bursdag i format DD.MM")
@@ -89,6 +92,11 @@ class Birthday(commands.Cog):
 
                     if member:
                         matches.append(member.mention)
+                        role = discord.utils.get(
+                            guild.roles, name=self.birthday_role_name
+                        )
+                        if role:
+                            await member.add_roles(role)
                     else:
                         matches.append(data["username"])
 
@@ -107,6 +115,26 @@ class Birthday(commands.Cog):
             if channel:
                 await channel.send(embed=embed)
 
+    @tasks.loop(time=BIRTHDAY_ROLE_TIME)
+    async def remove_birthday_roles(self):
+        """
+        Fjerner bursdagsrollen fra alle brukere hver dag ved midnatt
+        """
+        guild = self.bot.guilds[0]
+        role = discord.utils.get(guild.roles, name=self.birthday_role_name)
+        if not role:
+            return
+
+        for user_id in self.data_cache:
+            member = guild.get_member(int(user_id))
+            if member and role in member.roles:
+                try:
+                    await member.remove_roles(role)
+                except discord.Forbidden as e:
+                    self.bot.logger.error(
+                        f"Failed to remove 'årsdag' role from {member.name}: {e}"
+                    )
+
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         """
@@ -120,7 +148,8 @@ class Birthday(commands.Cog):
             self.bot.logger.debug(f"Birthday from {member.name} deleted")
 
     @check_todays_birthday.before_loop
-    async def before_check(self):
+    @remove_birthday_roles.before_loop
+    async def before_task(self):
         await self.bot.wait_until_ready()
 
 
