@@ -1,4 +1,4 @@
-discord.py==2.6.3
+discord.py==2.7.1
 environs==14.6.0
 flask==2.3.3
 marshmallow==4.0.1
