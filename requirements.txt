@@ -3,4 +3,4 @@ environs==14.6.0
 flask==2.3.3
 marshmallow==4.0.1
 python-dateutil==2.9.0.post0
-requests==2.32.5
+requests==2.34.2
