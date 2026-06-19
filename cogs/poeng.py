@@ -216,7 +216,7 @@ class Poeng(commands.Cog):
     @poeng_group.group()
     async def admin(self, ctx):
         """
-        Kategori for instillinger
+        Kategori for innstillinger
         """
 
         if ctx.invoked_subcommand is None:
