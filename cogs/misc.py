@@ -122,14 +122,19 @@ class Misc(commands.Cog):
         """
         embed = easy_embed(self, ctx)
         embed.title = "Hvordan få vakre meldinger når man poster kode"
-        embed.description = r"""
+        """ embed.description = r\"""
         Hei, du kan gjøre koden din mer leselig med å sende koden i kodeblokker.\n\n
         For vanlig kodeblokk skriv:\n\`\`\`\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
         Den kommer til å se ut som dette:\n```\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```\n
         Du kan også definere et språk, for å få syntax highlighting.\n
         For fargerik kodeblokk skriv:\n\`\`\`js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)\n\`\`\`\n
         Den kommer til å se ut som dette:\n```js\nconst dinKode = "Laget av meg"\nconsole.log(dinKode)```
-        """  # noqa: W605
+        \"""  # noqa: W605 """
+        embed.description = """
+Hei, du kan gjøre koden din mer leselig med å sende koden i kodeblokker.
+
+Les guiden [her](<https://support.discord.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline#h_01GY0DAKGXDEHE263BCAYEGFJA>)
+"""
         await ctx.reply(embed=embed)
 
     @commands.command(name="guilds")
