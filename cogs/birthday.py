@@ -51,23 +51,29 @@ class Birthday(commands.Cog):
         data = self.load_existing_data()
         user_id = str(interaction.user.id)
 
-        if user_id not in data:
-            data[user_id] = {"username": interaction.user.name, "birthday": date, "updated": today.isoformat()}
-            self.data_cache = data
-            self.save_data(data)
-        else:
-            last_updated = datetime.fromisoformat(data[user_id].get("updated"))
-            if (today - last_updated).days < 180:
-                return await interaction.response.send_message(
-                    "Du kan bare endre bursdagen din hver 6 måned. Prøv igjen senere.", ephemeral=True
-                )
-            data[user_id] = {"username": interaction.user.name, "birthday": date, "updated": today.isoformat()}
-            self.data_cache = data
-            self.save_data(data)
+        try:
+            if user_id not in data:
+                data[user_id] = {"username": interaction.user.name, "birthday": date, "updated": today.isoformat()}
+                self.data_cache = data
+                self.save_data(data)
+            else:
+                last_updated_str = data[user_id].get("updated")
+                if last_updated_str:
+                    last_updated = datetime.fromisoformat(last_updated_str)
+                    if (today - last_updated).days < 180:
+                        return await interaction.response.send_message(
+                            "Du kan bare endre bursdagen din hver 6 måned. Prøv igjen senere.", ephemeral=True
+                        )
+                data[user_id] = {"username": interaction.user.name, "birthday": date, "updated": today.isoformat()}
+                self.data_cache = data
+                self.save_data(data)
 
-        await interaction.response.send_message(
-            f"Lagret bursdag for {user.mention}: {date} \nDette blir slettet når serveren forlates."
-        )
+            await interaction.response.send_message(
+                f"Lagret bursdag for {user.mention}: {date} \nDette blir slettet når serveren forlates."
+            )
+        except Exception as e:
+            self.bot.logger.error(f"Error in add_birthday: {e}")
+            await interaction.response.send_message("En feil oppstod. Prøv igjen senere.", ephemeral=True)
 
     def load_existing_data(self):
         data = {}
