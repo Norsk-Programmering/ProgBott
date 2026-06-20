@@ -22,8 +22,7 @@ class Birthday(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = 1502653422682378242
-        self.birthday_role_name = "årsdag"
+        self.settings_file = bot.data_dir + "/birthday/innstilinger.json"
         self.birthdays_file = bot.data_dir + "/birthday/birthdays.json"
         self.data_cache = self.load_existing_data()
         self.check_todays_birthday.start()
