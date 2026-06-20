@@ -2,12 +2,13 @@
 Modul for bursdagsfunksjonalitet
 """
 
-import discord
-from discord.ext import commands, tasks
 import json
 import os
 from datetime import datetime, time
 from zoneinfo import ZoneInfo
+
+import discord
+from discord.ext import commands, tasks
 
 NORWEGIAN_TIME = ZoneInfo("Europe/Oslo")
 BIRTHDAY_CHECK_TIME = time(hour=8, minute=00, tzinfo=NORWEGIAN_TIME)
@@ -43,16 +44,26 @@ class Birthday(commands.Cog):
                 raise ValueError
 
         except (ValueError, IndexError):
-            return await interaction.response.send_message(
-                "Feil format! Bruk `DD.MM`(f.eks. 24.12)", ephemeral=True
-            )
+            return await interaction.response.send_message("Feil format! Bruk `DD.MM`(f.eks. 24.12)", ephemeral=True)
 
         user = interaction.user
-        user_id = str(interaction.user.id)
+        today = datetime.now()
         data = self.load_existing_data()
-        data[user_id] = {"username": interaction.user.name, "birthday": date}
-        self.data_cache = data
-        self.save_data(data)
+        user_id = str(interaction.user.id)
+
+        if user_id not in data:
+            data[user_id] = {"username": interaction.user.name, "birthday": date, "updated": today.isoformat()}
+            self.data_cache = data
+            self.save_data(data)
+        else:
+            last_updated = datetime.fromisoformat(data[user_id].get("updated"))
+            if (today - last_updated).days < 180:
+                return await interaction.response.send_message(
+                    "Du kan bare endre bursdagen din hver 6 måned. Prøv igjen senere.", ephemeral=True
+                )
+            data[user_id] = {"username": interaction.user.name, "birthday": date, "updated": today.isoformat()}
+            self.data_cache = data
+            self.save_data(data)
 
         await interaction.response.send_message(
             f"Lagret bursdag for {user.mention}: {date} \nDette blir slettet når serveren forlates."
@@ -92,9 +103,7 @@ class Birthday(commands.Cog):
 
                     if member:
                         matches.append(member.mention)
-                        role = discord.utils.get(
-                            guild.roles, name=self.birthday_role_name
-                        )
+                        role = discord.utils.get(guild.roles, name=self.settings_file.get("birthday_role_name"))
                         if role:
                             await member.add_roles(role)
                     else:
@@ -111,7 +120,7 @@ class Birthday(commands.Cog):
                 color=discord.Color.gold(),
             )
             embed.set_footer(text="Gratulerer med dagen!")
-            channel = self.bot.get_channel(self.channel_id)
+            channel = self.bot.get_channel(self.settings_file.get("channel_id"))
             if channel:
                 await channel.send(embed=embed)
 
@@ -121,7 +130,7 @@ class Birthday(commands.Cog):
         Fjerner bursdagsrollen fra alle brukere hver dag ved midnatt
         """
         guild = self.bot.guilds[0]
-        role = discord.utils.get(guild.roles, name=self.birthday_role_name)
+        role = discord.utils.get(guild.roles, name=self.settings_file.get("birthday_role_name"))
         if not role:
             return
 
@@ -131,9 +140,7 @@ class Birthday(commands.Cog):
                 try:
                     await member.remove_roles(role)
                 except discord.Forbidden as e:
-                    self.bot.logger.error(
-                        f"Failed to remove 'årsdag' role from {member.name}: {e}"
-                    )
+                    self.bot.logger.error(f"Failed to remove 'årsdag' role from {member.name}: {e}")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
