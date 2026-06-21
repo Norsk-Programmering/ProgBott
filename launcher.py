@@ -90,9 +90,7 @@ class Bot(commands.Bot):
         if not hasattr(self, "appinfo"):
             self.appinfo = await self.application_info()
 
-        self.logger.info(
-            "Logged in as: %s in %s servers.", self.user.name, len(self.guilds)
-        )
+        self.logger.info("Logged in as: %s in %s servers.", self.user.name, len(self.guilds))
         self.logger.info("DiscordPY: %s", discord.__version__)
         self.logger.debug("Bot Ready;Prefixes: %s", ", ".join(settings.prefix))
 
@@ -113,9 +111,7 @@ class Bot(commands.Bot):
                 self.logger.debug("Loading extension %s", extension)
                 await self.load_extension(extension)
             except Exception as _e:
-                self.logger.exception(
-                    "Loading of extension %s failed: %s", extension, _e
-                )
+                self.logger.exception("Loading of extension %s failed: %s", extension, _e)
 
         await self.tree.sync()
 
@@ -170,9 +166,7 @@ if __name__ == "__main__":
     if args.debug:
         LEVEL = "DEBUG"
 
-    settings = Settings(
-        data_dir=data_dir, log_level=LEVEL, log_to_file=args.log_to_file
-    )
+    settings = Settings(data_dir=data_dir, log_level=LEVEL, log_to_file=args.log_to_file)
 
     logger = Logger(
         location=settings.data_dir,
