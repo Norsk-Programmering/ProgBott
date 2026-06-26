@@ -102,6 +102,8 @@ class Bot(commands.Bot):
             except Exception as _e:
                 self.logger.exception("Loading of extension %s failed: %s", extension, _e)
 
+        await self.tree.sync()
+
     async def close(self):
         self.logger.info("Logging out")
         await super().close()
