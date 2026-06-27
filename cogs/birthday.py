@@ -165,5 +165,24 @@ class Birthday(commands.Cog):
         await self.bot.wait_until_ready()
 
 
+def check_files(bot):
+    files = [
+        {
+            f"{bot.data_dir}/birthday/innstilinger.json": {
+                "guild": 1502653421877199008,
+                "channel_id": 1502653422682378242,
+                "birthday_role_name": "årsdag",
+            }
+        },
+        {f"{bot.data_dir}/birthday/birthdays.json": {}},
+    ]
+    for i in files:
+        for file, default in i.items():
+            if not os.path.exists(file):
+                with open(file, "w", encoding="utf8") as outfile:
+                    json.dump(default, outfile)
+
+
 async def setup(bot):
+    check_files(bot)
     await bot.add_cog(Birthday(bot))
