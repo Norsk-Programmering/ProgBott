@@ -107,6 +107,68 @@ class Birthday(commands.Cog):
         with open(self.birthdays_file, "w") as file:
             json.dump(data, file, indent=4)
 
+    @commands.guild_only()
+    @commands.group(name="bursdag")
+    async def birthday_group(self, ctx):
+        """
+        Kategori for styring av bursdagsfunksjonalitet
+        """
+
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @commands.is_owner()
+    @birthday_group.group()
+    async def admin(self, ctx):
+        """
+        Kategori for innstillinger
+        """
+
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @admin.command(name="guild")
+    async def set_guild(self, ctx, guild_id):
+        """
+        Kommando for å sette guild_id i innstillinger
+        """
+        try:
+            self.settings["guild"] = int(guild_id)
+            await ctx.send(f"La til guild med guild id {guild_id} i lista")
+        except KeyError:
+            self.settings["guild"] = ""
+            self.settings["guild"] = int(guild_id)
+        except Exception:
+            return self.bot.logger.error(f"Failed to set guild_id: {guild_id}")
+        self.save_settings(self.settings)
+        self.load_settings()
+
+    @admin.command(name="channel")
+    async def set_channel(self, ctx, channel_id):
+        """
+        Kommando for å sette channel_id i innstillinger
+        """
+        try:
+            self.settings["channel_id"] = int(channel_id)
+            await ctx.send(f"Satt kanal med kanal id {channel_id} som bursdagskanal")
+        except Exception:
+            return self.bot.logger.error(f"Failed to set channel_id: {channel_id}")
+        self.save_settings(self.settings)
+        self.load_settings()
+
+    @admin.command(name="role")
+    async def set_role(self, ctx, role_name):
+        """
+        Kommando for å sette bursdagsrolle i innstillinger
+        """
+        try:
+            self.settings["birthday_role_name"] = role_name
+            await ctx.send(f"Satt rolle med navn {role_name} som bursdagsrolle")
+        except Exception:
+            return self.bot.logger.error(f"Failed to set birthday_role_name: {role_name}")
+        self.save_settings(self.settings)
+        self.load_settings()
+
     @tasks.loop(time=BIRTHDAY_CHECK_TIME)
     async def check_todays_birthday(self):
         """
