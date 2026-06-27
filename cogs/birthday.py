@@ -24,6 +24,7 @@ class Birthday(commands.Cog):
         self.bot = bot
         self.settings_file = bot.data_dir + "/birthday/innstilinger.json"
         self.birthdays_file = bot.data_dir + "/birthday/birthdays.json"
+        self.settings = self.load_settings()
         self.data_cache = self.load_existing_data()
         self.check_todays_birthday.start()
         self.remove_birthday_roles.start()
@@ -80,6 +81,12 @@ class Birthday(commands.Cog):
             with open(self.birthdays_file, "r") as file:
                 data = json.load(file)
         return data
+
+    def load_settings(self):
+        if os.path.exists(self.settings_file):
+            with open(self.settings_file, "r") as file:
+                return json.load(file)
+        return {}
 
     def save_data(self, data):
         os.makedirs(os.path.dirname(self.birthdays_file), exist_ok=True)
