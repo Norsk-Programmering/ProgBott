@@ -110,7 +110,13 @@ class Birthday(commands.Cog):
                 b_day, b_month = map(int, data["birthday"].split("."))
 
                 if b_day == day and b_month == month:
-                    guild = self.bot.guilds[0]
+                    try:
+                        guild_id = self.settings.get("guild")
+                        guild = self.bot.get_guild(guild_id)
+                    except AttributeError:
+                        self.bot.logger.error("Guild not found")
+                        return
+
                     member = guild.get_member(int(user_id))
 
                     if member:
