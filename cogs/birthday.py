@@ -121,14 +121,14 @@ class Birthday(commands.Cog):
 
                     if member:
                         matches.append(member.mention)
-                        role = discord.utils.get(guild.roles, name=self.settings_file.get("birthday_role_name"))
+                        role = discord.utils.get(guild.roles, name=self.settings.get("birthday_role_name"))
                         if role:
                             await member.add_roles(role)
                     else:
                         matches.append(data["username"])
 
             except (ValueError, KeyError):
-                continue
+                self.bot.logger.error(f"Invalid birthday format for user {user_id}: {data.get('birthday')}")
 
         if matches:
             birthday_list = "\n".join([f"🎂 {name}" for name in matches])
@@ -138,7 +138,7 @@ class Birthday(commands.Cog):
                 color=discord.Color.gold(),
             )
             embed.set_footer(text="Gratulerer med dagen!")
-            channel = self.bot.get_channel(self.settings_file.get("channel_id"))
+            channel = self.bot.get_channel(self.settings.get("channel_id"))
             if channel:
                 await channel.send(embed=embed)
 
@@ -148,7 +148,7 @@ class Birthday(commands.Cog):
         Fjerner bursdagsrollen fra alle brukere hver dag ved midnatt
         """
         guild = self.bot.guilds[0]
-        role = discord.utils.get(guild.roles, name=self.settings_file.get("birthday_role_name"))
+        role = discord.utils.get(guild.roles, name=self.settings.get("birthday_role_name"))
         if not role:
             return
 
