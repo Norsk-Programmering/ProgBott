@@ -182,9 +182,9 @@ def check_files(bot):
     files = [
         {
             f"{bot.data_dir}/birthday/innstilinger.json": {
-                "guild": 1502653421877199008,
-                "channel_id": 1502653422682378242,
-                "birthday_role_name": "årsdag",
+                "guild": "",
+                "channel_id": "",
+                "birthday_role_name": "",
             }
         },
         {f"{bot.data_dir}/birthday/birthdays.json": {}},
