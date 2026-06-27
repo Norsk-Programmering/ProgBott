@@ -88,6 +88,20 @@ class Birthday(commands.Cog):
                 return json.load(file)
         return {}
 
+    def save_settings(self, setting):
+        os.makedirs(os.path.dirname(self.settings_file), exist_ok=True)
+
+        try:
+            with open(self.settings_file, "r") as file:
+                settings = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            settings = {}
+
+        settings.update(setting)
+
+        with open(self.settings_file, "w") as file:
+            json.dump(settings, file, indent=4)
+
     def save_data(self, data):
         os.makedirs(os.path.dirname(self.birthdays_file), exist_ok=True)
         with open(self.birthdays_file, "w") as file:
