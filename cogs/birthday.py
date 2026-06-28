@@ -162,10 +162,10 @@ class Birthday(commands.Cog):
         Kommando for å sette bursdagsrolle i innstillinger
         """
         try:
-            self.settings["birthday_role_name"] = role.name
-            await ctx.send(f"Satt rolle med navn {role.name} som bursdagsrolle")
+            self.settings["birthday_role_id"] = int(role.id)
+            await ctx.send(f"Satt rolle med id {role.id} som bursdagsrolle")
         except Exception:
-            return self.bot.logger.error(f"Failed to set birthday_role_name: {role.name}")
+            return self.bot.logger.error(f"Failed to set birthday_role_id: {role.id}")
         self.save_settings(self.settings)
         self.load_settings()
 
@@ -197,7 +197,7 @@ class Birthday(commands.Cog):
 
                     if member:
                         matches.append(member.mention)
-                        role = discord.utils.get(guild.roles, name=self.settings.get("birthday_role_name"))
+                        role = discord.utils.get(guild.roles, id=self.settings.get("birthday_role_id"))
                         if role:
                             await member.add_roles(role)
                     else:
@@ -224,7 +224,7 @@ class Birthday(commands.Cog):
         Fjerner bursdagsrollen fra alle brukere hver dag ved midnatt
         """
         guild = self.bot.guilds[0]
-        role = discord.utils.get(guild.roles, name=self.settings.get("birthday_role_name"))
+        role = discord.utils.get(guild.roles, id=self.settings.get("birthday_role_id"))
         if not role:
             return
 
@@ -260,7 +260,7 @@ def check_files(bot):
             f"{bot.data_dir}/birthday/innstilinger.json": {
                 "guild": "",
                 "channel_id": "",
-                "birthday_role_name": "",
+                "birthday_role_id": "",
             }
         },
         {f"{bot.data_dir}/birthday/birthdays.json": {}},
