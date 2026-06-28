@@ -157,15 +157,15 @@ class Birthday(commands.Cog):
         self.load_settings()
 
     @admin.command(name="role")
-    async def set_role(self, ctx, role_name):
+    async def set_role(self, ctx, role: discord.Role):
         """
         Kommando for å sette bursdagsrolle i innstillinger
         """
         try:
-            self.settings["birthday_role_name"] = role_name
-            await ctx.send(f"Satt rolle med navn {role_name} som bursdagsrolle")
+            self.settings["birthday_role_name"] = role.name
+            await ctx.send(f"Satt rolle med navn {role.name} som bursdagsrolle")
         except Exception:
-            return self.bot.logger.error(f"Failed to set birthday_role_name: {role_name}")
+            return self.bot.logger.error(f"Failed to set birthday_role_name: {role.name}")
         self.save_settings(self.settings)
         self.load_settings()
 
