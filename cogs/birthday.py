@@ -144,15 +144,15 @@ class Birthday(commands.Cog):
         self.load_settings()
 
     @admin.command(name="channel")
-    async def set_channel(self, ctx, channel_id):
+    async def set_channel(self, ctx, channel: discord.TextChannel):
         """
         Kommando for å sette channel_id i innstillinger
         """
         try:
-            self.settings["channel_id"] = int(channel_id)
-            await ctx.send(f"Satt kanal med kanal id {channel_id} som bursdagskanal")
+            self.settings["channel_id"] = int(channel.id)
+            await ctx.send(f"Satt kanal med kanal id {channel.id} som bursdagskanal")
         except Exception:
-            return self.bot.logger.error(f"Failed to set channel_id: {channel_id}")
+            return self.bot.logger.error(f"Failed to set channel_id: {channel.id}")
         self.save_settings(self.settings)
         self.load_settings()
 
