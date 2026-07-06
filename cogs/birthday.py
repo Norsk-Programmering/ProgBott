@@ -2,13 +2,14 @@
 Modul for bursdagsfunksjonalitet
 """
 
+# Discord Packages
+import discord
+from discord.ext import commands, tasks
+
 import json
 import os
 from datetime import datetime, time
 from zoneinfo import ZoneInfo
-
-import discord
-from discord.ext import commands, tasks
 
 NORWEGIAN_TIME = ZoneInfo("Europe/Oslo")
 BIRTHDAY_CHECK_TIME = time(hour=8, minute=00, tzinfo=NORWEGIAN_TIME)
