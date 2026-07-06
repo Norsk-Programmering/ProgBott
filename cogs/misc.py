@@ -168,6 +168,7 @@ Les guiden [her](<https://support.discord.com/hc/en-us/articles/210298617-Markdo
             class DevTeam(object):
                 name = self.bot.appinfo.team.name
                 display_avatar = self.bot.appinfo.team.icon or self.bot.appinfo.icon
+                url = f"https://github.com/{self.bot.appinfo.team.name.replace(' ', '-')}"
             dev = DevTeam()
         else:
             dev = await self.bot.fetch_user(self.bot.appinfo.owner.id)
@@ -199,7 +200,7 @@ Les guiden [her](<https://support.discord.com/hc/en-us/articles/210298617-Markdo
 
         uptimetext = f"{days}d {hours}t {minutes}m {seconds}s"
         embed = discord.Embed(color=discord.Colour.from_rgb(244, 1, 110), description=desc)
-        embed.set_author(url=f"https://github.com/{dev.name}", name=dev.name, icon_url=dev.display_avatar.url)
+        embed.set_author(url=dev.url, name=dev.name, icon_url=dev.display_avatar.url)
         embed.set_thumbnail(url=self.ico)
 
         embed.add_field(name="Tjenere", value=str(guilds))
