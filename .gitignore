@@ -201,3 +201,7 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 db/*.sqlite
+
+# Ruff
+ruff.toml
+.ruff_cache/

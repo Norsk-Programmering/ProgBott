@@ -94,13 +94,15 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         extensions = ["cogs.norprog", "cogs.misc", "cogs.poeng", "cogs.bokmerker",
-                      "cogs.errors", "cogs.github", "cogs.broder", "cogs.workplace"]
+                      "cogs.errors", "cogs.github", "cogs.broder", "cogs.workplace", "cogs.birthday"]
         for extension in extensions:
             try:
                 self.logger.debug("Loading extension %s", extension)
                 await self.load_extension(extension)
             except Exception as _e:
                 self.logger.exception("Loading of extension %s failed: %s", extension, _e)
+
+        await self.tree.sync()
 
     async def close(self):
         self.logger.info("Logging out")
