@@ -265,6 +265,11 @@ def check_files(bot):
         },
         {f"{bot.data_dir}/birthday/birthdays.json": {}},
     ]
+
+    folder = f"{bot.data_dir}/birthday"
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
     for i in files:
         for file, default in i.items():
             if not os.path.exists(file):
