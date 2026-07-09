@@ -83,6 +83,9 @@ class Birthday(commands.Cog):
                 data = json.load(file)
         return data
 
+    def get_guild_from_settings(self):
+        return self.bot.get_guild(self.settings.get("guild"))
+
     def load_settings(self):
         if os.path.exists(self.settings_file):
             with open(self.settings_file, "r") as file:
@@ -188,8 +191,7 @@ class Birthday(commands.Cog):
 
                 if b_day == day and b_month == month:
                     try:
-                        guild_id = self.settings.get("guild")
-                        guild = self.bot.get_guild(guild_id)
+                        guild = self.get_guild_from_settings()
                     except AttributeError:
                         self.bot.logger.error("Guild not found")
                         return
@@ -224,7 +226,7 @@ class Birthday(commands.Cog):
         """
         Fjerner bursdagsrollen fra alle brukere hver dag ved midnatt
         """
-        guild = self.bot.guilds[0]
+        guild = self.get_guild_from_settings()
         role = discord.utils.get(guild.roles, id=self.settings.get("birthday_role_id"))
         if not role:
             return
